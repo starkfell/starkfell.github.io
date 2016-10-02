@@ -2,14 +2,11 @@
 layout: default
 title: About
 ---
-	<h1>{{ page.title }}</h1>
+<div class="blurb">
+	<h1>About</h1>
+<p>All information divulged in this Blog is based on my personal opinion and experience. Before applying any of the techniques or methods described in this blog
+	 to a Production Environment, adequate testing should be applied beforehand.</p>
 
-	This Website contains my own personal musings and experiences working with technology. The opinions and ideas contained herein are my own.
+<p> If you would like to learn more about my Professional Experience, please visit my <a href="https://www.linkedin.com/in/rirujo">LinkedIn Profile</a>.</p>
 
-	If you are interested in my professional experience in an easy to read format, please visit my LinkedIn Profile.
-	<ul class="about">
-
-	  {% for post in site.about %}
-	    <li><span>{{ post.date | date_to_string }}</span> » <a href="{{ post.url }}" title="{{ post.title }}">{{ post.title }}</a></li>
-	  {% endfor %}
-	</ul>
+</div>

@@ -41,12 +41,3 @@ ul.posts {
 ul.posts li {
     list-style: none;
 }
-
-ul.about { 
-    margin: 20px auto 40px; 
-    font-size: 1.5em;
-}
-
-ul.about li {
-    list-style: none;
-}
