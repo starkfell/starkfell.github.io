@@ -128,14 +128,14 @@
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "The Azure Key Vault Id."
+        "description": "The Azure Key Vault Resource Id which is found in the Properties Blade of the Key Vault."
       }
     },
     "nanoServerCertificateUrl": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
-        "description": "The URL of the Nano Server Certificate Url that is stored in the Azure Key Vault."
+        "description": "The Secret Identifier URL of the Nano Server Certificate stored in the Azure Key Vault."
       }
     },
     "apiVersion": {
