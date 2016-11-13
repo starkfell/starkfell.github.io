@@ -4,7 +4,9 @@
   "parameters": {
     "clientID": {
       "type": "string",
-      "defaultValue": "luma",
+      "minLength": 2,
+      "maxLength": 5,
+      "defaultValue": "rei",
       "metadata": {
         "description": "Prefix for the Environment (2-5 characters) related to the Client ID or Name."
       }
@@ -23,46 +25,11 @@
         "description": "Nano Server Subnet Prefix."
       }
     },
-    "vNetName": {
-      "type": "string",
-      "defaultValue": "[concat(parameters('clientID'), '-VNet')]",
-      "metadata": {
-        "description": "vNet Name."
-      }
-    },
-    "subnetName": {
-      "type": "string",
-      "defaultValue": "[concat(parameters('clientID'), '-Subnet')]",
-      "metadata": {
-        "description": "Active Directory Subnet Name"
-      }
-    },
-    "nsgName": {
-      "type": "string",
-      "defaultValue": "[concat(parameters('clientID'), '-nsg-', substring(uniqueString(resourceGroup().id), 0, 2))]",
-      "metadata": {
-        "description": "Network Security Group for the File Maker Server being deployed."
-      }
-    },
     "nanoServerServerNicIPAddress": {
       "type": "string",
       "defaultValue": "10.0.1.4",
       "metadata": {
         "description": "The Primary IP address of the new Nano Server being deployed."
-      }
-    },
-    "nanoServerServerPubIPName": {
-      "type": "string",
-      "metadata": {
-        "description": "The FQDN of the Public IP Address associated with the Nano Server being deployed."
-      },
-      "defaultValue": "[concat( parameters('clientID'), '-nanosrv-', substring(uniqueString(resourceGroup().id), 0, 2))]"
-    },
-    "nanoServerStorageName": {
-      "type": "string",
-      "defaultValue": "[concat(parameters('clientID'), 'nanosrvstr', substring(uniqueString(resourceGroup().id), 0, 4))]",
-      "metadata": {
-        "Description": "Name of the Storage Account where the Nano Server is being deployed."
       }
     },
     "nanoServerStorageType": {
@@ -76,13 +43,6 @@
       ],
       "metadata": {
         "Description": "The Type of Redundant Storage used for the Nano Server being deployed."
-      }
-    },
-    "nanoServerServerName": {
-      "type": "string",
-      "defaultValue": "[concat( parameters('clientID'), '-nanosrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
-      "metadata": {
-        "Description": "The Name of the Nano Server being deployed."
       }
     },
     "nanoServeradminUsername": {
@@ -143,20 +103,6 @@
         "description": "The Version Number of the fully patched Windows Image being deployed."
       }
     },
-    "nanoServerServerOSDiskName": {
-      "type": "string",
-      "defaultValue": "[concat('nano','OSDisk')]",
-      "metadata": {
-        "description": "The Name of the Nano Server OS Disk."
-      }
-    },
-    "nanoServerServerDataDiskName": {
-      "type": "string",
-      "defaultValue": "[concat('nano','DataDisk')]",
-      "metadata": {
-        "description": "The Name of the Nano Server Data Disk."
-      }
-    },
     "nanoServerServerDataDiskSize": {
       "type": "int",
       "defaultValue": 50,
@@ -180,16 +126,16 @@
     },
     "nanoServerkeyVaultId": {
       "type": "string",
-      "defaultValue": "/subscriptions/84f065f5-e37a-4127-9c82-0b1ecd57a652/resourceGroups/nano-key-vault/providers/Microsoft.KeyVault/vaults/nanokeyvaultd393",
+      "defaultValue": "",
       "metadata": {
         "description": "The Azure Key Vault Id."
       }
     },
     "nanoServerCertificateUrl": {
       "type": "string",
-      "defaultValue": "https://nanokeyvaultd393.vault.azure.net/secrets/nanoservers-lumagate-com-cert/5de63e289c714b2a8c4450e0d9144216",
+      "defaultValue": "",
       "metadata": {
-        "description": "The Azure Key Vault Id."
+        "description": "The URL of the Nano Server Certificate Url that is stored in the Azure Key Vault."
       }
     },
     "apiVersion": {
@@ -201,42 +147,49 @@
     }
   },
   "variables": {
-
+    "vNetName": "[concat(parameters('clientID'), '-VNet')]",
+    "subnetName": "[concat(parameters('clientID'), '-Subnet')]",
+    "nsgName": "[concat(parameters('clientID'), '-nsg-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "nanoServerPubIPName": "[concat(parameters('clientID'), '-nanosrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "nanoServerStorageName": "[concat(parameters('clientID'), 'nanosrvstr', substring(uniqueString(resourceGroup().id), 0, 4))]",
+    "nanoServerName": "[concat(parameters('clientID'), '-nanosrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "nanoServerOSDiskName": "[concat(variables('nanoServerName'), '-OSDisk')]",
+    "nanoServerDataDiskName": "[concat(variables('nanoServerName'), '-DataDisk')]"
   },
   "resources": [
     {
-      "name": "[parameters('nanoServerStorageName')]",
+      "name": "[variables('nanoServerStorageName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [],
       "tags": {
-        "displayName": "[parameters('nanoServerStorageName')]"
+        "displayName": "[variables('nanoServerStorageName')]"
       },
       "properties": {
         "accountType": "[parameters('nanoServerStorageType')]"
       }
     },
     {
-      "name": "[parameters('nanoServerServerPubIPName')]",
+      "name": "[variables('nanoServerPubIPName')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [],
       "tags": {
-        "displayName": "[parameters('nanoServerServerPubIPName')]"
+        "displayName": "[variables('nanoServerPubIPName')]"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('nanoServerServerPubIPName')]"
+          "domainNameLabel": "[variables('nanoServerPubIPName')]"
         }
       }
     },
     {
       "apiVersion": "[parameters('apiVersion')]",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[parameters('nsgName')]",
+      "name": "[variables('nsgName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "securityRules": [
@@ -302,10 +255,10 @@
     {
       "apiVersion": "[parameters('apiVersion')]",
       "type": "Microsoft.Network/virtualNetworks",
-      "name": "[parameters('vNetName')]",
+      "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', parameters('nsgName'))]"
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('nsgName'))]"
       ],
       "properties": {
         "addressSpace": {
@@ -315,11 +268,11 @@
         },
         "subnets": [
           {
-            "name": "[parameters('subnetName')]",
+            "name": "[variables('subnetName')]",
             "properties": {
               "addressPrefix": "[parameters('subnetPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', parameters('nsgName'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('nsgName'))]"
               }
             }
           }
@@ -327,29 +280,29 @@
       }
     },
     {
-      "name": "[concat(parameters('nanoServerServerName'), '-NIC')]",
+      "name": "[concat(variables('nanoServerName'), '-NIC')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', parameters('nanoServerServerPubIPName'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', parameters('vNetName'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('nanoServerPubIPName'))]",
+        "[concat('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
       ],
       "tags": {
-        "displayName": "[concat(parameters('nanoServerServerName'), '-NIC')]"
+        "displayName": "[concat(variables('nanoServerName'), '-NIC')]"
       },
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[concat(parameters('nanoServerServerName'), '-ipconfig')]",
+            "name": "[concat(variables('nanoServerName'), '-ipconfig')]",
             "properties": {
               "privateIPAddress": "[parameters('nanoServerServerNicIPAddress')]",
               "privateIPAllocationMethod": "Static",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('nanoServerServerPubIPName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('nanoServerPubIPName'))]"
               },
               "subnet": {
-                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', parameters('vNetName')), '/subnets/', parameters('subnetName'))]"
+                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('vNetName')), '/subnets/', variables('subnetName'))]"
               }
             }
           }
@@ -357,16 +310,16 @@
       }
     },
     {
-      "name": "[parameters('nanoServerServerName')]",
+      "name": "[variables('nanoServerName')]",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', parameters('nanoServerStorageName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', parameters('nanoServerServerName'), '-NIC')]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('nanoServerStorageName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('nanoServerName'), '-NIC')]"
       ],
       "tags": {
-        "displayName": "[parameters('nanoServerServerName')]"
+        "displayName": "[variables('nanoServerName')]"
       },
       "properties": {
         "hardwareProfile": {
@@ -384,7 +337,7 @@
               ]
             }
           ],
-          "computerName": "[parameters('nanoServerServerName')]",
+          "computerName": "[variables('nanoServerName')]",
           "adminUsername": "[parameters('nanoServeradminUsername')]",
           "adminPassword": "[parameters('nanoServeradminPassword')]",
           "windowsConfiguration": {
@@ -409,9 +362,9 @@
             "version": "[parameters('nanoServerServerImageVersion')]"
           },
           "osDisk": {
-            "name": "[parameters('nanoServerServerOSDiskName')]",
+            "name": "[variables('nanoServerOSDiskName')]",
             "vhd": {
-              "uri": "[concat('http://', parameters('nanoServerStorageName'), '.blob.core.windows.net/vhds', '/', parameters('nanoServerServerOSDiskName'), '.vhd')]"
+              "uri": "[concat('http://', variables('nanoServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('nanoServerOSDiskName'), '.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -419,9 +372,9 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://', parameters('nanoServerStorageName'), '.blob.core.windows.net/vhds', '/', parameters('nanoServerServerDataDiskName'),'-F.vhd')]"
+                "uri": "[concat('http://', variables('nanoServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('nanoServerDataDiskName'),'-F.vhd')]"
               },
-              "name": "[concat(parameters('nanoServerServerName'),'-F')]",
+              "name": "[concat(variables('nanoServerName'),'-F')]",
               "caching": "None",
               "createOption": "Empty",
               "diskSizeGB": "[parameters('nanoServerServerDataDiskSize')]",
@@ -432,7 +385,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('nanoServerServerName'), '-NIC'))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('nanoServerName'), '-NIC'))]",
               "properties": { "primary": true }
             }
           ]
