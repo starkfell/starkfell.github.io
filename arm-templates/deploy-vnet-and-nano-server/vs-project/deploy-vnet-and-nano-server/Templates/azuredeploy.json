@@ -124,7 +124,7 @@
         "description": "The Size of the Nano Server VM being deployed in Azure."
       }
     },
-    "nanoServerkeyVaultId": {
+    "nanoServerKeyVaultId": {
       "type": "string",
       "defaultValue": "",
       "metadata": {
@@ -328,7 +328,7 @@
         "osProfile": {
           "secrets": [
             {
-              "sourceVault": { "id": "[parameters('nanoServerkeyVaultId')]" },
+              "sourceVault": { "id": "[parameters('nanoServerKeyVaultId')]" },
               "vaultCertificates": [
                 {
                   "certificateUrl": "[parameters('nanoServerCertificateUrl')]",
