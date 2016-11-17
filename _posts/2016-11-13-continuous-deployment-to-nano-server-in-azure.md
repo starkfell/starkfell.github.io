@@ -34,7 +34,7 @@ This script is responsible for the following:
 
 Full details about the Script can be reviewed within the script itself.
 
-Copy the file to your Host and run it using the Syntax and Example below:
+Copy the file to your Host, open up an elevated PowerShell prompt and run the script using the Syntax and Example below as a guide:
 
 Syntax:
 
@@ -75,6 +75,8 @@ Example:
 ```
 
 The output from the script should have two entries at the bottom when it completes successfully:
+
+<img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg" alt="" />
 
 ```powershell
 Azure Key Vault Resource ID:                           /subscriptions/87d031cb-5fde-412d-b09c-c44c16131488/resourceGroups/nano-key-vault/providers/Microsoft.KeyVault/vaults/nanokeyvault7780.
