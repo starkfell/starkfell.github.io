@@ -51,8 +51,7 @@ Syntax:
 -NanoServerLocalAdminPassword <NANO_SERVER_LOCAL_ADMINISTRATOR_PASSWORD> `
 -NanoServerCertificateName <NANO_SERVER_CERTIFICATE_NAME> `
 -NanoServerCertificatePassword <NANO_SERVER_CERTIFICATE_PASSWORD> `
--Location <LOCATIION>
-
+-Location <LOCATION>
 ```
 
 Example:
@@ -71,7 +70,6 @@ Example:
 -NanoServerCertificateName nanoservers.lumadeep.com `
 -NanoServerCertificatePassword NanoMation1! `
 -Location westeurope
-
 ```
 
 The output from the script should return two values once the script has completed successfully:
@@ -124,8 +122,8 @@ Afterwards, click on the **Purchase** button to kick off the deployment.
 
 ![continuous-deployment-to-nano-server-in-azure-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-002.jpg)
 
-The deployment should take between 5 to 10 minutes to complete. Afterwards, open up the Resource Group you deployed the Nano Server to and make note of the Public IP Address
-DNS Name.
+The deployment should take between 5 to 10 minutes to complete. Afterwards, open up the Resource Group you deployed the Nano Server to and make note of DNS Name
+of the Public IP Address Resource.
 
 ![continuous-deployment-to-nano-server-in-azure-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-003.jpg)
 
@@ -150,18 +148,12 @@ Setup a Powershell Remoting Session to the Nano Server.
 $Session = New-PSSession -ComputerName luma-nanosrv-at.westeurope.cloudapp.azure.com -Credential ~\winadmin
 ```
 
-Type in the Password of the Username when prompted.
+Type in the Password of the Nano Server Username when prompted.
 
 ![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
 
-Authentication to the Nano Server may take a few seconds to complete and you won't get a response back from the server. Run the following
-command to verify that the PowerShell Remoting Session to the Host is open.
-
-```powershell
-Get-PSSession
-```
-
-You should get the following response.
+Authentication to the Nano Server may take a few seconds to complete and you won't get a response back from the server. Run the **Get-PSSession** cmdlet to verify
+that the PowerShell Remoting Session to the Host is open.
 
 ![continuous-deployment-to-nano-server-in-azure-005]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-005.jpg)
 
@@ -174,7 +166,6 @@ Invoke-Command `
 	{
 		Get-Process
 	}
-
 ```
 
 You should get the current running processes on the Nano Server similar to what is shown in the screenshot below.
@@ -182,8 +173,44 @@ You should get the current running processes on the Nano Server similar to what 
 ![continuous-deployment-to-nano-server-in-azure-006]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-006.jpg)
 
 
+## Install IIS on the Nano Server
+
+Run the following command from the elevated PowerShell prompt created earlier to install IIS on the Nano Server.
+
+```powershell
+Invoke-Command `
+	-Session $Session `
+	-ScriptBlock `
+	{
+		Install-Module -Name NanoServerPackage -SkipPublisherCheck -Force
+		Install-PackageProvider NanoServerPackage
+		Set-ExecutionPolicy RemoteSigned -Scope Process
+		Import-PackageProvider NanoServerPackage
+		Install-NanoServerPackage -Name Microsoft-NanoServer-IIS-Package -Culture "en-us"
+	}
+```
+
+You will be prompted to install the NuGet Provider, type **Y** and hit Enter.
+
+![continuous-deployment-to-nano-server-in-azure-007]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-007.jpg)
+
+The required Packages will then be downloaded and installed on the Nano Server. You will see the details of the **Microsoft-NanoServer-IIS-Package** when
+the installation is complete.
+
+![continuous-deployment-to-nano-server-in-azure-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-008.jpg)
 
 
+Next, run the following command to verify IIS is installed and running on the Nano Server.
+
+```powershell
+Invoke-Command `
+	-Session $Session `
+	-ScriptBlock `
+	{
+		Import-Module IISAdministation
+		Get-IISSite
+	}
+```
 
 
 
