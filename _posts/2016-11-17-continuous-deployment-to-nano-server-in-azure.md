@@ -161,11 +161,11 @@ Next, run the following command to return back the current running processes on 
 
 ```powershell
 Invoke-Command `
-	-Session $Session `
-	-ScriptBlock `
-	{
-		Get-Process
-	}
+    -Session $Session `
+    -ScriptBlock `
+    {
+        Get-Process
+    }
 ```
 
 You should get the current running processes on the Nano Server similar to what is shown in the screenshot below.
@@ -179,15 +179,15 @@ Run the following command from the elevated PowerShell prompt created earlier to
 
 ```powershell
 Invoke-Command `
-	-Session $Session `
-	-ScriptBlock `
-	{
-		Install-Module -Name NanoServerPackage -SkipPublisherCheck -Force
-		Install-PackageProvider NanoServerPackage
-		Set-ExecutionPolicy RemoteSigned -Scope Process
-		Import-PackageProvider NanoServerPackage
-		Install-NanoServerPackage -Name Microsoft-NanoServer-IIS-Package -Culture "en-us"
-	}
+    -Session $Session `
+    -ScriptBlock `
+    {
+        Install-Module -Name NanoServerPackage -SkipPublisherCheck -Force
+        Install-PackageProvider NanoServerPackage
+        Set-ExecutionPolicy RemoteSigned -Scope Process
+        Import-PackageProvider NanoServerPackage
+        Install-NanoServerPackage -Name Microsoft-NanoServer-IIS-Package -Culture "en-us"
+    }
 ```
 
 You will be prompted to install the NuGet Provider, type **Y** and hit Enter.
@@ -200,12 +200,15 @@ the installation is complete.
 ![continuous-deployment-to-nano-server-in-azure-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-008.jpg)
 
 
-Next, download the ASP.NET Core files from the Starkfell repository locally to your machine in **C:\Windows\Temp**.
+Next, download the ASP.NET Core files locally to your machine in **C:\Windows\Temp**.
 
 ```powershell
 Invoke-WebRequest `
     -Uri "https://github.com/starkfell/starkfell.github.io/blob/master/binaries/continuous-deployment-to-nano-server-in-azure/aspnetcore.dll?raw=true" `
     -OutFile C:\Windows\Temp\aspnetcore.dll
+```
+
+```powershell
 Invoke-WebRequest `
     -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/binaries/continuous-deployment-to-nano-server-in-azure/aspnetcore_schema.xml" `
     -OutFile C:\Windows\Temp\aspnetcore_schema.xml
@@ -218,6 +221,9 @@ Copy-Item `
     -Path "C:\Windows\Temp\aspnetcore.dll" `
     -Destination C:\Windows\System32\inetsrv\aspnetcore.dll `
     -ToSession $Session
+```
+
+```powershell
 Copy-Item `
     -Path "C:\Windows\Temp\aspnetcore_schema.xml" `
     -Destination C:\windows\system32\inetsrv\config\schema\aspnetcore_schema.xml `
@@ -225,18 +231,30 @@ Copy-Item `
 ```
 
 
-Next, run the following Scripts.
+Next, download the following scripts files from the Starkfell repository locally to your machine in **C:\Windows\Temp**.
 
 ```powershell
-./install-dotnet-core-1.0.1-on-nano-server.ps1 `
--NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
--Username winadmin
+Invoke-WebRequest `
 ```
 
 ```powershell
-./update-nano-server-iis-for-dotnet-core-apps.ps1 `
--NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
--Username winadmin
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/update-nano-server-iis-for-dotnet-core-apps.ps1" `
+    -OutFile C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1
+```
+
+
+Next, run the following Scripts.
+
+```powershell
+    -NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
+    -Username winadmin
+```
+
+```powershell
+C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1 `
+    -NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
+    -Username winadmin
 ```
 
 

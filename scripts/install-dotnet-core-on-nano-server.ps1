@@ -43,7 +43,7 @@ Installing .NET Core 1.0.1 to an existing Nano Server joined to a Domain.
 
 Installing .NET Core 1.0.1 to an existing stand-alone Nano Server.
 
-./install-dotnet-core-1.0.1-on-nano-server.ps1 `
+./install-dotnet-core-on-nano-server.ps1 `
 -NanoServerName nanosrv-vm-5 `
 -Username administrator
 
