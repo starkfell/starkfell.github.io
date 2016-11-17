@@ -88,7 +88,6 @@ Once you have logged into your Azure Subscription, the Custom deployment blade w
 
 <img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg" alt="" />
 
-![continuous-deployment-to-nano-server-in-azure-001](media/continuous-deployment-to-nano-server-in-azure-001.jpg)
 
 Under the **BASICS** section, do the following:
 
@@ -113,7 +112,8 @@ The rest of the predefined values should work under most circumstances; however,
 Once you are finished, scroll down to the bottom of the blade and put a checkmark in the **I agree to the terms and conditions stated above** checkbox.
 Afterwards, click on the **Purchase** button to kick off the deployment.
 
-![continuous-deployment-to-nano-server-in-azure-002](media/continuous-deployment-to-nano-server-in-azure-002.jpg)
+<img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-002.jpg" alt="" />
 
 Once the deployment is finished, verify you can use PowerShell remoting to access the Nano Server.
+
 
