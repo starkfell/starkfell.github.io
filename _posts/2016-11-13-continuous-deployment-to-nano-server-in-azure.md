@@ -86,6 +86,8 @@ If you are not already logged into your Azure Subscription, you will be prompted
 
 Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
 
+<img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg" alt="" />
+
 ![continuous-deployment-to-nano-server-in-azure-001](media/continuous-deployment-to-nano-server-in-azure-001.jpg)
 
 Under the **BASICS** section, do the following:
