@@ -86,7 +86,8 @@ Make note of both of these values before continuing.
 
 # Deploy a Nano Server to Azure from GitHub
 
-Right-click on the button below to deploy a new Nano Server to Azure. You can Browse to **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server)**
+Click on the **Deploy to Azure** button below. A new tab will open up prompting you to login to your Azure Subscription if you haven't done so already. The Custom deployment blade will open up and allow you
+to deploy a new Nano Server to Azure. You can Browse to **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server)**
 for more information about the Template.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstarkfell%2Fstarkfell.github.io%2Fmaster%2Farm-templates%2Fdeploy-vnet-and-nano-server%2Fazuredeploy.json" target="blank">
@@ -123,6 +124,73 @@ Afterwards, click on the **Purchase** button to kick off the deployment.
 
 ![continuous-deployment-to-nano-server-in-azure-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-002.jpg)
 
-Once the deployment is finished, verify you can use PowerShell remoting to access the Nano Server.
+The deployment should take between 5 to 10 minutes to complete. Afterwards, open up the Resource Group you deployed the Nano Server to and make note of the Public IP Address
+DNS Name.
+
+![continuous-deployment-to-nano-server-in-azure-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-003.jpg)
+
+Next, we need to verify connectivity to the Nano Server using the Credentials set earlier via PowerShell Remoting. Open up an elevated PowerShell prompt or use
+the existing PowerShell prompt used previously.
+
+Start the Windows Remote Management (WS-Management) Service.
+
+```powershell
+Start-Service WinRM
+```
+
+Add the FQDN of the Nano Server to your TrustedHosts Configuration.
+
+```powershell
+Set-Item WSMan:\localhost\Client\TrustedHosts -Value luma-nanosrv-at.westeurope.cloudapp.azure.com -Concatenate -Force
+```
+
+Setup a Powershell Remoting Session to the Nano Server.
+
+```powershell
+$Session = New-PSSession -ComputerName luma-nanosrv-at.westeurope.cloudapp.azure.com -Credential ~\winadmin
+```
+
+Type in the Password of the Username when prompted.
+
+![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
+
+Authentication to the Nano Server may take a few seconds to complete and you won't get a response back from the server. Run the following
+command to verify that the PowerShell Remoting Session to the Host is open.
+
+```powershell
+Get-PSSession
+```
+
+You should get the following response.
+
+![continuous-deployment-to-nano-server-in-azure-005]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-005.jpg)
+
+Next, run the following command to return back the current running processes on the Nano Server.
+
+```powershell
+Invoke-Command `
+	-Session $Session `
+	-ScriptBlock `
+	{
+		Get-Process
+	}
+
+```
+
+You should get the current running processes on the Nano Server similar to what is shown in the screenshot below.
+
+![continuous-deployment-to-nano-server-in-azure-006]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-006.jpg)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
