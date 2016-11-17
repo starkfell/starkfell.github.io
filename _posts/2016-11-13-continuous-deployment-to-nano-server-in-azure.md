@@ -84,7 +84,7 @@ Nano Server Self-Signed Certificate Secret Identifier: https://nanokeyvault7780.
 
 ## Deploy a Nano Server in Azure from GitHub
 
-Browse to the **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server)** ARM Template 
+Browse to the **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server-in-azure)** ARM Template 
 and clicko on the **Deploy to Azure** button.
 
 If you are not already logged into your Azure Subscription, you will be prompted to do so.
