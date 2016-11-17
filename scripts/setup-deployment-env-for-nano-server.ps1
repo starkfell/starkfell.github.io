@@ -5,64 +5,32 @@ This script deploys a new Azure Automation Account and all required deployment R
 
 .DESCRIPTION
 This Script must be executed using an Account that is either a Co-Administrator or an Azure Organizational Account to the Subscription that
-is being targeted. Additionally, Azure PowerShell 1.0 or higher is required.
+is being targeted. Additionally, Azure PowerShell 1.0 or higher is required. Additionally, this script needs to be ran from an elevated
+PowerShell Prompt on a Host running Windows 10 or Windows Server 2016.
 
 Once this script is launched and the user is logged in, the following actions will occur:
 
 - Resource Groups are created for:
   - An Azure Key Vault.
-  - A Storage Account to hold deployment resources.
   - An Azure Automation Account.
 - A GUID is generated to give all deployed resources a Unique Name or ID that require it.
 - The Azure Key Vault Name is modified and appended with the first 4-digits from the generated GUID.
 - A New Azure Key Vault is created.
-- The Local Administrator Credentials are added to the Azure Key Vault.
-- The Active Directory Domin Administrator Credentials are added to the Azure Key Vault.
+- The local 'Administrator' Credentials of the Nano Server are added to the Azure Key Vault.
 - A New Azure Automation Account is created.
 - The first 4-digits from the generated GUID are added to the Azure Automation Account as a Variable Asset called 'DeploymentID'.
 - The Azure Automation Account Primary Key is added to the Azure Key Vault.
 - The Azure Automation Account Registration URL is added to the Azure Key Vault.
 - The 'AzureRunAsConnection' and 'AzureRunAsCertificate' are generated and added to the Azure Automation Account.
-- The Azure Storage Account Name is modified and appended with the first 4-digits from the generated GUID.
-- A New Azure Storage Account is created for storing all the Resources listed in the Storage Containers below.
-- A New Storage Container is created for the Scripts.
-- A New Storage Container is created for the DSC Resources.
-- A New Storage Container is created for the ARM Templates.
-- A New Storage Container is created for the ARM Template Deployments.
-- The Scripts from the 'arm-powershell-scripts' directory are uploaded to the Storage Container for Scripts.
-- The URL Location of the copy-tags-and-trigger-runbook.ps1 Script is added to the Azure Key Vault.
-- The DSC Modules from the 'azure-automation-dsc-modules' directory are uploaded to the Storage Container for DSC Modules.
-- The DSC Modules are added to the Azure Automation Account and then extracted.
-- The ARM Template DSC Modules from the 'arm-deployment-dsc-modules' directory are uploaded to the Storage Container for DSC Modules.
-- The URL Location of the 'LumaAzureAutomationRegistration.zip' DSC Module is added to the Azure Key Vault.
-- The Files located in the '\arm-templates\staging' directory are copied to the '\arm-templates\production' directory.
-- The ARM Template Parameters File(s) in the '\arm-templates\production' directory are modified to have the correct:
-  - Key Vault Name
-  - Key Vault Resource Group
-  - Subscription ID.
-- The ARM Template Files in the '\arm-templates\production' directory are uploaded to the Azure Storage Container for ARM Templates.
-  - The default value of this Azure Storage Container is 'arm-templates'.
-- The Contents of '\arm-templates\production' directory are deleted.
-- The Active Directory Domain Administrator Credentials are added to the Azure Automation Account as a Credential Asset.
-- The Azure Runbooks located in the 'azure-automation-runbooks' directory are imported into the Azure Automation Account.
-- Webhooks for each of the Azure Runbooks are generated and then added to the Azure Key Vault.
-  - The default expiration date of the Webhooks is 1 year.
-- The DSC Configuration Files from the 'azure-automation-dsc-configs' are imported into the Azure Automation Account and then compiled.
+- Create a new Self-Signed Certificate for the Nano Server.
+- Convert Nano Server Certificate to a Secret Value and storing it in the Azure Key Vault. 
+- The local 'Administrator' Credentials of the Nano Server are added to the Azure Automation Account as a Credential Asset.
 
 This script has been designed to allow all of the resources that are deployed to work and not interfere with an existing 
 Azure Subscription that already has an Azure Automation Account and Azure Key Vault in place.
 
 .PARAMETER SubscriptionId
-The ID of the Azure Subscription you are deploying to, i.e. - 838f045f5-e37a-5156-8e82-0c1ecd17a682
-
-.PARAMETER CopyTagsAndTriggerRunbookPSScriptName
-The Name of the PowerShell Script that is responsible for copying specified VM Tags to the VMs being deployed via ARM Template 
-and then triggering the Azure Automation Runbook responsible for registering the VM with its respective DSC Node Configuration 
-in the Azure Automation Account.
-
-.PARAMETER LumaAzureAutomationRegistrationDSCModuleName
-The Name of the DSC Module that is responsible for registering VMs being deployed via ARM Template with the Azure Automation
-Account as a DSC Node.
+The ID of the Azure Subscription you are deploying to, i.e. - 87d031cb-5fde-412d-b09c-c44c16131488
 
 .PARAMETER AzureAutomationResourceGroupName
 The Name of the Resource Group where the Azure Automation Account will reside.
@@ -82,38 +50,38 @@ The Name of the Resource Group that will be storing the Azure Key Vault.
 .PARAMETER KeyVaultName
 The Name of the Azure Key Vault.
 
-.PARAMETER LocalAdminUsername
-The Local Administrator Username that will be used by default in VM Deployments. This value is added to the Azure Key Vault.
+.PARAMETER NanoServerLocalAdminUsername
+The Local Administrator Username that will be used by the Nano Server. This value is added to the Azure Key Vault.
 
-.PARAMETER LocalAdminPassword
-The Local Administrator Password that will be used by default in VM Deployments. This value is added to the Azure Key Vault.
+.PARAMETER NanoServerLocalAdminPassword
+The Local Administrator Password that will be used by the Nano Server. This value is added to the Azure Key Vault.
 
-.PARAMETER ADDomainAdminUsername
-The Active Directory Domain Administrator Username that will be used by default in VM Deployments. This value is added to the Azure Key Vault.
+.PARAMETER NanoServerCertificateName
+The Name of the Self-Signed Certificate that is being created and used for WinRM access on the Nano Server. This value is added to the Azure Key Vault.
 
-.PARAMETER ADDomainAdminPassword
-The Active Directory Domain Administrator Password that will be used by default in VM Deployments. This value is added to the Azure Key Vault.
+.PARAMETER NanoServerCertificatePassword
+The Password of the Self-Signed Certificate that is being created and used for WinRM access on the Nano Server. This value id added to the Azure Key Vault.
 
 .PARAMETER Location
 The Location where all resources will be deployed, i.e. westeurope, northeurope, eastus, etc...
 
 .NOTES
-Filename:   deploy-azure-automation-for-nano-server.ps1
+Filename:   setup-deployment-env-for-nano-server.ps1
 Author:     Ryan Irujo (https://github.com/starkfell)
 Language:   PowerShell 5.0
 
 .EXAMPLE          
-./deploy-azure-automation-for-nano-server.ps1 `
--SubscriptionId 84f065f5-e37a-4127-9c82-0b1ecd57a652 `
+./setup-deployment-env-for-nano-server.ps1 `
+-SubscriptionId 87d031cb-5fde-412d-b09c-c44c16131488 `
 -AzureAutomationResourceGroupName nano-automation `
 -AzureAutomationAccountName nano-automation `
 -AzureAutomationPricingTier Free `
 -AzureAutomationCertificatePassword AlwaysOn! `
 -KeyVaultResourceGroupName nano-key-vault `
 -KeyVaultName nanokeyvault `
--LocalAdminUsername winadmin `
--LocalAdminPassword AlwaysOn! `
--NanoServerCertificateName nanoservers.lumagate.com `
+-NanoServerLocalAdminUsername winadmin `
+-NanoServerLocalAdminPassword AlwaysOn! `
+-NanoServerCertificateName nanoservers.lumadeep.com `
 -NanoServerCertificatePassword AlwaysOn! `
 -Location westeurope
 
@@ -143,10 +111,10 @@ param
     [String]$KeyVaultName,
 
     [Parameter(Mandatory)]
-    [String]$LocalAdminUsername,
+    [String]$NanoServerLocalAdminUsername,
 
     [Parameter(Mandatory)]
-    [String]$LocalAdminPassword,
+    [String]$NanoServerLocalAdminPassword,
 
     [Parameter(Mandatory)]
     [String]$NanoServerCertificateName,
@@ -157,7 +125,6 @@ param
 	[Parameter(Mandatory)]
     [String]$Location
 )
-
 
 # Logging into an Azure Subscription.
 Add-AzureRMAccount `
@@ -277,43 +244,43 @@ If (!$CheckForExistingVault)
 	}		
 }
 
-# Converting the Local Administrator Credentials Key Vault Name to lowercase.
-$LocalAdminUsernameSecretName = ($LocalAdminUsername).ToLower()
+# Converting the Nano Server Local Administrator Credentials Key Vault Name to lowercase.
+$NanoServerLocalAdminUsernameSecretName = ($NanoServerLocalAdminUsername).ToLower()
 
-# Converting Local Administrator Credentials to Secure Strings before adding them into the Azure Key Vault.
-$LocalAdminUsernameSecretValue = ConvertTo-SecureString -String $LocalAdminUsername -AsPlainText -Force
-$LocalAdminPasswordSecretValue = ConvertTo-SecureString -String $LocalAdminPassword -AsPlainText -Force
+# Converting Nano Server Local Administrator Credentials to Secure Strings before adding them into the Azure Key Vault.
+$NanoServerLocalAdminUsernameSecretValue = ConvertTo-SecureString -String $NanoServerLocalAdminUsername -AsPlainText -Force
+$NanoServerLocalAdminPasswordSecretValue = ConvertTo-SecureString -String $NanoServerLocalAdminPassword -AsPlainText -Force
 
-# Adding the Local Administrator Credentials into the Azure Key Vault.
+# Adding the Nano Server Local Administrator Credentials into the Azure Key Vault.
 Set-AzureKeyVaultSecret `
     -VaultName $KeyVaultName `
-    -Name "$($LocalAdminUsernameSecretName)-username" `
-    -SecretValue $LocalAdminUsernameSecretValue | Out-Null
+    -Name "$($NanoServerLocalAdminUsernameSecretName)-username" `
+    -SecretValue $NanoServerLocalAdminUsernameSecretValue | Out-Null
 
 If ($?)
 {
-    Write-Output "$($LocalAdminUsernameSecretName)-username Successfully Added to Azure Key Vault: $KeyVaultName."
+    Write-Output "$($NanoServerLocalAdminUsernameSecretName)-username Successfully Added to Azure Key Vault: $KeyVaultName."
 }
 
 If (!$?)
 {
-	Write-Error -Message "Failed to add $($LocalAdminUsernameSecretName)-username to Azure Key Vault: $KeyVaultName."
+	Write-Error -Message "Failed to add $($NanoServerLocalAdminUsernameSecretName)-username to Azure Key Vault: $KeyVaultName."
     exit 2
 }
 
 Set-AzureKeyVaultSecret `
     -VaultName $KeyVaultName `
-    -Name "$($LocalAdminUsernameSecretName)-password" `
-    -SecretValue $LocalAdminPasswordSecretValue | Out-Null
+    -Name "$($NanoServerLocalAdminUsernameSecretName)-password" `
+    -SecretValue $NanoServerLocalAdminPasswordSecretValue | Out-Null
 
 If ($?)
 {
-    Write-Output "$($LocalAdminUsernameSecretName)-password Successfully Added to Azure Key Vault: $KeyVaultName."
+    Write-Output "$($NanoServerLocalAdminUsernameSecretName)-password Successfully Added to Azure Key Vault: $KeyVaultName."
 }
 
 If (!$?)
 {
-	Write-Error -Message "Failed to add $($LocalAdminUsernameSecretName)-password to Azure Key Vault: $KeyVaultName."
+	Write-Error -Message "Failed to add $($NanoServerLocalAdminUsernameSecretName)-password to Azure Key Vault: $KeyVaultName."
     exit 2
 }
 
@@ -393,13 +360,13 @@ If (!$?)
     exit 2
 }
 
-# Creating an End Date, GUID, and generating a naming convention for the new Self-Signed Certificate being created.
+# Creating an End Date, GUID, and generating a naming convention for the new Self-Signed Certificate being created for the Azure Automation Account.
 $CurrentDate = Get-Date
 $EndDate = $CurrentDate.AddMonths(12)
 $KeyId = (New-Guid).Guid
 $CertPath = Join-Path $env:TEMP ($AzureAutomationAccountName + ".pfx")
 
-# Creating a new Self-Signed Certificate.
+# Creating a new Self-Signed Certificate for the Azure Automation Account.
 $Cert = New-SelfSignedCertificate `
     -DnsName $AzureAutomationAccountName `
     -CertStoreLocation cert:\LocalMachine\My `
@@ -645,7 +612,65 @@ $NanoServerCertificateSecretValue = ConvertTo-SecureString -String $JSONEncoded 
 Set-AzureKeyVaultSecret `
     -VaultName $KeyVaultName `
     -Name "$($NanoServerCertificateName.replace(".","-"))-cert" `
-    -SecretValue $NanoServerCertificateSecretValue | Out-Null
+    -SecretValue $NanoServerCertificateSecretValue `
+    -ErrorAction SilentlyContinue `
+    -ErrorVariable SetKeyVaultNanoServerCert `
+    | Out-Null
+
+If (!$SetKeyVaultNanoServerCert)
+{
+    Write-Output "Successfully added the Nano Server Self-Signed Certificate to the Azure Key Vault."
+}
+
+If ($SetKeyVaultNanoServerCert)
+{
+	Write-Output  "Failed to add the Nano Server Self-Signed Certificate to the Azure Key Vault."
+    Write-Output $SetKeyVaultNanoServerCert.Exception
+    exit 2
+}
+
+# Converting the Nano Server Local Administrator Credentials into a PSCredential Object.
+$NanoServerLocalAdminPasswordSecured = ConvertTo-SecureString $NanoServerLocalAdminPassword -AsPlainText -Force
+
+$NanoServerSecuredCredentials = New-Object -TypeName System.Management.Automation.PSCredential -ArgumentList ($NanoServerLocalAdminUsername,$NanoServerLocalAdminPasswordSecured)
+
+# Adding the Nano Server Local Administrator Credentials to the Azure Automation Account.
+New-AzureRmAutomationCredential `
+    -AutomationAccountName $AzureAutomationAccountName `
+    -ResourceGroupName $AzureAutomationResourceGroupName `
+    -Name "NanoServerCreds" `
+    -Description "Nano Server Local Credentials" `
+    -Value $NanoServerSecuredCredentials `
+    -ErrorAction SilentlyContinue `
+    -ErrorVariable NewAutomationCredFail `
+    | Out-Null
+
+If (!$NewAutomationCredFail)
+{
+    Write-Output "Successfully added the Nano Server Local Credentials to the Azure Automation Account."
+}
+
+If ($NewAutomationCredFail)
+{
+	Write-Output  "Failed to add the Nano Server Local Credentials to the Azure Automation Account."
+    Write-Output $NewAutomationCredFail.Exception
+    exit 2
+}
 
 # End of Script.
 Write-Output "Deployment of the Azure Automation Account and all related Resources is Complete!"
+
+# Key Vault Resource Id.
+$KeyVaultResourceId = (Get-AzureRmKeyVault `
+    -VaultName $KeyVaultName `
+    -ResourceGroupName $KeyVaultResourceGroupName).ResourceId
+
+# Nano Server Self-Signed Certificate Secret Identifier from the Azure Key Vault.
+$NanoServerCertKeyVaultId = (Get-AzureKeyVaultSecret `
+    -VaultName $KeyVaultName `
+    -Name "$($NanoServerCertificateName.replace(".","-"))-cert").Id
+
+Write-Output ""
+Write-Output "Azure Key Vault Resource ID:                           $KeyVaultResourceId."
+Write-Output "Nano Server Self-Signed Certificate Secret Identifier: $NanoServerCertKeyVaultId."
+Write-Output ""
