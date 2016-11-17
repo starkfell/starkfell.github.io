@@ -200,20 +200,44 @@ the installation is complete.
 ![continuous-deployment-to-nano-server-in-azure-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-008.jpg)
 
 
-Next, run the following command to verify IIS is installed and running on the Nano Server.
+Next, download the ASP.NET Core files from the Starkfell repository locally to your machine in **C:\Windows\Temp**.
 
 ```powershell
-Invoke-Command `
-	-Session $Session `
-	-ScriptBlock `
-	{
-		Import-Module IISAdministation
-		Get-IISSite
-	}
+Invoke-WebRequest `
+    -Uri "https://github.com/starkfell/starkfell.github.io/blob/master/binaries/continuous-deployment-to-nano-server-in-azure/aspnetcore.dll?raw=true" `
+    -OutFile C:\Windows\Temp\aspnetcore.dll
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/binaries/continuous-deployment-to-nano-server-in-azure/aspnetcore_schema.xml" `
+    -OutFile C:\Windows\Temp\aspnetcore_schema.xml
+```
+
+Next, copy the ASP.NET Core files to the Nano Server.
+
+```powershell
+Copy-Item `
+    -Path "C:\Windows\Temp\aspnetcore.dll" `
+    -Destination C:\Windows\System32\inetsrv\aspnetcore.dll `
+    -ToSession $Session
+Copy-Item `
+    -Path "C:\Windows\Temp\aspnetcore_schema.xml" `
+    -Destination C:\windows\system32\inetsrv\config\schema\aspnetcore_schema.xml `
+    -ToSession $Session
 ```
 
 
+Next, run the following Scripts.
 
+```powershell
+./install-dotnet-core-1.0.1-on-nano-server.ps1 `
+-NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
+-Username winadmin
+```
+
+```powershell
+./update-nano-server-iis-for-dotnet-core-apps.ps1 `
+-NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
+-Username winadmin
+```
 
 
 
