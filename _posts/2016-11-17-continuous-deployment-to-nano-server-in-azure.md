@@ -235,6 +235,8 @@ Next, download the following scripts files from the Starkfell repository locally
 
 ```powershell
 Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/install-dotnet-core-on-nano-server.ps1" `
+    -OutFile C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1
 ```
 
 ```powershell
@@ -247,6 +249,7 @@ Invoke-WebRequest `
 Next, run the following Scripts.
 
 ```powershell
+C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
     -NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
     -Username winadmin
 ```
