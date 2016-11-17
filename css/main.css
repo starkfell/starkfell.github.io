@@ -5,11 +5,11 @@ body {
     color: #444;
     font-family: 'Segoe WPC', 'Segoe UI', SFUIText-Light, HelveticaNeue-Light, sans-serif;
     font-size: 1rem;
-    line-height: 1.4;
+    line-height: 1.5;
 }
 nav ul, footer ul {
     font-family:'Helvetica', 'Arial', 'Sans-Serif';
-    padding: 0px;
+    padding: 10px;
     list-style: none;
     font-weight: bold;
 }
