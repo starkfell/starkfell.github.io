@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "Continuous Deployment to Nano Server in Azure."
+title: "Continuous Deployment to Nano Server in Azure"
 date: 2016-11-17
 ---
 
@@ -19,7 +19,7 @@ This article will cover the following:
 * Creating a Runbook to push changes from GitHub to the Nano Server
 
 
-## Deploy Azure Automation Resources using PowerShell Script
+# Deploy Azure Automation Resources using PowerShell Script
 
 The Azure Resources that are required for this demo will be deployed using the PowerShell script,
 **[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)**.
@@ -84,10 +84,14 @@ The output from the script should return two values once the script has complete
 Make note of both of these values before continuing.
 
 
-## Deploy a Nano Server in Azure from GitHub
+# Deploy a Nano Server to Azure from GitHub
 
-Browse to the **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server-in-azure)** ARM Template
-and click on the **Deploy to Azure** button.
+Right-click on the button below to deploy a new Nano Server to Azure. You can Browse to **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server)**
+for more information about the Template.
+
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstarkfell%2Fstarkfell.github.io%2Fmaster%2Farm-templates%2Fdeploy-vnet-and-nano-server%2Fazuredeploy.json" target="blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
 
 If you are not already logged into your Azure Subscription, you will be prompted to do so. Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
 
