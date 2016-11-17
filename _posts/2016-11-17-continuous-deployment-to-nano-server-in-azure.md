@@ -284,7 +284,7 @@ Invoke-Command `
     -ScriptBlock `
     {
         Import-Module IISAdministration
-        Get-IISSite
+        Get-IISSite | FT -AutoSize
     }
 ```
 
