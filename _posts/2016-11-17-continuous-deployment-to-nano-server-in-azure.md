@@ -79,7 +79,7 @@ The output from the script should return two values once the script has complete
 * Azure Key Vault Resource ID
 * Nano Server Self-Signed Certificate Secret Identifier
 
-<img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg" alt="" />
+![continuous-deployment-to-nano-server-in-azure-000]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg)
 
 Make note of both of these values before continuing.
 
@@ -89,13 +89,9 @@ Make note of both of these values before continuing.
 Browse to the **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server-in-azure)** ARM Template 
 and clicko on the **Deploy to Azure** button.
 
-If you are not already logged into your Azure Subscription, you will be prompted to do so.
+If you are not already logged into your Azure Subscription, you will be prompted to do so. Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
 
-Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
-
-<img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg" alt="" />
-
-![test-url]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg)
+![continuous-deployment-to-nano-server-in-azure-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg)
 
 
 
@@ -123,7 +119,7 @@ The rest of the predefined values should work under most circumstances; however,
 Once you are finished, scroll down to the bottom of the blade and put a checkmark in the **I agree to the terms and conditions stated above** checkbox.
 Afterwards, click on the **Purchase** button to kick off the deployment.
 
-<img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-002.jpg" alt="" />
+![continuous-deployment-to-nano-server-in-azure-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-002.jpg)
 
 Once the deployment is finished, verify you can use PowerShell remoting to access the Nano Server.
 
