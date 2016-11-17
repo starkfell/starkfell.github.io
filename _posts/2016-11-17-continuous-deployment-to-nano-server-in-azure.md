@@ -22,7 +22,7 @@ This article will cover the following:
 # Deploy Azure Automation Resources using PowerShell Script
 
 The Azure Resources that are required for this demo will be deployed using the PowerShell script,
-**[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server.ps1)**.
+**[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)**.
 
 This script is responsible for the following:
 
@@ -74,14 +74,14 @@ Example:
 
 ```
 
-The output from the script should have two entries at the bottom when it completes successfully:
+The output from the script should return two values once the script has completed successfully:
+
+- Azure Key Vault Resource ID
+- Nano Server Self-Signed Certificate Secret Identifier
 
 <img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg" alt="" />
 
-```powershell
-Azure Key Vault Resource ID:                           /subscriptions/87d031cb-5fde-412d-b09c-c44c16131488/resourceGroups/nano-key-vault/providers/Microsoft.KeyVault/vaults/nanokeyvault7780.
-Nano Server Self-Signed Certificate Secret Identifier: https://nanokeyvault7780.vault.azure.net:443/secrets/nanoservers-lumadeep-com-cert/1f21b4be49dd49a1a05d4eca5400c609.
-```
+Make note of both of these values before continuing.
 
 
 ## Deploy a Nano Server in Azure from GitHub
@@ -94,6 +94,10 @@ If you are not already logged into your Azure Subscription, you will be prompted
 Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
 
 <img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg" alt="" />
+
+![test-url]("{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg")
+
+
 
 
 Under the **BASICS** section, do the following:
