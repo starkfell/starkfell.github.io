@@ -9,7 +9,7 @@ date: 2016-11-17
 There are several documented ways online on how to deploy Nano Server to Hyper-V Hosts or to Azure. Additionally, there is documentation on how to deploy a .NET Core Application to a Nano Server.
 This article will demonstrate how to deploy a .NET Core Application to a Nano Server in Azure from GitHub using Azure Automation.
 
-## Overview
+# Overview
 
 This article will cover the following:
 
@@ -19,7 +19,7 @@ This article will cover the following:
 * Creating a Runbook to push changes from GitHub to the Nano Server
 
 
-# Deploy Azure Automation Resources using PowerShell Script
+## Deploy Azure Automation Resources using PowerShell Script
 
 The Azure Resources that are required for this demo will be deployed using the PowerShell script,
 **[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)**.
@@ -86,14 +86,12 @@ Make note of both of these values before continuing.
 
 ## Deploy a Nano Server in Azure from GitHub
 
-Browse to the **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server-in-azure)** ARM Template 
-and clicko on the **Deploy to Azure** button.
+Browse to the **[Deploy Nano Server and VNet into Azure](https://github.com/starkfell/starkfell.github.io/tree/master/arm-templates/deploy-vnet-and-nano-server-in-azure)** ARM Template
+and click on the **Deploy to Azure** button.
 
 If you are not already logged into your Azure Subscription, you will be prompted to do so. Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
 
 ![continuous-deployment-to-nano-server-in-azure-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg)
-
-
 
 
 Under the **BASICS** section, do the following:
