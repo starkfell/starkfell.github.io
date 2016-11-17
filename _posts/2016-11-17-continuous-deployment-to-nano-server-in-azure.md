@@ -76,8 +76,8 @@ Example:
 
 The output from the script should return two values once the script has completed successfully:
 
-- Azure Key Vault Resource ID
-- Nano Server Self-Signed Certificate Secret Identifier
+* Azure Key Vault Resource ID
+* Nano Server Self-Signed Certificate Secret Identifier
 
 <img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg" alt="" />
 
@@ -95,7 +95,7 @@ Once you have logged into your Azure Subscription, the Custom deployment blade w
 
 <img src="{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg" alt="" />
 
-![test-url]("{{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg")
+![test-url]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg)
 
 
 
