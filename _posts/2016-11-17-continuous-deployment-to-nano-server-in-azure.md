@@ -208,6 +208,8 @@ Invoke-WebRequest `
     -OutFile C:\Windows\Temp\aspnetcore.dll
 ```
 
+<br>
+
 ```powershell
 Invoke-WebRequest `
     -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/binaries/continuous-deployment-to-nano-server-in-azure/aspnetcore_schema.xml" `
@@ -223,6 +225,8 @@ Copy-Item `
     -ToSession $Session
 ```
 
+<br>
+
 ```powershell
 Copy-Item `
     -Path "C:\Windows\Temp\aspnetcore_schema.xml" `
@@ -231,13 +235,15 @@ Copy-Item `
 ```
 
 
-Next, download the following scripts files from the Starkfell repository locally to your machine in **C:\Windows\Temp**.
+Next, download the following scripts locally to your machine in **C:\Windows\Temp**.
 
 ```powershell
 Invoke-WebRequest `
     -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/install-dotnet-core-on-nano-server.ps1" `
     -OutFile C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1
 ```
+
+<br>
 
 ```powershell
 Invoke-WebRequest `
@@ -246,7 +252,7 @@ Invoke-WebRequest `
 ```
 
 
-Next, run the following Scripts.
+Next, run the following Script to install .NET Core for Nano Server.
 
 ```powershell
 C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
@@ -254,15 +260,36 @@ C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
     -Username winadmin
 ```
 
+You should get the following response back.
+
+[SS]
+
+Next, run the following Script to update IIS on the Nano Server to work with .NET Core.
+
 ```powershell
 C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1 `
     -NanoServerName luma-nanosrv-at.westeurope.cloudapp.azure.com `
     -Username winadmin
 ```
 
+You should get the following response back.
+
+[SS]
+
+Run the following command to verify IIS is functional on the Nano Server.
+
+```powershell
+Invoke-Command `
+    -Session $Session `
+    -ScriptBlock `
+    {
+        Import-Module IISAdministration
+        Get-IISSite
+    }
+```
 
 
-
+.
 
 
 
