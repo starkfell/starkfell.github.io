@@ -19,9 +19,10 @@ This article will cover the following:
 * Creating a Runbook to push changes from GitHub to the Nano Server
 
 
-## Deploy Azure Automation Resources using PowerShell Script
+# Deploy Azure Automation Resources using PowerShell Script
 
-The Azure Resources that need to be in place for this scenario will be deployed using **setup-deployment-env-for-nano-server-in-azure.ps1**.
+The Azure Resources that are required for this demo will be deployed using the PowerShell script,
+**[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server.ps1)**.
 
 This script is responsible for the following:
 
@@ -50,6 +51,8 @@ Syntax:
 -NanoServerLocalAdminPassword <NANO_SERVER_LOCAL_ADMINISTRATOR_PASSWORD> `
 -NanoServerCertificateName <NANO_SERVER_CERTIFICATE_NAME> `
 -NanoServerCertificatePassword <NANO_SERVER_CERTIFICATE_PASSWORD> `
+-Location <LOCATIION>
+
 ```
 
 Example:
@@ -67,6 +70,8 @@ Example:
 -NanoServerLocalAdminPassword NanoMation1! `
 -NanoServerCertificateName nanoservers.lumadeep.com `
 -NanoServerCertificatePassword NanoMation1! `
+-Location westeurope
+
 ```
 
 The output from the script should have two entries at the bottom when it completes successfully:
