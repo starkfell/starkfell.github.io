@@ -1,13 +1,12 @@
 ---
 layout: post
 title: "Continuous Deployment to Nano Server in Azure"
-date: 2016-11-17
+date: 2016-11-18
 ---
 
-# Introduction
-
-There are several documented ways online on how to deploy Nano Server to Hyper-V Hosts or to Azure. Additionally, there is documentation on how to deploy a .NET Core Application to a Nano Server.
-This article will demonstrate how to deploy a .NET Core Application to a Nano Server in Azure from GitHub using Azure Automation.
+There are several documented ways online on how to deploy Nano Server to Hyper-V Hosts or to Azure. Additionally, there is documentation
+on how to deploy a .NET Core Application to a Nano Server. This article will demonstrate how to deploy a .NET Core Application to a Nano
+Server in Azure from GitHub using Azure Automation.
 
 # Overview
 
