@@ -1,5 +1,6 @@
 ---
 layout: post
+comments: true
 title: "Continuous Deployment to Nano Server in Azure"
 date: 2016-11-18
 ---
