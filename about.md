@@ -4,12 +4,13 @@ title: About
 permalink: /about/
 ---
 
-Some information about you!
+All information in this Blog is based on my personal opinion and experience. Before applying any of the techniques or methods described in this blog 
+to a Production Environment, adequate testing should be applied beforehand.
 
-### More Information
+## Resume
 
-A place to include any other types of information that you'd like to include about yourself.
+If you would like to learn more about my Professional Experience, please visit my **[LinkedIn Profile](https://www.linkedin.com/in/rirujo)**.
 
-### Contact me
+## Contact
 
-[email@domain.com](mailto:email@domain.com)
+[ryan.irujo@gmail.com](mailto:ryan.irujo@gmail.com)
