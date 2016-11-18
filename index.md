@@ -3,6 +3,7 @@ layout: page
 title: Hello World!
 tagline: Supporting tagline
 ---
+<link rel="stylesheet" href="http://twitter.github.com/bootstrap/assets/css/bootstrap.min.css">
 {% include JB/setup %}
 
 Read [Jekyll Quick Start](http://jekyllbootstrap.com/usage/jekyll-quick-start.html)
