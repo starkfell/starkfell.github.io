@@ -18,12 +18,9 @@ html {
 }
 
 body {
-    margin: 60px auto;
-    width: 70%;	
-    color: #444;
-    font-family: 'Segoe WPC', 'Segoe UI', SFUIText-Light, HelveticaNeue-Light, sans-serif;
-    font-size: 1rem;
-    line-height: 1.5;
+	background: $white;
+  font: 18px/1.4 $helvetica;
+  color: $darkGray;
 }
 
 .container {
@@ -112,28 +109,7 @@ strong, b {
 img {
   max-width: 100%;
 }
-code {
-    color: #000;
-    font-family: Menlo, Monaco, Consolas, 'Droid Sans Mono', 'Courier New', monospace;
-    background: rgba(127, 127, 127, 0.1);
-    padding: 0 0.25rem;
-    border-radius: 0.25rem;
-}
-pre {
-    white-space: pre;
-    margin: 0;
-}
-pre:not(:first-child) {
-    margin-top: 1rem;
-}
-pre > code {
-    font-family: Menlo, Monaco, Consolas, 'Droid Sans Mono', 'Courier New', monospace;
-    background: rgba(127, 127, 127, 0.05);
-    display: block;
-    padding: 0.65rem 1rem;
-    border: 1px solid rgba(0, 0, 0, 0.18);
-    overflow: auto;
-}
+
 // Fixes images in popup boxes from Google Translate
 .gmnoprint img {
   max-width: none;
@@ -237,9 +213,8 @@ pre > code {
 nav {
   float: right;
   margin-top: 23px; // @TODO: Vertically middle align
-  font-family:'Helvetica', 'Arial', 'Sans-Serif';
+  font-family: $helveticaNeue;
   font-size: 18px;
-  font-weight: bold;
 
   @include mobile {
     float: none;
