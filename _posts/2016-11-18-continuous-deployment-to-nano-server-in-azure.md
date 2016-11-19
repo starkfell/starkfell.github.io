@@ -240,7 +240,7 @@ Invoke-WebRequest `
     -OutFile C:\Windows\Temp\aspnetcore_schema.xml
 ```
 
-Next, copy the ASP.NET Core files to the Nano Server.
+Copy the **aspnetcore.dll** file to the Nano Server.
 
 ```powershell
 Copy-Item `
@@ -249,7 +249,7 @@ Copy-Item `
     -ToSession $Session
 ```
 
-<br>
+Copy the **aspnetcore_schema.xml** file to the Nano Server.
 
 ```powershell
 Copy-Item `
@@ -258,8 +258,9 @@ Copy-Item `
     -ToSession $Session
 ```
 
+## Install .NET Core on the Nano Server
 
-Next, download the following scripts locally to your machine in **C:\Windows\Temp**.
+Download the following script locally to your machine in **C:\Windows\Temp**.
 
 ```powershell
 Invoke-WebRequest `
@@ -267,15 +268,7 @@ Invoke-WebRequest `
     -OutFile C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1
 ```
 
-<br>
-
-```powershell
-Invoke-WebRequest `
-    -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/update-nano-server-iis-for-dotnet-core-apps.ps1" `
-    -OutFile C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1
-```
-
-Next, install .NET Core for Nano Server.
+Install .NET Core for Nano Server.
 
 ```powershell
 C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
@@ -286,6 +279,17 @@ C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
 You should get the following response back.
 
 [SS]
+
+## Update IIS to work with .NET Core on the Nano Server
+
+Download the following script locally to your machine in **C:\Windows\Temp**.
+
+```powershell
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/update-nano-server-iis-for-dotnet-core-apps.ps1" `
+    -OutFile C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1
+```
+
 
 Next, run the following Script to update IIS on the Nano Server to work with .NET Core.
 
