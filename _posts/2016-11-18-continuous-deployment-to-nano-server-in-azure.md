@@ -323,8 +323,13 @@ Invoke-Command `
     }
 ```
 
+You should get the following response back.
 
-.
+![continuous-deployment-to-nano-server-in-azure-011]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-011.jpg)
+
+## Setup a new Runbook in the Azure Automation Account
+
+
 
 
 
