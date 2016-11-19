@@ -117,14 +117,16 @@ Under the **BASICS** section, do the following:
 Under the **SETTINGS** section, the Parmater Values that are recommended that you change are:
 
 * Client ID
-* Nano Serveradmin Password
+* Nano Serveradmin Username
 
 The Parameter Values that you need to provide are:
 
+* Nano Serveradmin Password
 * Nano Server Key Vault Id
 * Nano Server Certificate Url
 
-Refer to the output from the **setup-deployment-env-for-nano-server.ps1** PowerShell script for their respective values.
+Refer to the output from the **setup-deployment-env-for-nano-server.ps1** PowerShell script for the values to use for **the Nano Server Key Vault Id** and
+**Nano Server Certificate Url**.
 
 The rest of the predefined values should work under most circumstances; however, they can be modified if required.
 
@@ -168,7 +170,7 @@ that the PowerShell Remoting Session to the Host is open.
 
 ![continuous-deployment-to-nano-server-in-azure-005]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-005.jpg)
 
-Next, retrieve the running processes on the Nano Server to verify connectivity and authentication.
+Retrieve the current running processes on the Nano Server as a final connectivity check.
 
 ```powershell
 Invoke-Command `
@@ -211,7 +213,18 @@ the installation is complete.
 ![continuous-deployment-to-nano-server-in-azure-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-008.jpg)
 
 
-Next, download the ASP.NET Core files locally to your machine in **C:\Windows\Temp**.
+## Install the ASP.NET Core Module
+
+In order for ASP.NET Core to function on Nano Server, the ASP.NET Core Module is required to be installed on the Nano Server is it is responsible for process
+management of ASP.NET Core HTTP listeners and to proxy requests to processes that it manages. Currently, the only option of getting the ASP.NET Core Module installed
+on the Nano Server is by installing the [.NET Core Windows Server Hosting bundle](https://www.microsoft.com/net/download/core) on a normal machine like
+Windows Server 2016 Standard and then manually copying the **aspnetcore.dll** and the **aspnetcore_schema.xml** files to their required locations on the Nano Server.
+
+To save time and trouble, this process has already been completed and both files are hosted in my GitHub Repository. Note that both of these files are from
+**.NET Core 1.0.1**; however, the latest version of these files available from Microsoft at the time of this writing is **.NET Core 1.1**.
+
+
+Download the ASP.NET Core files locally to your machine in **C:\Windows\Temp**.
 
 ```powershell
 Invoke-WebRequest `
