@@ -302,9 +302,14 @@ C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1 `
     -Username winadmin
 ```
 
+Type in the Password of the Nano Server Username when prompted.
+
+![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
+
 You should get the following response back.
 
-[SS]
+![continuous-deployment-to-nano-server-in-azure-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-009.jpg)
+
 
 Run the following command to verify IIS is functional on the Nano Server.
 
