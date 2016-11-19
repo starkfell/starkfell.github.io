@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Continuous Deployment to Nano Server in Azure"
+title: "Setting up Continuous Deployment to Nano Server in Azure"
 date: 2016-11-18
 ---
 
@@ -18,6 +18,10 @@ This article will cover the following:
 * Deploying IIS and ASP.NET Core to the Nano Server
 * Creating a Runbook to push changes from GitHub to the Nano Server
 
+# Prerequistes
+
+Make sure you are following the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM. Additionally, make sure you have
+Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption.
 
 # Deploy Azure Automation Resources using PowerShell Script
 
@@ -34,12 +38,20 @@ This script is responsible for the following:
 
 Full details about the Script can be reviewed within the script itself.
 
-Copy the file to your Host, open up an elevated PowerShell prompt and run the script using the Syntax and Example below as a guide:
+Open up an elevated PowerShell prompt and download the PowerShell script locally to your machine in **C:\Windows\Temp**.
+
+```powershell
+Invoke-WebRequest `
+    -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1" `
+    -OutFile C:\Windows\Temp\setup-deployment-env-for-nano-server-in-azure.ps1
+```
+
+Next, run the PowerShell script using the Syntax and Example below as a guide:
 
 Syntax:
 
 ```powershell
-./setup-deployment-env-for-nano-server-in-azure.ps1 `
+C:\Windows\Temp\setup-deployment-env-for-nano-server-in-azure.ps1 `
 -SubscriptionId <SUBSCRIPTION_ID> `
 -AzureAutomationResourceGroupName <AZURE_AUTOMATION_RESOURCE_GROUP_NAME> `
 -AzureAutomationAccountName <AZURE_AUTOMATION_ACCOUNT_NAME> `
@@ -57,7 +69,7 @@ Syntax:
 Example:
 
 ```powershell
-./setup-deployment-env-for-nano-server-in-azure.ps1 `
+C:\Windows\Temp\setup-deployment-env-for-nano-server-in-azure.ps1 `
 -SubscriptionId 87d031cb-5fde-412d-b09c-c44c16131488 `
 -AzureAutomationResourceGroupName nano-automation `
 -AzureAutomationAccountName nano-automation `
@@ -80,7 +92,6 @@ The output from the script should return two values once the script has complete
 ![continuous-deployment-to-nano-server-in-azure-000]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg)
 
 Make note of both of these values before continuing.
-
 
 # Deploy a Nano Server to Azure from GitHub
 
@@ -130,7 +141,7 @@ of the Public IP Address Resource.
 Next, we need to verify connectivity to the Nano Server using the Credentials set earlier via PowerShell Remoting. Open up an elevated PowerShell prompt or use
 the existing PowerShell prompt used previously.
 
-Start the Windows Remote Management (WS-Management) Service.
+Start the Windows Remote Management (WS-Management) Service on the machine you are working from.
 
 ```powershell
 Start-Service WinRM
@@ -157,7 +168,7 @@ that the PowerShell Remoting Session to the Host is open.
 
 ![continuous-deployment-to-nano-server-in-azure-005]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-005.jpg)
 
-Next, run the following command to return back the current running processes on the Nano Server.
+Next, retrieve the running processes on the Nano Server to verify connectivity and authentication.
 
 ```powershell
 Invoke-Command `
@@ -175,7 +186,7 @@ You should get the current running processes on the Nano Server similar to what 
 
 ## Install IIS on the Nano Server
 
-Run the following command from the elevated PowerShell prompt created earlier to install IIS on the Nano Server.
+From the elevated PowerShell prompt created earlier, install IIS on the Nano Server.
 
 ```powershell
 Invoke-Command `
@@ -251,8 +262,7 @@ Invoke-WebRequest `
     -OutFile C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1
 ```
 
-
-Next, run the following Script to install .NET Core for Nano Server.
+Next, install .NET Core for Nano Server.
 
 ```powershell
 C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
