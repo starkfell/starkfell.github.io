@@ -276,9 +276,13 @@ C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
     -Username winadmin
 ```
 
+Type in the Password of the Nano Server Username when prompted.
+
+![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
+
 You should get the following response back.
 
-[SS]
+![continuous-deployment-to-nano-server-in-azure-009]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-009.jpg)
 
 ## Update IIS to work with .NET Core on the Nano Server
 
@@ -289,7 +293,6 @@ Invoke-WebRequest `
     -Uri "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/update-nano-server-iis-for-dotnet-core-apps.ps1" `
     -OutFile C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1
 ```
-
 
 Next, run the following Script to update IIS on the Nano Server to work with .NET Core.
 
