@@ -85,14 +85,17 @@ catch
 Write-Output "Successfully Logged in to Azure."
 
 # Retrieve All Azure VMs that are tagged for the 'CoreWebAppDemo' DSC Configuration.
+# [array]$VMs = Get-AzureRmVM | Where-Object {$_.TagsText -match "CoreWebAppDemo"} | Get-AzureRmPublicIpAddress
+
+# Retrieve All Azure VMs that are tagged for the 'CoreWebAppDemo' Deployment.
 [array]$VMs = Get-AzureRmVM | Where-Object {$_.TagsText -match "CoreWebAppDemo"}
 
-If ($?)
+If ($VMs)
 {
-	Write-Output "The Virtual Machines were Successfully retrieved from the Subscription."
+	Write-Output "Virtual Machines tagged for CoreWebAppDemo Deployment were Successfully retrieved from the Subscription."
 }
 
-If (!$?)
+If (!$VMs)
 {
 	Write-Output "There are either no Virtual Machines in this Subscription or they were unable to retrieved from the Subscription."
 }
@@ -100,24 +103,16 @@ If (!$?)
 # Retrieving the Nano Server Credentials from Azure Automation Assets.
 $NanoServerCreds = Get-AutomationPSCredential -Name "NanoServerCreds"
 
-$Results = Invoke-Command `
-	-connectionUri "https://rei-nanosrv-at.westeurope.cloudapp.azure.com:5986" `
-    -credential $NanoServerCreds `
-    -SessionOption (New-PSSessionOption -SkipCACheck -SkipCNCheck) `
-    -ScriptBlock {
-        # Determining if the .NET Core Web Application Demo  is already installed.
-        Get-Item -Path "C:\CoreWebAppDemo\web.config" `
-            -ErrorAction SilentlyContinue `
-            -ErrorVariable CoreWebAppCheck
+Foreach ($VM in $VMs)
+{
+    # Setting up Connection URI.
+    $ConnectionUri = "https://" + "$($VM.Name)" + "." + "$($VM.Location)" + ".cloudapp.azure.com:5986"
 
-        If ($CoreWebAppCheck)
-        {
-            $CoreWebAppCheckResult = "CoreWebAppDemo is already installed on $($VM.Name)."
-        }
-
-        If (!$CoreWebAppCheck)
-        {
-            $CoreWebAppCheckResult = "CoreWebAppDemo was not found on $($VM.Name). - $($CoreWebAppCheck.Exception)"
+    $Results = Invoke-Command `
+        -connectionUri $ConnectionUri `
+        -credential $NanoServerCreds `
+        -SessionOption (New-PSSessionOption -SkipCACheck -SkipCNCheck) `
+        -ScriptBlock {param($VM)
 
             # Downloading the .NET Core Web Application Demo from GitHub.
             Invoke-WebRequest `
@@ -135,173 +130,199 @@ $Results = Invoke-Command `
             {
                 $CoreWebAppDownloadErrorResult = "Failed to download CoreWebAppDemo.zip from GitHub on $($VM.Name). - $($CoreWebAppDownloadError.Exception)"
             }
-        }
 
-        # Extracting the CoreWebAppDemo.zip file to C:\CoreWebAppDemo.
-        Expand-Archive `
-            -LiteralPath "C:\Windows\Temp\CoreWebAppDemo.zip" `
-            -DestinationPath "C:\CoreWebAppDemo" `
-            -ErrorAction SilentlyContinue `
-            -ErrorVariable ExpandArchiveError
-
-        If (!$ExpandArchiveError)
-        {
-            $ExpandArchiveErrorResult = "Successfully downloaded CoreWebAppDemo.zip from GitHub on $($VM.Name)."
-        }
-           
-        If ($ExpandArchiveError)
-        {
-            $ExpandArchiveErrorResult = "Failed to download CoreWebAppDemo.zip from GitHub on $($VM.Name). - $($ExpandArchiveError.Exception)"
-        }            
-
-        # Changing the processPath="dotnet" to processPath="C:\dotnet\dotnet.exe" in the web.config file.
-        (Get-Content C:\CoreWebAppDemo\web.config) `
-            -replace 'dotnet', 'C:\dotnet\dotnet.exe' `
-            | Set-Content C:\CoreWebAppDemo\web.config `
+            # Extracting the CoreWebAppDemo.zip file to C:\CoreWebAppDemo.
+            Expand-Archive `
+                -LiteralPath "C:\Windows\Temp\CoreWebAppDemo.zip" `
+                -DestinationPath "C:\CoreWebAppDemo" `
                 -ErrorAction SilentlyContinue `
-                -ErrorVariable SetContentError
+                -ErrorVariable ExpandArchiveError `
+                -Force
 
-        If (!$SetContentError)
-        {
-            $SetContentErrorResult = "Successfully updated processPath in web.config File on $($VM.Name)."
-        }
+            If (!$ExpandArchiveError)
+            {
+                $ExpandArchiveErrorResult = "Successfully extracted CoreWebAppDemo.zip to C:\CoreWebAppDemo on $($VM.Name)."
+            }
+            
+            If ($ExpandArchiveError)
+            {
+                $ExpandArchiveErrorResult = "Failed to extract CoreWebAppDemo.zip to C:\CoreWebAppDemo on $($VM.Name). - $($ExpandArchiveError.Exception)"
+            }            
 
-        If ($SetContentError)
-        {
-            $SetContentErrorResult = "Failed to update processPath in web.config File on $($VM.Name). - $($SetContentError.Exception)"
-        }
+            # Checking the original 'processPath' value of web.config file.
+            $OriginalProcessPath = (Get-Content "C:\CoreWebAppDemo\web.config") `
+                | Select-String "processPath=`"dotnet`""
 
-        # Checking if the CoreWebAppDemo8000 Firewall Rule already exists.
-        Get-NetFirewallRule `
-            -Name "CoreWebAppDemo8000" `
-            -ErrorAction SilentlyContinue `
-            -ErrorVariable FirewallRuleCheck
+            If (!$OriginalProcessPath)
+            {
+                $OriginalProcessPathResult = "processPath=`"dotnet`" entry not found in C:\CoreWebAppDemo\web.config."
+            }
 
-        If (!$FirewallRuleCheck)
-        {
-            $FirewallRuleCheckResult = "Firewall Rule 'CoreWebAppDemo8000' already exists on $($VM.Name)."
-        }
+            If ($OriginalProcessPath)
+            {
+                $OriginalProcessPathResult = "processPath=`"dotnet`" entry found in C:\CoreWebAppDemo\web.config."
 
-        # Adding CoreWebAppDemo8000 Firewall Rule if it wasn't found.
-        If ($FirewallRuleCheck)
-        {
-            $FirewallRuleCheckResult = "Firewall Rule 'CoreWebAppDemo8000' was not found. Adding new Rule."
+                # Changing the processPath="dotnet" to processPath="C:\dotnet\dotnet.exe" in the web.config file.
+                (Get-Content C:\CoreWebAppDemo\web.config) `
+                    -replace "processPath=`"dotnet`"", "processPath=`"C:\dotnet\dotnet.exe`"" `
+                    | Set-Content C:\CoreWebAppDemo\web.config `
+                        -ErrorAction SilentlyContinue `
+                        -ErrorVariable SetContentError
 
-            New-NetFirewallRule `
+                If (!$SetContentError)
+                {
+                    $SetContentErrorResult = "Successfully updated processPath in web.config File on $($VM.Name)."
+                }
+
+                If ($SetContentError)
+                {
+                    $SetContentErrorResult = "Failed to update processPath in web.config File on $($VM.Name). - $($SetContentError.Exception)"
+                }
+            }
+
+            # Checking the modified 'processPath' value of web.config file.
+            $ModifiedProcessPath = (Get-Content "C:\CoreWebAppDemo\web.config") `
+                | Select-String "processPath=`"C:\dotnet\dotnet.exe`""
+
+            If (!$ModifiedProcessPath)
+            {
+                $ModifiedProcessPathResult = "processPath=`"C:\dotnet\dotnet.exe`" entry not found in C:\CoreWebAppDemo\web.config."
+            }
+
+            If ($ModifiedProcessPath)
+            {
+                $ModifiedProcessPathResult = "processPath=`"C:\dotnet\dotnet.exe`" entry found in C:\CoreWebAppDemo\web.config."
+            }
+
+            # Checking if the CoreWebAppDemo8000 Firewall Rule already exists.
+            Get-NetFirewallRule `
                 -Name "CoreWebAppDemo8000" `
-                -DisplayName "CoreWebAppDemo - HTTP (8000)" `
-                -Protocol tcp -LocalPort 8000 `
-                -Action Allow `
                 -ErrorAction SilentlyContinue `
-                -ErrorVariable NewFirewallRuleError
+                -ErrorVariable FirewallRuleCheck
 
-            If (!$NewFirewallRuleError)
+            If (!$FirewallRuleCheck)
             {
-                $NewFirewallRuleErrorResult = "Successfully added Firewall Rule 'CoreWebAppDemo8000' to $($VM.Name)."
+                $FirewallRuleCheckResult = "Firewall Rule 'CoreWebAppDemo8000' already exists on $($VM.Name)."
             }
 
-            If ($NewFirewallRuleError)
+            # Adding CoreWebAppDemo8000 Firewall Rule if it wasn't found.
+            If ($FirewallRuleCheck)
             {
-                $NewFirewallRuleErrorResult = "Failed to add Firewall Rule 'CoreWebAppDemo8000' to $($VM.Name). - $($NewFirewallRuleError.Exception)"
-            }                               
-        }
+                $FirewallRuleCheckResult = "Firewall Rule 'CoreWebAppDemo8000' was not found. Adding new Rule."
 
-        # Importing the IIS Administration Module.
-        Import-Module IISAdministration
+                New-NetFirewallRule `
+                    -Name "CoreWebAppDemo8000" `
+                    -DisplayName "CoreWebAppDemo - HTTP (8000)" `
+                    -Protocol tcp -LocalPort 8000 `
+                    -Action Allow `
+                    -ErrorAction SilentlyContinue `
+                    -ErrorVariable NewFirewallRuleError
 
-        # Checking if the CoreWebAppDemo IIS Website already exists.            
-        Get-IISSite `
-            -Name "CoreWebAppDemo" `
-            -WarningAction SilentlyContinue `
-            -WarningVariable IISSiteCheck
+                If (!$NewFirewallRuleError)
+                {
+                    $NewFirewallRuleErrorResult = "Successfully added Firewall Rule 'CoreWebAppDemo8000' to $($VM.Name)."
+                }
 
-        If (!$IISSiteCheck)
-        {
-            $IISSiteCheckResult = "CoreWebAppDemo IIS Site already exists on $($VM.Name)."
-        }
+                If ($NewFirewallRuleError)
+                {
+                    $NewFirewallRuleErrorResult = "Failed to add Firewall Rule 'CoreWebAppDemo8000' to $($VM.Name). - $($NewFirewallRuleError.Exception)"
+                }                               
+            }
 
-        # Adding the CoreWebAppDemo IIS Website if it wasn't found.
-        If ($IISSiteCheck)
-        {
-            $IISSiteCheckResult = "CoreWebAppDemo IIS Site not found on $($VM.Name). - $($IISSiteCheck.Exception)"
-
+            # Importing the IIS Administration Module.
             Import-Module IISAdministration
-            New-IISSite `
+
+            # Checking if the CoreWebAppDemo IIS Website already exists.            
+            Get-IISSite `
                 -Name "CoreWebAppDemo" `
-                -PhysicalPath C:\CoreWebAppDemo `
-                -BindingInformation "*:8000:" `
+                -WarningAction SilentlyContinue `
+                -WarningVariable IISSiteCheck
+
+            If (!$IISSiteCheck)
+            {
+                $IISSiteCheckResult = "CoreWebAppDemo IIS Site already exists on $($VM.Name)."
+            }
+
+            # Adding the CoreWebAppDemo IIS Website if it wasn't found.
+            If ($IISSiteCheck)
+            {
+                $IISSiteCheckResult = "CoreWebAppDemo IIS Site not found on $($VM.Name). - $($IISSiteCheck.Exception)"
+
+                Import-Module IISAdministration
+                New-IISSite `
+                    -Name "CoreWebAppDemo" `
+                    -PhysicalPath C:\CoreWebAppDemo `
+                    -BindingInformation "*:8000:" `
+                    -ErrorAction SilentlyContinue `
+                    -ErrorVariable NewIISSiteError
+
+                If (!$NewIISSiteError)
+                {
+                    $NewIISSiteErrorResult = "Successfully added CoreWebAppDemo IIS Site to $($VM.Name)."
+                }
+
+                If ($NewIISSiteError)
+                {
+                    $NewIISSiteErrorResult = "Failed to add CoreWebAppDemo IIS Site to $($VM.Name). - $($NewIISSiteError.Exception)"
+                }
+            }
+
+            # Starting the IIS Service on the Nano Server.
+            Start-Service `
+                -Name W3SVC `
                 -ErrorAction SilentlyContinue `
-                -ErrorVariable NewIISSiteError
+                -ErrorVariable StartServiceError
 
-            If (!$NewIISSiteError)
+            If (!$StartServiceError)
             {
-                $NewIISSiteErrorResult = "Successfully added CoreWebAppDemo IIS Site to $($VM.Name)."
+                $StartServiceErrorResult = "Successfullly Started the IIS Service on $($VM.Name)."
+            }
+            
+            If ($StartServiceError)
+            {
+                $StartServiceErrorResult = "Failed to Start the IIS Service on $($VM.Name). - $($StartServiceError.Exception)"
+            }
+                
+            # Starting the .NET Core Web Application Demo Site.
+            Start-IISSite `
+                -Name CoreWebAppDemo `
+                -ErrorAction SilentlyContinue `
+                -ErrorVariable StartSiteError
+                
+            If (!$StartSiteError)
+            {
+                $StartSiteErrorResult = "Successfullly Started the CoreWebAppDemo Site on $($VM.Name)."
+            }
+            
+            If ($StartSiteError)
+            {
+                $StartSiteErrorResult = "Failed to Start the CoreWebAppDemo Site on $($VM.Name) - $($StartSiteError.Exception)."
             }
 
-            If ($NewIISSiteError)
-            {
-                $NewIISSiteErrorResult = "Failed to add CoreWebAppDemo IIS Site to $($VM.Name). - $($NewIISSiteError.Exception)"
+            # Adding Results of Configuration to a new PSCustomObject that will be outputted in the $Results Variable.
+            New-Object PSObject `
+            -Property @{
+                CoreWebAppDownloadErrorResult  = $CoreWebAppDownloadErrorResult
+                ExpandArchiveErrorResult       = $ExpandArchiveErrorResult
+                SetContentErrorResult          = $SetContentErrorResult
+                FirewallRuleCheckResult        = $FirewallRuleCheckResult
+                NewFirewallRuleErrorResult     = $NewFirewallRuleErrorResult
+                IISSiteCheckResult             = $IISSiteCheckResult
+                NewIISSiteErrorResult          = $NewIISSiteErrorResult
+                StartServiceErrorResult        = $StartServiceErrorResult
+                StartSiteErrorResult           = $StartSiteErrorResult
             }
-        }
+        } -ArgumentList $VM
 
-        # Starting the IIS Service on the Nano Server.
-        Start-Service `
-            -Name W3SVC `
-            -ErrorAction SilentlyContinue `
-            -ErrorVariable StartServiceError
-
-        If (!$StartServiceError)
-        {
-            $StartServiceErrorResult = "Successfullly Started the IIS Service on $($VM.Name)."
-        }
-           
-        If ($StartServiceError)
-        {
-            $StartServiceErrorResult = "Failed to Start the IIS Service on $($VM.Name). - $($StartServiceError.Exception)"
-        }
-            
-        # Starting the .NET Core Web Application Demo Site.
-        Start-IISSite `
-            -Name CoreWebAppDemo `
-            -ErrorAction SilentlyContinue `
-            -ErrorVariable StartSiteError
-            
-        If (!$StartSiteError)
-        {
-            $StartSiteErrorResult = "Successfullly Started the CoreWebAppDemo Site on $($VM.Name)."
-        }
-           
-        If ($StartSiteError)
-        {
-            $StartSiteErrorResult = "Failed to Start the CoreWebAppDemo Site on $($VM.Name) - $($StartSiteError.Exception)."
-        }
-
-        # Adding Results of Configuration to a new PSCustomObject that will be outputted in the $Results Variable.
-        New-Object PSObject `
-        -Property @{
-            CoreWebAppCheckResult          = $CoreWebAppCheckResult
-            CoreWebAppDownloadErrorResult  = $CoreWebAppDownloadErrorResult
-            ExpandArchiveErrorResult       = $ExpandArchiveErrorResult
-            SetContentErrorResult          = $SetContentErrorResult
-            FirewallRuleCheckResult        = $FirewallRuleCheckResult
-            NewFirewallRuleErrorResult     = $NewFirewallRuleErrorResult
-            IISSiteCheckResult             = $IISSiteCheckResult
-            NewIISSiteErrorResult          = $NewIISSiteErrorResult
-            StartServiceErrorResult        = $StartServiceErrorResult
-            StartSiteErrorResult           = $StartSiteErrorResult
-        }        
-    }
-
-# Returned Results.
-$Results.CoreWebAppCheckResult
-$Results.CoreWebAppDownloadErrorResult
-$Results.ExpandArchiveErrorResult
-$Results.SetContentErrorResult
-$Results.FirewallRuleCheckResult
-$Results.NewFirewallRuleErrorResult
-$Results.IISSiteCheckResult
-$Results.NewIISSiteErrorResult
-$Results.StartServiceErrorResult
-$Results.StartSiteErrorResult
-
+    # Returned Results.
+    $Results.CoreWebAppDownloadErrorResult
+    $Results.ExpandArchiveErrorResult
+    $Results.SetContentErrorResult
+    $Results.FirewallRuleCheckResult
+    $Results.NewFirewallRuleErrorResult
+    $Results.IISSiteCheckResult
+    $Results.NewIISSiteErrorResult
+    $Results.StartServiceErrorResult
+    $Results.StartSiteErrorResult
+}
 
