@@ -329,6 +329,6 @@ You should get the following response back.
 
 ## Setup a new Runbook in the Azure Automation Account
 
-Trigger.
+Tri
 
 
