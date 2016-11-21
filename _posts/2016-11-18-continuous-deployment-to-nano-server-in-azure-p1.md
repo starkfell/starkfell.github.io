@@ -119,16 +119,17 @@ Under the **BASICS** section, do the following:
 Under the **SETTINGS** section, the Parmater Values that are recommended that you change are:
 
 * Client ID
-* Nano Serveradmin Username
 
 The Parameter Values that you need to provide are:
 
+* Nano Serveradmin Username
 * Nano Serveradmin Password
 * Nano Server Key Vault Id
 * Nano Server Certificate Url
 
-Refer to the output from the **setup-deployment-env-for-nano-server.ps1** PowerShell script for the values to use for **the Nano Server Key Vault Id** and
-**Nano Server Certificate Url**.
+Change the **Nano Serveradmin Username** and **Nano Serveradmin Password** to the values you previously set for the **NanoServerLocalAdminUsername** and **NanoServerLocalAdminPassword** when running the
+**[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)** PowerShell script.
+Refer to the output from the same script for the values to use for **the Nano Server Key Vault Id** and **Nano Server Certificate Url**.
 
 The rest of the predefined values should work under most circumstances; however, they can be modified if required.
 
@@ -345,8 +346,8 @@ The next article will cover the following:
 
 ## Additional Resources
 
-The links below are to articles that were essential to creating this blog post, I recommend buying them a cold
-adult beverage if you see them in person.
+The links below are to articles that were essential to creating this blog post, I recommend buying the individuals responsible
+for writing them a cold adult beverage if you see them in person.
 
 [How to deploy Nano Server in Azure](http://www.thomasmaurer.ch/2016/11/how-to-deploy-nano-server-in-azure/)
 
@@ -354,5 +355,6 @@ adult beverage if you see them in person.
 
 [ASP.NET Core on Nano Server](https://docs.microsoft.com/en-us/aspnet/core/tutorials/nano-server)
 
-
+<br>
+<br>
 
