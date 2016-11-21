@@ -347,6 +347,7 @@ Invoke-Command `
 ```
 
 Verify the Default Web Site is accessible via a Web  Browser.
+
 ![continuous-deployment-to-nano-server-in-azure-p1-012]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-012.jpg)
 
 ## Closing
