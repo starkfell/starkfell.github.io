@@ -316,7 +316,7 @@ You should get the following response back.
 ![continuous-deployment-to-nano-server-in-azure-p1-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-010.jpg)
 
 
-Run the following command to verify IIS is functional on the Nano Server.
+Verify the Default Web Site is on the Nano Server.
 
 ```powershell
 Invoke-Command `
@@ -331,6 +331,23 @@ Invoke-Command `
 You should get the following response back.
 
 ![continuous-deployment-to-nano-server-in-azure-p1-011]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-011.jpg)
+
+Start the IIS Service followed by the Default Web Site.
+
+```powershell
+Invoke-Command `
+    -Session $Session `
+    -ScriptBlock `
+    {
+        Start-Service W3SVC
+        Import-Module IISAdministration
+        Start-IISSite `
+            -Name "Default Web Site" | FT -AutoSize
+    }
+```
+
+Verify the Default Web Site is accessible via a Web  Browser.
+![continuous-deployment-to-nano-server-in-azure-p1-012]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-012.jpg)
 
 ## Closing
 
