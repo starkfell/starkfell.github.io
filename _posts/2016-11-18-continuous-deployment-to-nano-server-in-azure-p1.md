@@ -1,13 +1,16 @@
 ---
 layout: post
 comments: true
-title: "Setting up Continuous Deployment to Nano Server in Azure"
-date: 2016-11-18
+title: "Setting up Continuous Deployment to Nano Server in Azure - Part 1"
+date: 2016-11-21
 ---
 
-There are several documented ways online on how to deploy Nano Server to Hyper-V Hosts or to Azure. Additionally, there is documentation
-on how to deploy a .NET Core Application to a Nano Server. This article will demonstrate how to deploy a .NET Core Application to a Nano
-Server in Azure from GitHub using Azure Automation.
+There is plenty of documentation online on how to setup and Administer Nano Server as well as how to get a .NET Core Application to run on
+Nano Server. I wanted to take that a step further and demonstrate a practical way setting up Continuous Deployment of a .NET Application from
+GitHub to a Nano Server running in Azure using Azure Automation.
+
+This will be the first of a series of blog posts that demonstrate how to set this up scenario along with some of the practical and security
+considerations to take into account while setting this up.
 
 # Overview
 
@@ -16,12 +19,11 @@ This article will cover the following:
 * Deploying Azure Automation Resources using PowerShell
 * Deploying a Nano Server in Azure from GitHub
 * Deploying IIS and ASP.NET Core to the Nano Server
-* Creating a Runbook to push changes from GitHub to the Nano Server
 
 # Prerequistes
 
 Make sure you are following the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM. Additionally, make sure you have
-Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption.
+Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption. A solid understanding of PowerShell is highly recommended.
 
 # Deploy Azure Automation Resources using PowerShell Script
 
@@ -89,7 +91,7 @@ The output from the script should return two values once the script has complete
 * Azure Key Vault Resource ID
 * Nano Server Self-Signed Certificate Secret Identifier
 
-![continuous-deployment-to-nano-server-in-azure-000]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-000.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-000]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-000.jpg)
 
 Make note of both of these values before continuing.
 
@@ -105,7 +107,7 @@ for more information about the Template.
 
 If you are not already logged into your Azure Subscription, you will be prompted to do so. Once you have logged into your Azure Subscription, the Custom deployment blade will appear.
 
-![continuous-deployment-to-nano-server-in-azure-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-001.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-001.jpg)
 
 
 Under the **BASICS** section, do the following:
@@ -133,12 +135,12 @@ The rest of the predefined values should work under most circumstances; however,
 Once you are finished, scroll down to the bottom of the blade and put a checkmark in the **I agree to the terms and conditions stated above** checkbox.
 Afterwards, click on the **Purchase** button to kick off the deployment.
 
-![continuous-deployment-to-nano-server-in-azure-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-002.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-002.jpg)
 
 The deployment should take between 5 to 10 minutes to complete. Afterwards, open up the Resource Group you deployed the Nano Server to and make note of DNS Name
 of the Public IP Address Resource.
 
-![continuous-deployment-to-nano-server-in-azure-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-003.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-003.jpg)
 
 Next, we need to verify connectivity to the Nano Server using the Credentials set earlier via PowerShell Remoting. Open up an elevated PowerShell prompt or use
 the existing PowerShell prompt used previously.
@@ -163,12 +165,12 @@ $Session = New-PSSession -ComputerName luma-nanosrv-at.westeurope.cloudapp.azure
 
 Type in the Password of the Nano Server Username when prompted.
 
-![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-004.jpg)
 
 Authentication to the Nano Server may take a few seconds to complete and you won't get a response back from the server. Run the **Get-PSSession** cmdlet to verify
 that the PowerShell Remoting Session to the Host is open.
 
-![continuous-deployment-to-nano-server-in-azure-005]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-005.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-005]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-005.jpg)
 
 Retrieve the current running processes on the Nano Server as a final connectivity check.
 
@@ -183,7 +185,7 @@ Invoke-Command `
 
 You should get the current running processes on the Nano Server similar to what is shown in the screenshot below.
 
-![continuous-deployment-to-nano-server-in-azure-006]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-006.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-006]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-006.jpg)
 
 
 ## Install IIS on the Nano Server
@@ -205,12 +207,12 @@ Invoke-Command `
 
 You will be prompted to install the NuGet Provider, type **Y** and hit Enter.
 
-![continuous-deployment-to-nano-server-in-azure-007]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-007.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-007]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-007.jpg)
 
 The required Packages will then be downloaded and installed on the Nano Server. You will see the details of the **Microsoft-NanoServer-IIS-Package** when
 the installation is complete.
 
-![continuous-deployment-to-nano-server-in-azure-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-008.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-008.jpg)
 
 
 ## Install the ASP.NET Core Module
@@ -278,11 +280,11 @@ C:\Windows\Temp\install-dotnet-core-on-nano-server.ps1 `
 
 Type in the Password of the Nano Server Username when prompted.
 
-![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-004.jpg)
 
 You should get the following response back.
 
-![continuous-deployment-to-nano-server-in-azure-009]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-009.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-009]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-009.jpg)
 
 ## Update IIS to work with .NET Core on the Nano Server
 
@@ -304,11 +306,11 @@ C:\Windows\Temp\update-nano-server-iis-for-dotnet-core-apps.ps1 `
 
 Type in the Password of the Nano Server Username when prompted.
 
-![continuous-deployment-to-nano-server-in-azure-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-004.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-004.jpg)
 
 You should get the following response back.
 
-![continuous-deployment-to-nano-server-in-azure-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-009.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-009.jpg)
 
 
 Run the following command to verify IIS is functional on the Nano Server.
@@ -325,10 +327,32 @@ Invoke-Command `
 
 You should get the following response back.
 
-![continuous-deployment-to-nano-server-in-azure-011]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-011.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-011]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-011.jpg)
 
-## Setup a new Runbook in the Azure Automation Account
+## Closing
 
-Tri
+In this article we deployed Resource Groups that are responsible for Hosting an Azure Automation Account, an Azure Key Vault, and
+a Nano Server. Additionally, we deployed IIS to the Nano Server, copied the .NET Core Modules to the Nano Server, Installed .NET
+Core on the Nano Server, and finally updated IIS to work with .NET Core.
+
+The next article will cover the following:
+
+* Deploying a Runbook to push changes from GitHub to the Nano Server
+* Creating a new Webhook for the Runbook
+* Adding the .NET Application to a public GitHub Repository
+* Adding the Runbook Webhook to a GitHub Repository
+* Triggering the deployment of the .NET Application to the Nano Server
+
+## Additional Resources
+
+The links below are to articles that were essential to creating this blog post, I recommend buying them a cold
+adult beverage if you see them in person.
+
+[How to deploy Nano Server in Azure](http://www.thomasmaurer.ch/2016/11/how-to-deploy-nano-server-in-azure/)
+
+[Install Nano Server](https://technet.microsoft.com/en-us/windows-server-docs/get-started/getting-started-with-nano-server)
+
+[ASP.NET Core on Nano Server](https://docs.microsoft.com/en-us/aspnet/core/tutorials/nano-server)
+
 
 
