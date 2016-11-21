@@ -6,8 +6,7 @@ the .NET Core Web Application to that Nano Server.
 
 .DESCRIPTION
 When this Runbook is triggered via the Webhook: the rb-CoreWebAppDemo-Webhook, the following will occur:
- - WebhookData from the Webhook will be parsed and assigned to their respective ARM Template Deployment Parameters.
- - Retrieve All Azure VMs that are tagged for the 'CoreWebAppDemo'.
+ - Something Something Something Darkside...
 
 .PARAMETER WebhookData
 This is the WebhookData that is automatically passed from the Webhook to the Runbook. The Runbook will exit if this Data Object is empty.

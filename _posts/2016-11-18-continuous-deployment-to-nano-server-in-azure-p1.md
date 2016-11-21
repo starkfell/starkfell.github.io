@@ -129,7 +129,9 @@ The Parameter Values that you need to provide are:
 
 Change the **Nano Serveradmin Username** and **Nano Serveradmin Password** to the values you previously set for the **NanoServerLocalAdminUsername** and **NanoServerLocalAdminPassword** when running the
 **[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)** PowerShell script.
-Refer to the output from the same script for the values to use for **the Nano Server Key Vault Id** and **Nano Server Certificate Url**.
+Refer to the output from the same script for the values to use for **the Nano Server Key Vault Id** and **Nano Server Certificate Url**. The ARM Template
+Deployment will fail without these last two values as the ARM Template is written to look in the Azure Key Vault created earlier in the script for the
+value of the Self-Signed Certificate to use for the WinRM Listener.
 
 The rest of the predefined values should work under most circumstances; however, they can be modified if required.
 
@@ -311,7 +313,7 @@ Type in the Password of the Nano Server Username when prompted.
 
 You should get the following response back.
 
-![continuous-deployment-to-nano-server-in-azure-p1-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-009.jpg)
+![continuous-deployment-to-nano-server-in-azure-p1-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p1-010.jpg)
 
 
 Run the following command to verify IIS is functional on the Nano Server.
