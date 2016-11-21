@@ -351,7 +351,9 @@ The next article will cover the following:
 The links below are to articles that were essential to creating this blog post, I recommend buying the individuals responsible
 for writing them a cold adult beverage if you see them in person.
 
-[How to deploy Nano Server in Azure](http://www.thomasmaurer.ch/2016/11/how-to-deploy-nano-server-in-azure/)
+[Thomas Maurer - How to deploy Nano Server in Azure](http://www.thomasmaurer.ch/2016/11/how-to-deploy-nano-server-in-azure/)
+
+[Alexandre Brisebois - Deploying Nano Server to Azure](https://alexandrebrisebois.wordpress.com/2016/02/18/deploying-nano-server-to-microsoft-azure/)
 
 [Install Nano Server](https://technet.microsoft.com/en-us/windows-server-docs/get-started/getting-started-with-nano-server)
 
