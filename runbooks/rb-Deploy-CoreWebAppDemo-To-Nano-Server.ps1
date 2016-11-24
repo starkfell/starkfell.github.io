@@ -41,7 +41,7 @@ If ($WebhookData)
 	# Parameter Values passed from the WebhookData.
 	$VMName = $WebhookDataParameters.VMName
 
-	Write-Output "Runbook triggered from Webhook $WebhookName on $VMName by $From on $Date."
+	Write-Output "Runbook triggered from Webhook $WebhookName by $From on $Date."
 }
 
 # If this Runbook is not triggered from a Webhook or no WebhookData is found, the script will exit.
@@ -83,24 +83,45 @@ catch
 
 Write-Output "Successfully Logged in to Azure."
 
-# Retrieve All Azure VMs that are tagged for the 'CoreWebAppDemo' DSC Configuration.
-# [array]$VMs = Get-AzureRmVM | Where-Object {$_.TagsText -match "CoreWebAppDemo"} | Get-AzureRmPublicIpAddress
-
 # Retrieve All Azure VMs that are tagged for the 'CoreWebAppDemo' Deployment.
-[array]$VMs = Get-AzureRmVM | Where-Object {$_.TagsText -match "CoreWebAppDemo"}
+[array]$VMs = Get-AzureRmVM `
+    -ErrorAction SilentlyContinue `
+    -ErrorVariable RetrieveVMError `
+    | Where-Object {$_.TagsText -match "CoreWebAppDemo"}
 
-If ($VMs)
+If ($RetrieveVMError)
 {
-	Write-Output "Virtual Machines tagged for CoreWebAppDemo Deployment were Successfully retrieved from the Subscription."
+	Write-Output "There was a problem attempting to retrieve Virtual Machines from the Subscription. - $($RetrieveVMError.Exception)"
+    exit 2
 }
 
 If (!$VMs)
 {
 	Write-Output "There are either no Virtual Machines in this Subscription or they were unable to retrieved from the Subscription."
+    exit 0
+}
+
+If ($VMs)
+{
+	Write-Output "Virtual Machines tagged for 'CoreWebAppDemo' Deployment were Successfully retrieved from the Subscription."
 }
 
 # Retrieving the Nano Server Credentials from Azure Automation Assets.
-$NanoServerCreds = Get-AutomationPSCredential -Name "NanoServerCreds"
+$NanoServerCreds = Get-AutomationPSCredential `
+    -Name "NanoServerCreds" `
+    -ErrorAction SilentlyContinue `
+    -ErrorVariable NanoServerCredsError
+
+If (!$NanoServerCredsError)
+{
+    Write-Output "Successfully retrieved the Nano Server Credentials from the Azure Automation Account."
+}
+
+If ($NanoServerCredsError)
+{
+    Write-Output "There were was problem retrieving the Nano Server Credentials for the Azure Automation Account. - $($NanoServerCredsError.Exception)"
+    exit 2
+}
 
 Foreach ($VM in $VMs)
 {
@@ -112,6 +133,51 @@ Foreach ($VM in $VMs)
         -credential $NanoServerCreds `
         -SessionOption (New-PSSessionOption -SkipCACheck -SkipCNCheck) `
         -ScriptBlock {param($VM)
+
+            # Checking if the CoreWebAppDemo IIS Website already exists.
+            Get-IISSite `
+                -Name "CoreWebAppDemo" `
+                -WarningAction SilentlyContinue `
+                -WarningVariable IISInitialSiteCheck
+
+            If (!$IISInitialSiteCheck)
+            {
+                $IISInitialSiteCheckResult = "CoreWebAppDemo IIS Site found on $($VM.Name). Stopping the Website."
+
+                # Stopping the CoreWebAppDemo IIS Website before downloading and extracting the new Application.
+                Stop-IISSite `
+                    -Name "CoreWebAppDemo" `
+                    -Confirm:$false `
+                    -ErrorAction SilentlyContinue `
+                    -ErrorVariable StopIISSiteError
+
+                If (!$StopIISSiteError)
+                {
+                    $StopIISSiteErrorResult = "Successfully stopped the CoreWebAppDemo IIS Website on $($VM.Name)"
+                }
+
+                If ($StopIISSiteError)
+                {
+                    $StopIISSiteErrorResult = "Failed to stop the CoreWebAppDemo IIS Website on $($VM.Name)"
+                }
+            }
+ 
+            # Stopping the IIS Service on the Nano Server
+            Stop-Service `
+                -Name W3SVC `
+                -ErrorAction SilentlyContinue `
+                -ErrorVariable StopIISServiceError
+
+            If (!$StopIISServiceError)
+            {
+                $StopIISServiceErrorResult = "Successfullly Stopped the IIS Service on $($VM.Name). Pausing for 5 seconds before continuing."
+                Start-Sleep -Seconds 5
+            }
+            
+            If ($StopIISServiceError)
+            {
+                $StopIISServiceErrorResult = "Failed to Stop the IIS Service on $($VM.Name). - $($StopIISServiceError.Exception)"
+            }
 
             # Downloading the .NET Core Web Application Demo from GitHub.
             Invoke-WebRequest `
@@ -181,7 +247,7 @@ Foreach ($VM in $VMs)
 
             # Checking the modified 'processPath' value of web.config file.
             $ModifiedProcessPath = (Get-Content "C:\CoreWebAppDemo\web.config") `
-                | Select-String "processPath=`"C:\dotnet\dotnet.exe`""
+                | Select-String "processPath=`"C:\\dotnet\\dotnet.exe`""
 
             If (!$ModifiedProcessPath)
             {
@@ -197,7 +263,8 @@ Foreach ($VM in $VMs)
             Get-NetFirewallRule `
                 -Name "CoreWebAppDemo8000" `
                 -ErrorAction SilentlyContinue `
-                -ErrorVariable FirewallRuleCheck
+                -ErrorVariable FirewallRuleCheck `
+                | Out-Null
 
             If (!$FirewallRuleCheck)
             {
@@ -215,7 +282,8 @@ Foreach ($VM in $VMs)
                     -Protocol tcp -LocalPort 8000 `
                     -Action Allow `
                     -ErrorAction SilentlyContinue `
-                    -ErrorVariable NewFirewallRuleError
+                    -ErrorVariable NewFirewallRuleError `
+                    | Out-Null
 
                 If (!$NewFirewallRuleError)
                 {
@@ -229,13 +297,27 @@ Foreach ($VM in $VMs)
             }
 
             # Importing the IIS Administration Module.
-            Import-Module IISAdministration
+            Import-Module IISAdministration `
+                -ErrorAction SilentlyContinue `
+                -ErrorVariable ImportIISModuleCheck `
+                | Out-Null
+
+            If (!$ImportIISModuleCheck)
+            {
+                $ImportIISModuleCheckResult = "Successfully imported the IIS Administration Module on $($VM.Name)."
+            }
+
+            If ($ImportIISModuleCheck)
+            {
+                $ImportIISModuleCheckResult = "Failed to import the IIS Administration Module onon $($VM.Name)."
+            }
 
             # Checking if the CoreWebAppDemo IIS Website already exists.            
             Get-IISSite `
                 -Name "CoreWebAppDemo" `
                 -WarningAction SilentlyContinue `
-                -WarningVariable IISSiteCheck
+                -WarningVariable IISSiteCheck `
+                | Out-Null
 
             If (!$IISSiteCheck)
             {
@@ -253,7 +335,8 @@ Foreach ($VM in $VMs)
                     -PhysicalPath C:\CoreWebAppDemo `
                     -BindingInformation "*:8000:" `
                     -ErrorAction SilentlyContinue `
-                    -ErrorVariable NewIISSiteError
+                    -ErrorVariable NewIISSiteError `
+                    | Out-Null
 
                 If (!$NewIISSiteError)
                 {
@@ -270,29 +353,32 @@ Foreach ($VM in $VMs)
             Start-Service `
                 -Name W3SVC `
                 -ErrorAction SilentlyContinue `
-                -ErrorVariable StartServiceError
+                -ErrorVariable StartServiceError `
+                | Out-Null
 
             If (!$StartServiceError)
             {
-                $StartServiceErrorResult = "Successfullly Started the IIS Service on $($VM.Name)."
+                $StartServiceErrorResult = "Successfully Started the IIS Service on $($VM.Name). Pausing 5 seconds before continuing."
+                Start-Sleep -Seconds 5
             }
-            
+
             If ($StartServiceError)
             {
                 $StartServiceErrorResult = "Failed to Start the IIS Service on $($VM.Name). - $($StartServiceError.Exception)"
             }
-                
+
             # Starting the .NET Core Web Application Demo Site.
             Start-IISSite `
                 -Name CoreWebAppDemo `
                 -ErrorAction SilentlyContinue `
-                -ErrorVariable StartSiteError
-                
+                -ErrorVariable StartSiteError `
+                | Out-Null
+
             If (!$StartSiteError)
             {
-                $StartSiteErrorResult = "Successfullly Started the CoreWebAppDemo Site on $($VM.Name)."
+                $StartSiteErrorResult = "Successfully Started the CoreWebAppDemo Site on $($VM.Name)."
             }
-            
+
             If ($StartSiteError)
             {
                 $StartSiteErrorResult = "Failed to Start the CoreWebAppDemo Site on $($VM.Name) - $($StartSiteError.Exception)."
@@ -301,11 +387,16 @@ Foreach ($VM in $VMs)
             # Adding Results of Configuration to a new PSCustomObject that will be outputted in the $Results Variable.
             New-Object PSObject `
             -Property @{
+                IISInitialSiteCheckResult      = $IISInitialSiteCheckResult
+                StopIISSiteErrorResult         = $StopIISSiteErrorResult
+                StopIISServiceErrorResult      = $StopIISServiceErrorResult
                 CoreWebAppDownloadErrorResult  = $CoreWebAppDownloadErrorResult
                 ExpandArchiveErrorResult       = $ExpandArchiveErrorResult
                 SetContentErrorResult          = $SetContentErrorResult
+                ModifiedProcessPathResult      = $ModifiedProcessPathResult
                 FirewallRuleCheckResult        = $FirewallRuleCheckResult
                 NewFirewallRuleErrorResult     = $NewFirewallRuleErrorResult
+                ImportIISModuleCheckResult     = $ImportIISModuleCheckResult
                 IISSiteCheckResult             = $IISSiteCheckResult
                 NewIISSiteErrorResult          = $NewIISSiteErrorResult
                 StartServiceErrorResult        = $StartServiceErrorResult
@@ -314,14 +405,18 @@ Foreach ($VM in $VMs)
         } -ArgumentList $VM
 
     # Returned Results.
+    $Results.IISInitialSiteCheckResult
+    $Results.StopIISSiteErrorResult
+    $Results.StopIISServiceErrorResult
     $Results.CoreWebAppDownloadErrorResult
     $Results.ExpandArchiveErrorResult
     $Results.SetContentErrorResult
+    $Results.ModifiedProcessPathResult
     $Results.FirewallRuleCheckResult
     $Results.NewFirewallRuleErrorResult
+    $Results.ImportIISModuleCheckResult
     $Results.IISSiteCheckResult
     $Results.NewIISSiteErrorResult
     $Results.StartServiceErrorResult
     $Results.StartSiteErrorResult
 }
-
