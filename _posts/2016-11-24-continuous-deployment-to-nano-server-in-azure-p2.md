@@ -47,7 +47,7 @@ Type in the Name of the Runbook, rb-Deploy-CoreWebAppDemo-To-Nano-Server. Change
 The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**
 and click the **Save** button.
 
-Next,
+Next, Nuggets
 
 
 
