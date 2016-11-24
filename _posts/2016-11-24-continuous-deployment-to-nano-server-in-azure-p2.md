@@ -25,12 +25,42 @@ This article will cover the following:
 
 # Prerequistes
 
-**All of the resources that were deployed in Azure in [Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/) are required to be in place before continuing.**
+**All of the resources that were deployed in Azure in [Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/) of this series are required to be in place before continuing.**
 
 Make sure you are following the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM. Additionally, make sure you have
 Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption.
 
 # Deploy a new Runbook to the Azure Automation Account
+
+The Runbook that we will be deploying to the Azure Automation Account can be
+downloaded **[here](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/runbooks/rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1).**
+
+Login to the [Azure Portal](https://portal.azure.com) and go to the Subscription where you deployed resources using the PowerShell script,
+**[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)**.
+
+Go into the Resource Group where the Azure Automation account was deployed, click on Automation Account --> Runbooks --> Add a Runbook --> Create a new Runbook.
+
+Type in the Name of the Runbook, rb-Deploy-CoreWebAppDemo-To-Nano-Server. Change the Runbook type to PowerShell and then click on the Create button at the bottom of the page.
+
+![continuous-deployment-to-nano-server-in-azure-p2-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-001.jpg)
+
+The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**
+and click the **Save** button.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
