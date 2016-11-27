@@ -27,10 +27,21 @@ This article will cover the following:
 
 **All of the resources that were deployed in Azure in [Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/) of this series are required to be in place before continuing.**
 
-Make sure you are following the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM. Additionally, make sure you have
-Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption.
+Additionally the following items are required.
+
+* Follow the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM.
+* Verify that you have access to a Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption.
+* Access to at a Free GitHub Account is required.
 
 # Add the .NET Application to your GitHub Repository
+
+Create a new repository in your GitHub Account called **nano-deploy-demo** and initialize it with a README.md file.
+
+![continuous-deployment-to-nano-server-in-azure-p2-000]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-000.jpg)
+
+Next, download the **[CoreWebAppDemo.zip](https://github.com/starkfell/starkfell.github.io/blob/master/apps/continuous-deployment-to-nano-server-in-azure/CoreWebAppDemo.zip?raw=true)** and
+upload it to the **nano-deploy-demo** Repository.
+
 
 
 # Deploy a new Runbook to the Azure Automation Account
@@ -47,8 +58,29 @@ Type in the Name of the Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**. Ch
 
 ![continuous-deployment-to-nano-server-in-azure-p2-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-001.jpg)
 
-The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**,
-click the **Save** button and then click the **Publish** button.
+The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**.
+
+Scroll down in the page and look for this link: 
+
+```powershell
+https://github.com/starkfell/starkfell.github.io/blob/master/apps/continuous-deployment-to-nano-server-in-azure/CoreWebAppDemo.zip?raw=true
+```
+
+Change this link to reflect the GitHub Respository you created earlier and uploaded the **CoreWebAppDemo.zip** file to.
+
+Syntax:
+
+```powershell
+https://github.com/<USERNAME>/<REPSOITORY_NAME>/blob/master/CoreWebAppDemo.zip?raw=true
+```
+
+Example:
+
+```powershell
+https://github.com/starkfell/nano-deploy-demo/blob/master/CoreWebAppDemo.zip?raw=true
+```
+
+Click the **Save** button and then click the **Publish** button.
 
 ![continuous-deployment-to-nano-server-in-azure-p2-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-002.jpg)
 
