@@ -4,6 +4,8 @@
 #!/bin/bash
 sudo apt-get install openssh-server -y
 
+sudo apt-get install expect -y
+
 sudo wget http://public-repo-1.hortonworks.com/ambari/ubuntu14/2.x/updates/2.1.2/ambari.list -O /etc/apt/sources.list.d/ambari.list
 
 sudo apt-key adv --recv-keys --keyserver keyserver.ubuntu.com B9733A7A07513CAD
@@ -26,6 +28,8 @@ sudo ambari-server start
 #
 # This script must be ran as 'root'.
 #
+
+# Creating a new SSH Key.
 ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -P ""
 
 if [ $? -eq 0 ]; then
@@ -35,6 +39,7 @@ else
         exit 2
 fi
 
+# Adding the SSH Key to '/root/.ssh/authorized_keys'.
 cat "/root/.ssh/id_rsa.pub" >> "/root/.ssh/authorized_keys"
 
 if [ $? -eq 0 ]; then
@@ -43,7 +48,6 @@ else
         echo "Failed to concatenate 'id_rsa.pub' to '/root/.ssh/authorized_keys'."
         exit 2
 fi
-
 
 scp /root/.ssh/id_rsa linuxadmin@rei-datanode-540:/tmp/id_rsa
 scp /root/.ssh/id_rsa.pub linuxadmin@rei-datanode-540:/tmp/id_rsa.pub
@@ -93,3 +97,49 @@ g32a6qECgYBzWovEdBon1KxM8c/R+TUOt4nmSCnbdafkl3k/bLuScko69Dfh0SCZ
 5hQqFisAdwVXDRTdMVNXgmV0XM6MiuxMig5p+DLMT/eGtMKj8JEKISFegHaFVXzj
 LEm4aMbDMaT3XMr5wM/0mHipN00lhoRChZ/hW1S5vWAWe5AsPPVywA==
 -----END RSA PRIVATE KEY-----
+
+
+
+#!/usr/bin/expect
+
+set USERNAME [lindex $argv 0]
+set PASSWORD [lindex $argv 1]
+set HOSTNAME [lindex $argv 2]
+
+# Copying over the id_rsa file to '/tmp/id_rsa'.
+spawn scp /root/.ssh/id_rsa $USERNAME@$HOSTNAME:/tmp/id_rsa
+
+# Look for RSA Key fingerprint Prompt and send yes to add it.
+expect "continue connecting*" { send "yes\r" ; exp_continue }
+
+# Look for Password Prompt and send Password.
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+
+
+# Copying over the id_rsa.pub file to '/tmp/id_rsa.pub'.
+spawn scp /root/.ssh/id_rsa.pub $USERNAME@$HOSTNAME:/tmp/id_rsa.pub
+
+# Look for RSA Key fingerprint Prompt and send yes to add it.
+expect "continue connecting*" { send "yes\r" ; exp_continue }
+
+# Look for Password Prompt and send Password.
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+
+
+# Copying the 'id_rsa' file to '/root/.ssh/id_rsa' on the Remote Host.
+spawn ssh $USERNAME@$HOSTNAME "sudo cp /tmp/id_rsa /root/.ssh/id_rsa"
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+
+
+spawn ssh $USERNAME@$HOSTNAME "sudo cp /tmp/id_rsa.pub /root/.ssh/id_rsa.pub"
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+
+spawn ssh $USERNAME@$HOSTNAME "sudo bash -c 'cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys'"
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+
+
+
+
+
+
+
