@@ -394,6 +394,7 @@
         "count": "[parameters('dataNodeInstances')]"
       },
       "dependsOn": [
+        "[concat('Microsoft.Network/networkInterfaces/', variables('ambariServerName'), '-NIC')]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
       ],
       "tags": {
