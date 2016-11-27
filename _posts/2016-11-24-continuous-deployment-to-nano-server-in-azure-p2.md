@@ -30,6 +30,9 @@ This article will cover the following:
 Make sure you are following the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM. Additionally, make sure you have
 Co-Administrator or an Azure Organizational Account with access to an existing Azure Subsciption.
 
+# Add the .NET Application to your GitHub Repository
+
+
 # Deploy a new Runbook to the Azure Automation Account
 
 The Runbook that we will be deploying to the Azure Automation Account can be
@@ -38,16 +41,36 @@ downloaded **[here](https://raw.githubusercontent.com/starkfell/starkfell.github
 Login to the [Azure Portal](https://portal.azure.com) and go to the Subscription where you deployed resources using the PowerShell script,
 **[setup-deployment-env-for-nano-server-in-azure.ps1](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/setup-deployment-env-for-nano-server-in-azure.ps1)**.
 
-Go into the Resource Group where the Azure Automation account was deployed, click on Automation Account --> Runbooks --> Add a Runbook --> Create a new Runbook.
+Go into the Resource Group where the Azure Automation account was deployed, click on **Automation Account** --> **Runbooks** --> **Add a Runbook** --> **Create a new Runbook**.
 
-Type in the Name of the Runbook, rb-Deploy-CoreWebAppDemo-To-Nano-Server. Change the Runbook type to PowerShell and then click on the Create button at the bottom of the page.
+Type in the Name of the Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**. Change the Runbook type to PowerShell and then click on the **Create** button at the bottom of the page.
 
 ![continuous-deployment-to-nano-server-in-azure-p2-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-001.jpg)
 
-The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**
-and click the **Save** button.
+The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**,
+click the **Save** button and then click the **Publish** button.
 
-euro traing.
+![continuous-deployment-to-nano-server-in-azure-p2-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-002.jpg)
+
+Next, you will be taken back to the Runbook blade, click on **Webhook** --> **Create new Webhook**. Set the Name of the Webhook to **demo-webhook**, leave it **Enabled** and set it to expire next year.
+Make sure to copy the URL of the Webhook before clicking on the **OK** button.
+
+![continuous-deployment-to-nano-server-in-azure-p2-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-003.jpg)
+
+Click on the **Parameters and run settings** section, leave the **Parameters** and **Run Settings** as is and click on the **OK** button.
+
+Back on the Add Webhook blade click on the **Create** button.
+
+*Note: Feel free to change the expiration on the Webhook to a longer or shorter time period, the shortest length of time you can set the Webhook to is 2 hours.*
+
+# Add the Webhook to your GitHub Repository
+
+
+.
+.
+.
+.
+.
 
 
 
