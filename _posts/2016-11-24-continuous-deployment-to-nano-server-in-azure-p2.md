@@ -59,7 +59,7 @@ Type in the Name of the Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**. Ch
 The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the Azure Automation Runbook,
 **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**.
 
-Scroll down in the page and look for this URL: 
+Scroll down in the script to around line 205 and look for this URL:
 
 ```powershell
 https://github.com/starkfell/starkfell.github.io/blob/master/apps/continuous-deployment-to-nano-server-in-azure/CoreWebAppDemo.zip?raw=true

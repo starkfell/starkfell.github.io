@@ -6,7 +6,28 @@ the .NET Core Web Application to that Nano Server.
 
 .DESCRIPTION
 When this Runbook is triggered via the Webhook: the rb-CoreWebAppDemo-Webhook, the following will occur:
- - Something Something Something Darkside...
+- Verify that the Runbook is being triggered from a Webhook.
+- Retrieve All Azure VMs that are tagged for the 'CoreWebAppDemo' Deployment.
+- Login to the Azure Subscription using the Azure Automation Account.
+- Retrieve the Azure Automation Credentials for the Nano Server.
+- A Session is then created to the Nano Server and the following actions are taken
+  - Check if the CoreWebAppDemo IIS Website already exists.
+  - Stop the CoreWebAppDemo IIS Website before downloading and extracting the new Application.
+  - Stop the IIS Service on the Nano Server
+  - Download the .NET Core Web Application Demo from GitHub.
+  - Extract the CoreWebAppDemo.zip file to C:\CoreWebAppDemo.
+  - Check the original 'processPath' value of web.config file.
+  - Change the processPath="dotnet" to processPath="C:\dotnet\dotnet.exe" in the web.config file.
+  - Check the modified 'processPath' value of web.config file.
+  - Check if the CoreWebAppDemo8000 Firewall Rule already exists.
+    - Add the CoreWebAppDemo8000 Firewall Rule if it wasn't found.
+  - Import the IIS Administration Module.
+  - Check if the CoreWebAppDemo IIS Website already exists.
+  - Add the CoreWebAppDemo IIS Website if it wasn't found.
+  - Start the IIS Service on the Nano Server.
+  - Start the .NET Core Web Application Demo Site.
+  - Results of the deployment are added to a new PSCustomObject that are added in the $Results Variable.
+- Results are returned to the Output blade of the Job of the Runbook.
 
 .PARAMETER WebhookData
 This is the WebhookData that is automatically passed from the Webhook to the Runbook. The Runbook will exit if this Data Object is empty.
@@ -384,7 +405,7 @@ Foreach ($VM in $VMs)
                 $StartSiteErrorResult = "Failed to Start the CoreWebAppDemo Site on $($VM.Name) - $($StartSiteError.Exception)."
             }
 
-            # Adding Results of Configuration to a new PSCustomObject that will be outputted in the $Results Variable.
+            # Adding the Results of the deployment to a new PSCustomObject that will be outputted in the $Results Variable.
             New-Object PSObject `
             -Property @{
                 IISInitialSiteCheckResult      = $IISInitialSiteCheckResult
