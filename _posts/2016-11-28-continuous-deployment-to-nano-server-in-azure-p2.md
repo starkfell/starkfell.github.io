@@ -1,8 +1,6 @@
 ---
 layout: post
 comments: true
-title: "Incomplete and in progress... - Setting up Continuous Deployment to Nano Server in Azure - Part 2"
-date: 2016-11-27
 ---
 
 Throughout this series of blog posts, I will cover how to setup continuous deployment to Nano Server in Azure. 
@@ -143,3 +141,12 @@ Value: CoreWebAppDemo
 
 Create a Tag with this Key/Value pair on the Nano Server VM and retrigger the Webhook and the .NET Application should deploy sucessfully to the server.
 
+## Closing
+
+In this article we covered how to deploy an Azure Runbook to the Azure Automation account created in the previous article
+and how to configure it to trigger the deployment of a .NET Application from Github to the Nano Server using a Webhook.
+
+The next article will cover the following:
+
+* Parsing Webhook Data from GitHub in the Azure Automation Runbook
+* Securing Webhooks in Azure Automation
