@@ -128,14 +128,18 @@ Finally, verify that you can access the .NET Application on the Nano Server that
 
 ![continuous-deployment-to-nano-server-in-azure-p2-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-010.jpg)
 
+## Troubleshooting
 
+You may get back the following in the Output window when the Runbook is triggered the first time.
 
+![continuous-deployment-to-nano-server-in-azure-p2-011]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-011.jpg)
 
+This is because there was an earlier version of the ARM Template that existed that did not add a Tag on the VM during deployment with the Key/Value of:
 
+```powershell
+Key:   appDeployment
+Value: CoreWebAppDemo
+```
 
-
-
-
-
-
+Create a Tag with this Key/Value pair on the Nano Server VM and retrigger the Webhook and the .NET Application should deploy sucessfully to the server.
 
