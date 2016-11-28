@@ -1,6 +1,8 @@
 ---
 layout: post
 comments: true
+title: "Setting up Continuous Deployment to Nano Server in Azure - Part 2"
+date: 2016-11-28
 ---
 
 Throughout this series of blog posts, I will cover how to setup continuous deployment to Nano Server in Azure. 
