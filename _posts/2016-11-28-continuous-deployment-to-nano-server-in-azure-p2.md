@@ -5,15 +5,15 @@ title: "Setting up Continuous Deployment to Nano Server in Azure - Part 2"
 date: 2016-11-28
 ---
 
-Throughout this series of blog posts, I will cover how to setup continuous deployment to Nano Server in Azure. 
-
-* [Setting up Continuous Deployment to Nano Server in Azure - Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
-* [Setting up Continuous Deployment to Nano Server in Azure - Part 2](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p2/)
-
 This blog post will cover how to deploy an Azure Runbook to the Azure Automation account created in the previous article
 and how configure it to trigger the deployment of a .NET Application from Github to the Nano Server using a Webhook.
 
 # Overview
+
+This article is the second in a series of blog posts on setting up continuous deployment to Nano Server in Azure. 
+
+* [Setting up Continuous Deployment to Nano Server in Azure - Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
+* [Setting up Continuous Deployment to Nano Server in Azure - Part 2](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p2/)
 
 This article will cover the following:
 
