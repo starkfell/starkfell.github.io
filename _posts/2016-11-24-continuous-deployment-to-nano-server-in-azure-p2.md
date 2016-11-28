@@ -48,7 +48,7 @@ The Runbook that we will be deploying to the Azure Automation Account, **rb-Depl
 accessed **[here](https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/runbooks/rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1).**
 
 Login to the **[Azure Portal](https://portal.azure.com)** and go to the Subscription where you deployed the resources in
-[Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
+**[Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)**.
 
 Go into the Resource Group where the Azure Automation account was deployed and click on **Automation Account --> Runbooks --> Add a Runbook --> Create a new Runbook**.
 
@@ -56,7 +56,7 @@ Type in the Name of the Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**. Ch
 
 ![continuous-deployment-to-nano-server-in-azure-p2-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-001.jpg)
 
-The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. Paste in the contents of the Azure Automation Runbook,
+The Runbook will be created within a few seconds. Afterwards, the Runbook Editor will appear. If the Editor doesn't appear, click on the **Edit** button. Paste in the contents of the Azure Automation Runbook,
 **rb-Deploy-CoreWebAppDemo-To-Nano-Server.ps1**.
 
 Scroll down in the script to around line 205 and look for this URL:
@@ -84,7 +84,7 @@ Click the **Save** button and then click the **Publish** button.
 
 ![continuous-deployment-to-nano-server-in-azure-p2-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-002.jpg)
 
-Next, you will be taken back to the Runbook blade, click on **Webhook** --> **Create new Webhook**. Set the Name of the Webhook to **demo-webhook**, leave it **Enabled** and set it to expire next year.
+You should be taken back to the Runbook blade, click on **Webhook --> Create new Webhook**. Set the Name of the Webhook to **demo-webhook**, leave it **Enabled** and set it to expire next year.
 Make sure to copy the URL of the Webhook somewhere safe before clicking on the **OK** button.
 
 *Note: Feel free to change the expiration on the Webhook to a longer or shorter time period if necessary.*
@@ -93,7 +93,7 @@ Make sure to copy the URL of the Webhook somewhere safe before clicking on the *
 
 Click on the **Parameters and run settings** section, leave the **Parameters** and **Run Settings** as is and click on the **OK** button.
 
-Back on the Add Webhook blade click on the **Create** button.
+Back on the Add Webhook blade click on the **Create** button. The Webhook will be created and available within a matter of seconds.
 
 # Add the Webhook to your GitHub Repository
 
@@ -116,23 +116,17 @@ Click on the link to your webhook and scroll down to **Recent Deliveries**. Expa
 # Verify the .NET Application was triggered by the Webhook
 
 Login to the **[Azure Portal](https://portal.azure.com)** and browse to the Azure Automation Account and into to the **rb-Deploy-CoreWebAppDemo-To-Nano-Server** Runbook. Click on **Jobs**
-and then click on the job at the top. The Job will expand out to display the Job Summary, click on the Output button.
+and then click on the job at the top. The Job will expand out to display the Job Summary.
 
-You should see the following output below from the completed job.
+![continuous-deployment-to-nano-server-in-azure-p2-008]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-008.jpg)
 
-You should now be able to access the .NET Application on the Nano Server that was previously deployed.
+Click on the **Output** button to see the following output below from the completed job.
 
-Syntax:
+![continuous-deployment-to-nano-server-in-azure-p2-009]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-009.jpg)
 
-```powershell
-http://<FQDN>:8000
-```
+Finally, verify that you can access the .NET Application on the Nano Server that was previously deployed on port 8000.
 
-Example:
-
-```powershell
-http://rei-nanosrv-at.westeurope.cloudapp.azure.com:8000
-```
+![continuous-deployment-to-nano-server-in-azure-p2-010]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-010.jpg)
 
 
 
