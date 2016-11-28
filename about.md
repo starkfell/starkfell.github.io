@@ -4,6 +4,8 @@ title: About
 permalink: /about/
 ---
 
+Yes, this space is slacking at the moment...in the meantime, Google works.
+
 All information in this Blog is based on my personal opinion and experience. Before applying any of the techniques or methods described in this blog 
 to a Production Environment, adequate testing should be applied beforehand.
 
