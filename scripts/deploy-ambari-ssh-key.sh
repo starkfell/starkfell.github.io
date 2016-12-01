@@ -69,55 +69,64 @@ else
         fi
 fi
 
-# Running Remote Commands on targeted Hosts using expect.
-/usr/bin/expect <<EOD
-# Copying over the 'id_rsa' file to '/tmp/id_rsa' on the Remote Host.
-spawn scp /root/.ssh/id_rsa $USERNAME@$HOSTNAMES:/tmp/id_rsa
+# Adding HOSTNAMES into the HOSTS Array, using the semi-colon as the delimiter.
+HOSTS=$(echo $HOSTNAMES | tr ";" "\n")
 
-# Look for RSA Key fingerprint Prompt and send yes to add it.
-expect "continue connecting*" { send "yes\r" ; exp_continue }
+# Start of expect section.
+for HOST in $HOSTS
+do
+        # Running Remote Commands on targeted Hosts using expect.
+        /usr/bin/expect <<EOD
+        # Copying over the 'id_rsa' file to '/tmp/id_rsa' on the Remote Host.
+        spawn scp /root/.ssh/id_rsa $USERNAME@$HOST:/tmp/id_rsa
 
-# Look for Password Prompt and send Password.
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        # Look for RSA Key fingerprint Prompt and send yes to add it.
+        expect "continue connecting*" { send "yes\r" ; exp_continue }
 
-# Copying over the 'id_rsa.pub' file to '/tmp/id_rsa.pub' on the Remote Host.
-spawn scp /root/.ssh/id_rsa.pub $USERNAME@$HOSTNAMES:/tmp/id_rsa.pub
+        # Look for Password Prompt and send Password.
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
 
-# Look for RSA Key fingerprint Prompt and send yes to add it.
-expect "continue connecting*" { send "yes\r" ; exp_continue }
+        # Copying over the 'id_rsa.pub' file to '/tmp/id_rsa.pub' on the Remote Host.
+        spawn scp /root/.ssh/id_rsa.pub $USERNAME@$HOST:/tmp/id_rsa.pub
 
-# Look for Password Prompt and send Password.
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        # Look for RSA Key fingerprint Prompt and send yes to add it.
+        expect "continue connecting*" { send "yes\r" ; exp_continue }
 
-# Copying the 'id_rsa' file in the '/tmp' directory to '/root/.ssh/id_rsa' on the Remote Host.
-spawn ssh -t $USERNAME@$HOSTNAMES "sudo mkdir -p /root/.ssh && sudo cp /tmp/id_rsa /root/.ssh/id_rsa"
-expect "continue connecting*" { send "yes\r" ; exp_continue }
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
-expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+        # Look for Password Prompt and send Password.
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
 
-# Copying the 'id_rsa.pub' feil in the '/tmp' diretory to '/root/.ssh/id_rsa.pub' on the Remote Host.
-spawn ssh -t $USERNAME@$HOSTNAMES "sudo cp /tmp/id_rsa.pub /root/.ssh/id_rsa.pub"
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
-expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+        # Copying the 'id_rsa' file in the '/tmp' directory to '/root/.ssh/id_rsa' on the Remote Host.
+        spawn ssh -t $USERNAME@$HOST "sudo mkdir -p /root/.ssh && sudo cp /tmp/id_rsa /root/.ssh/id_rsa"
+        expect "continue connecting*" { send "yes\r" ; exp_continue }
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
-# Adding 'id_rsa.pub' to the 'authorized_keys' on the Remote Host.
-spawn ssh -t $USERNAME@$HOSTNAMES "sudo bash -c 'cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys'"
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
-expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+        # Copying the 'id_rsa.pub' feil in the '/tmp' diretory to '/root/.ssh/id_rsa.pub' on the Remote Host.
+        spawn ssh -t $USERNAME@$HOST "sudo cp /tmp/id_rsa.pub /root/.ssh/id_rsa.pub"
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
-# Enabling root login on the Remote Host.
-spawn ssh -t $USERNAME@$HOSTNAMES "sudo sed -i -e 's/#PermitRootLogin yes/PermitRootLogin without-password/' /etc/ssh/sshd_config"
-expect "continue connecting*" { send "yes\r" ; exp_continue }
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
-expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+        # Adding 'id_rsa.pub' to the 'authorized_keys' on the Remote Host.
+        spawn ssh -t $USERNAME@$HOST "sudo bash -c 'cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys'"
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
-# Disabling SELinux and then restarting the Remote Host.
-spawn ssh -t $USERNAME@$HOSTNAMES "sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config && sudo shutdown now -r"
-expect "continue connecting*" { send "yes\r" ; exp_continue }
-expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
-expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+        # Enabling root login on the Remote Host.
+        spawn ssh -t $USERNAME@$HOST "sudo sed -i -e 's/#PermitRootLogin yes/PermitRootLogin without-password/' /etc/ssh/sshd_config"
+        expect "continue connecting*" { send "yes\r" ; exp_continue }
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+
+        # Disabling SELinux and then restarting the Remote Host.
+        spawn ssh -t $USERNAME@$HOST "sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config && sudo shutdown now -r"
+        expect "continue connecting*" { send "yes\r" ; exp_continue }
+        expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+        expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
 EOD
+
+# End of expect section.
+done
 
 # End of Script
 echo "All SSH Keys copied over to Remote Hosts Successfully!"
