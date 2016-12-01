@@ -41,30 +41,32 @@ if [ -z "${HOSTNAMES}" ]; then
     exit 2
 fi
 
-echo "-------------"
-echo $USERNAME
-echo $PASSWORD
-echo $HOSTNAMES
-echo "-------------"
 
-# Creating a new SSH Key.
-ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -P ""
-
-if [ $? -eq 0 ]; then
-        echo "Successfully generated a new SSH Private key in '/root/.ssh/id_rsa'."
+# Checking if SSH Key already exists.
+if [ -f "/root/.ssh/id_rsa" ]; then
+        echo "'id_rsa' already exists in '/root/.ssh'."
 else
-        echo "Failed to generate new SSH Private Key in '/root/.ssh/id_rsa'."
-        exit 2
-fi
+        echo "Generating a new SSH Key."
 
-# Adding the SSH Key to the '/root/.ssh/authorized_keys' locally.
-cat "/root/.ssh/id_rsa.pub" >> "/root/.ssh/authorized_keys"
+        # Creating a new SSH Key.
+        ssh-keygen -t rsa -f /root/.ssh/id_rsa -q -P ""
 
-if [ $? -eq 0 ]; then
-        echo "Successfully concatenated the 'id_rsa.pub' to '/root/.ssh/authorized_keys'."
-else
-        echo "Failed to concatenate 'id_rsa.pub' to '/root/.ssh/authorized_keys'."
-        exit 2
+        if [ $? -eq 0 ]; then
+                echo "Successfully generated a new SSH Private key in '/root/.ssh/id_rsa'."
+        else
+                echo "Failed to generate new SSH Private Key in '/root/.ssh/id_rsa'."
+                exit 2
+        fi
+
+        # Adding the SSH Key to the '/root/.ssh/authorized_keys' locally.
+        cat "/root/.ssh/id_rsa.pub" >> "/root/.ssh/authorized_keys"
+
+        if [ $? -eq 0 ]; then
+                echo "Successfully concatenated the 'id_rsa.pub' to '/root/.ssh/authorized_keys'."
+        else
+                echo "Failed to concatenate 'id_rsa.pub' to '/root/.ssh/authorized_keys'."
+                exit 2
+        fi
 fi
 
 # Running Remote Commands on targeted Hosts using expect.
@@ -88,16 +90,32 @@ expect "continue connecting*" { send "yes\r" ; exp_continue }
 expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
 
 # Copying the 'id_rsa' file in the '/tmp' directory to '/root/.ssh/id_rsa' on the Remote Host.
-spawn ssh $USERNAME@$HOSTNAMES "sudo cp /tmp/id_rsa /root/.ssh/id_rsa"
+spawn ssh -t $USERNAME@$HOSTNAMES "sudo mkdir -p /root/.ssh && sudo cp /tmp/id_rsa /root/.ssh/id_rsa"
+expect "continue connecting*" { send "yes\r" ; exp_continue }
 expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
 # Copying the 'id_rsa.pub' feil in the '/tmp' diretory to '/root/.ssh/id_rsa.pub' on the Remote Host.
-spawn ssh $USERNAME@$HOSTNAMES "sudo cp /tmp/id_rsa.pub /root/.ssh/id_rsa.pub"
+spawn ssh -t $USERNAME@$HOSTNAMES "sudo cp /tmp/id_rsa.pub /root/.ssh/id_rsa.pub"
 expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
 # Adding 'id_rsa.pub' to the 'authorized_keys' on the Remote Host.
-spawn ssh $USERNAME@$HOSTNAMES "sudo bash -c 'cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys'"
+spawn ssh -t $USERNAME@$HOSTNAMES "sudo bash -c 'cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys'"
 expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+
+# Enabling root login on the Remote Host.
+spawn ssh -t $USERNAME@$HOSTNAMES "sudo sed -i -e 's/#PermitRootLogin yes/PermitRootLogin without-password/' /etc/ssh/sshd_config"
+expect "continue connecting*" { send "yes\r" ; exp_continue }
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
+
+# Disabling SELinux and then restarting the Remote Host.
+spawn ssh -t $USERNAME@$HOSTNAMES "sudo sed -i -e 's/SELINUX=enforcing/SELINUX=disabled/' /etc/selinux/config && sudo shutdown now -r"
+expect "continue connecting*" { send "yes\r" ; exp_continue }
+expect "*?assword:*" { send "$PASSWORD\r" ; exp_continue }
+expect "*?assword*" { send "$PASSWORD\r" ; exp_continue }
 
 EOD
 
