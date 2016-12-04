@@ -227,8 +227,9 @@ done
 # End of SSH Key section.
 echo "All SSH Keys copied over to Remote Hosts Successfully!"
 
-# Start Sleep for 20 seconds.
-sleep 20s
+# Start Sleep for 30 seconds.
+echo "Pausing for 30 seconds while the DataNodes are restarting."
+sleep 30s
 
 # IP Address of Ambari Server.
 AMBARI_SERVER_IP=$(ip addr | grep eth0 | awk '{ print $2 }' | sed -n '2'p | rev | cut -c 4- | rev)
@@ -239,8 +240,8 @@ HOSTS_FILE_NAMES="$AMBARI_SERVER_IP $HOSTNAME.$DOMAIN_NAME $HOSTNAME"
 # Adding the DataNodes to the new Hosts File.
 for HOST in $HOSTS
 do
-        # Retrieving the IP Address of the Remote Host.
-        REMOTE_IP=$(ssh $USERNAME@$HOST ip addr | grep eth0 | awk '{ print $2 }' | sed -n '2'p | rev | cut -c 4- | rev)
+        # Retrieving the IP Address of the Remote Host using the root account.
+        REMOTE_IP=$(ssh root@$HOST ip addr | grep eth0 | awk '{ print $2 }' | sed -n '2'p | rev | cut -c 4- | rev)
 
         # Adding the Remote Host IP Address, FQDN, and Hostname entry to the modified Hosts File.
         HOSTS_FILE_NAMES=$(echo -e "$HOSTS_FILE_NAMES\n$REMOTE_IP $HOST.$DOMAIN_NAME $HOST")
@@ -269,7 +270,6 @@ if test -f /sys/kernel/mm/redhat_transparent_hugepage/defrag; then \
         echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag \
 fi' /etc/rc.local
 
-
 # Disable iptables at startup on the Ambari Server.
 chkconfig iptables off
 
@@ -279,6 +279,12 @@ chkconfig iptables off
 # Disabling Transparent Huge Pages on the Ambari Server.
 echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled
 echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
+
+# Update Hostname in /etc/sysconfig/network on the Ambari Server.
+sed -i -e "s/HOSTNAME=$HOSTNAME/HOSTNAME=$HOSTNAME.$DOMAIN_NAME/" /etc/sysconfig/network
+
+# Restarting the network service on the Ambari Server.
+/etc/init.d/network restart
 
 # Copying the new Hosts File to the DataNode Servers.
 for HOST in $HOSTS
@@ -290,47 +296,26 @@ done
 # Disabling iptables and Transparent Huge Pages on the DataNodes.
 for HOST in $HOSTS
 do
-        # Disable iptables at startup.
+        # Disable iptables at startup on DataNode.
         ssh -o 'StrictHostKeyChecking no' root@$HOST chkconfig iptables off
 
-        # Stop iptables service.
+        # Stop iptables serviceon on DataNode.
         ssh -o 'StrictHostKeyChecking no' root@$HOST /etc/init.d/iptables stop
 
-        # Disabling Transparent Huge Pages.
+        # Disabling Transparent Huge Pages on DataNode.
         ssh -o 'StrictHostKeyChecking no' root@$HOST echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled
         ssh -o 'StrictHostKeyChecking no' root@$HOST echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag
 
-        # Disabling Transparent Huge Pages on startup on the DataNodes.
+        # Copying /etc/rc.local file from the Ambari Server to the DataNode Host which ensures that Transparent Huge Pages are disabled on startup.
         scp /etc/rc.local root@$HOST:/etc/rc.local 
 
-        # Update Hostname in /etc/sysconfig/network.
-        ssh -o 'StrictHostKeyChecking no' root@$HOST sed -i -e "s/HOSTNAME=$HOSTNAME/HOSTNAME=$HOSTNAME.$DOMAIN_NAME/" /etc/sysconfig/network
+        # Update Hostname in /etc/sysconfig/network on the DataNode.
+        ssh -o 'StrictHostKeyChecking no' root@$HOST sed -i -e "s/HOSTNAME=$HOST/HOSTNAME=$HOST.$DOMAIN_NAME/" /etc/sysconfig/network
 
-        # Restart network service.
-        ssh -o 'StrictHostKeyChecking no' root@HOST /etc/init.d/network restart
+        # Restarting the network service on the DataNode.
+        ssh -o 'StrictHostKeyChecking no' root@$HOST /etc/init.d/network restart
 done
 
-
-
-# Disabling Transparent Huge Pages on startup.
-sed -i -e '/touch/a \
- \
-#disable THP at boot time \
-if test -f /sys/kernel/mm/redhat_transparent_hugepage/enabled; then \
-        echo never > /sys/kernel/mm/redhat_transparent_hugepage/enabled \
-fi \
-if test -f /sys/kernel/mm/redhat_transparent_hugepage/defrag; then \
-        echo never > /sys/kernel/mm/redhat_transparent_hugepage/defrag \
-fi ' /etc/rc.local
-
-# Update Hostname in /etc/sysconfig/network.
-sed -i -e 's/HOSTNAME=rei-ambarisrv-bo/HOSTNAME=rei-ambarisrv-bo.lumadeep.com/' /etc/sysconfig/network
-sed -i -e 's/HOSTNAME=rei-datanode-bo0/HOSTNAME=rei-datanode-bo0.lumadeep.com/' /etc/sysconfig/network
-sed -i -e 's/HOSTNAME=rei-datanode-bo1/HOSTNAME=rei-datanode-bo1.lumadeep.com/' /etc/sysconfig/network
-
-# Restart network service.
-/etc/init.d/network restart
-
 # Set hostname using hostname command. (this will require an auto-answer again for no/yes to ssh key) and standard hostname will no longer resolve for commands.
-hostname rei-datanode-bo1.lumadeep.com
+#hostname rei-datanode-bo1.lumadeep.com
 
