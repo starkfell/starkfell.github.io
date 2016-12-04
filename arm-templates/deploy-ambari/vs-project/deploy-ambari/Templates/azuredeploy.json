@@ -113,10 +113,11 @@
     },
     "ambariServerVMSize": {
       "type": "string",
-      "defaultValue": "Standard_A1",
+      "defaultValue": "Standard_DS1_v2",
       "allowedValues": [
         "Standard_A0",
         "Standard_A1",
+        "Standard_DS1_v2",
         "Standard_DS1",
         "Standard_DS2",
         "Standard_DS3",
@@ -214,10 +215,11 @@
     },
     "dataNodeVMSize": {
       "type": "string",
-      "defaultValue": "Standard_A1",
+      "defaultValue": "Standard_DS1_v2",
       "allowedValues": [
         "Standard_A0",
         "Standard_A1",
+        "Standard_DS1_v2",
         "Standard_DS1",
         "Standard_DS2",
         "Standard_DS3",
