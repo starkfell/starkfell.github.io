@@ -76,13 +76,13 @@ Language:   PowerShell 5.0
 -AzureAutomationResourceGroupName nano-automation `
 -AzureAutomationAccountName nano-automation `
 -AzureAutomationPricingTier Free `
--AzureAutomationCertificatePassword AlwaysOn! `
+-AzureAutomationCertificatePassword NanoMation1! `
 -KeyVaultResourceGroupName nano-key-vault `
 -KeyVaultName nanokeyvault `
 -NanoServerLocalAdminUsername winadmin `
--NanoServerLocalAdminPassword AlwaysOn! `
+-NanoServerLocalAdminPassword NanoMation1! `
 -NanoServerCertificateName nanoservers.lumadeep.com `
--NanoServerCertificatePassword AlwaysOn! `
+-NanoServerCertificatePassword NanoMation1! `
 -Location westeurope
 
 #>
@@ -671,6 +671,6 @@ $NanoServerCertKeyVaultId = (Get-AzureKeyVaultSecret `
     -Name "$($NanoServerCertificateName.replace(".","-"))-cert").Id
 
 Write-Output ""
-Write-Output "Azure Key Vault Resource ID:                           $KeyVaultResourceId."
-Write-Output "Nano Server Self-Signed Certificate Secret Identifier: $NanoServerCertKeyVaultId."
+Write-Output "Azure Key Vault Resource ID:                           $KeyVaultResourceId"
+Write-Output "Nano Server Self-Signed Certificate Secret Identifier: $NanoServerCertKeyVaultId"
 Write-Output ""
