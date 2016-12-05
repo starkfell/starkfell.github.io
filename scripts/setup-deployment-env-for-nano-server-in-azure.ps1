@@ -66,12 +66,12 @@ The Password of the Self-Signed Certificate that is being created and used for W
 The Location where all resources will be deployed, i.e. westeurope, northeurope, eastus, etc...
 
 .NOTES
-Filename:   setup-deployment-env-for-nano-server.ps1
+Filename:   setup-deployment-env-for-nano-server-in-azure.ps1
 Author:     Ryan Irujo (https://github.com/starkfell)
 Language:   PowerShell 5.0
 
 .EXAMPLE          
-./setup-deployment-env-for-nano-server.ps1 `
+./setup-deployment-env-for-nano-server-in-azure.ps1 `
 -SubscriptionId 87d031cb-5fde-412d-b09c-c44c16131488 `
 -AzureAutomationResourceGroupName nano-automation `
 -AzureAutomationAccountName nano-automation `

@@ -326,7 +326,7 @@
         "[concat('Microsoft.Network/networkInterfaces/', variables('nanoServerName'), '-NIC')]"
       ],
       "tags": {
-        "displayName": "[variables('nanoServerName')]"
+        "displayName": "[variables('nanoServerName')]",
 		"appDeployment": "[parameters('appDeploymentTag')]"
       },
       "properties": {

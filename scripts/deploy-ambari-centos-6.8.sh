@@ -286,16 +286,12 @@ sed -i -e "s/HOSTNAME=$HOSTNAME/HOSTNAME=$HOSTNAME.$DOMAIN_NAME/" /etc/sysconfig
 # Restarting the network service on the Ambari Server.
 /etc/init.d/network restart
 
-# Copying the new Hosts File to the DataNode Servers.
+# Disabling iptables and Transparent Huge Pages on the DataNodes.
 for HOST in $HOSTS
 do
         # Copying the Hosts File from the Ambari Server and replacing the Hosts Files on the DataNodes using the root account.
         scp /etc/hosts root@$HOST:/etc/hosts
-done
 
-# Disabling iptables and Transparent Huge Pages on the DataNodes.
-for HOST in $HOSTS
-do
         # Disable iptables at startup on DataNode.
         ssh -o 'StrictHostKeyChecking no' root@$HOST chkconfig iptables off
 
@@ -316,6 +312,5 @@ do
         ssh -o 'StrictHostKeyChecking no' root@$HOST /etc/init.d/network restart
 done
 
-# Set hostname using hostname command. (this will require an auto-answer again for no/yes to ssh key) and standard hostname will no longer resolve for commands.
-#hostname rei-datanode-bo1.lumadeep.com
+echo "Ambari Server and DataNodes successfully prepped for deployment."
 
