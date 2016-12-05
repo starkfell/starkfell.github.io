@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Setting up Continuous Deployment to Nano Server in Azure - Part 3"
+title: "In Progress... Setting up Continuous Deployment to Nano Server in Azure - Part 3"
 date: 2016-12-05
 ---
 
