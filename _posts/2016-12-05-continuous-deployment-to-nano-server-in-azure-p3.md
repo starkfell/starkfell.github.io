@@ -95,7 +95,8 @@ Syntax:
 Set-AzureKeyVaultSecret `
     -VaultName <KEY_VAULT_NAME> `
     -Name webhook-uri `
-    -SecretValue $SecuredWebhookURI
+    -SecretValue $SecuredWebhookURI `
+    | Out-Null
 ```
 
 Example:
@@ -104,7 +105,8 @@ Example:
 Set-AzureKeyVaultSecret `
     -VaultName nanokeyvaultf4ac `
     -Name webhook-uri `
-    -SecretValue $SecuredWebhookURI
+    -SecretValue $SecuredWebhookURI `
+    | Out-Null
 ```
 
 # Create a new Personal Access Token in GitHub
