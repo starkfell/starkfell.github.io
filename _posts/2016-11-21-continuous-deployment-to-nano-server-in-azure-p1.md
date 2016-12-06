@@ -14,6 +14,12 @@ considerations to take into account while setting this up.
 
 # Overview
 
+This article is the first in a series of blog posts on setting up continuous deployment to Nano Server in Azure. 
+
+* [Setting up Continuous Deployment to Nano Server in Azure - Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
+* [Setting up Continuous Deployment to Nano Server in Azure - Part 2](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p2/)
+* [Setting up Continuous Deployment to Nano Server in Azure - Part 3](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p3/)
+
 This article will cover the following:
 
 * Deploying Azure Automation Resources using PowerShell

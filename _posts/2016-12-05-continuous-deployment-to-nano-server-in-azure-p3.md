@@ -194,7 +194,7 @@ Syntax:
 Invoke-RestMethod `
     -Method Post `
     -Uri https://api.github.com/repos/<GITHUB_USERNAME>/<REPOSITORY_NAME>/hooks `
-    -Body $GitHub_Webhook_JSON `
+    -Body "$GitHub_Webhook_JSON" `
     -Headers @{ "Authorization" = "token $Token" } | Out-Null
 ```
 
@@ -204,12 +204,13 @@ Example:
 Invoke-RestMethod `
     -Method Post `
     -Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
-    -Body $GitHub_Webhook_JSON `
+    -Body "$GitHub_Webhook_JSON" `
     -Headers @{ "Authorization" = "token $Token" } | Out-Null
 ```
 
-Go to the repository settings of where you added the Webhook and verify it is there.
+Go to the **nano-deploy-demo** repository settings of where you added the Webhook and verify it is there.
 
+![continuous-deployment-to-nano-server-in-azure-p3-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-003.jpg)
 
 Finally, you can run the command below to see the details of the Webhook in GitHub.
 
@@ -238,7 +239,3 @@ Invoke-RestMethod `
 In this article we covered how to deploy an Azure Runbook to the Azure Automation account created in the previous article
 and how to configure it to trigger the deployment of a .NET Application from Github to the Nano Server using a Webhook.
 
-The next article will cover the following:
-
-* Parsing Webhook Data from GitHub in the Azure Automation Runbook
-* Securing Webhooks in Azure Automation
