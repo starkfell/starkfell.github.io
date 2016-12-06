@@ -33,7 +33,7 @@ Additionally the following items are required.
 * Verify that you have access to a Co-Administrator or an Azure Organizational Account with access to an existing Azure Subscription.
 * A basic understanding of GitHub as well as access to a Free GitHub Account is required.
 
-# Create a secure Webhook for the  Runbook
+# Create a secure Webhook for the Runbook
 
 Open up an elevated PowerShell prompt and login to Azure.
 
@@ -129,7 +129,7 @@ and click on the **Generate token** button.
 Copy the Personal Access Token and convert it into a secure string in the elevated PowerShell prompt from earlier.
 
 ```powershell
-$SecuredWebhookURI = ConvertTo-SecureString -String "fff9af39fe47f89e54e87866adc1ee9e9dec000d" -AsPlainText -Force
+$SecuredToken = ConvertTo-SecureString -String "fff9af39fe47f89e54e87866adc1ee9e9dec000d" -AsPlainText -Force
 ```
 
 Syntax:
@@ -138,7 +138,7 @@ Syntax:
 Set-AzureKeyVaultSecret `
     -VaultName <KEY_VAULT_NAME> `
     -Name github-pat `
-    -SecretValue $SecuredWebhookURI
+    -SecretValue $SecuredToken
 ```
 
 Example:
@@ -147,7 +147,7 @@ Example:
 Set-AzureKeyVaultSecret `
     -VaultName nanokeyvaultf4ac `
     -Name github-pat `
-    -SecretValue $SecuredWebhookURI
+    -SecretValue $SecuredToken
 ```
 
 # Add the Webhook to GitHub from Azure Key Vault using PowerShell
