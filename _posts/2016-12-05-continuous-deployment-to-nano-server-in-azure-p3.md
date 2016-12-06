@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "In Progress... Setting up Continuous Deployment to Nano Server in Azure - Part 3"
+title: "Setting up Continuous Deployment to Nano Server in Azure - Part 3"
 date: 2016-12-05
 ---
 
@@ -15,6 +15,11 @@ This article is the third in a series of blog posts on setting up continuous dep
 * [Setting up Continuous Deployment to Nano Server in Azure - Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
 * [Setting up Continuous Deployment to Nano Server in Azure - Part 2](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p2/)
 * [Setting up Continuous Deployment to Nano Server in Azure - Part 3](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p3/)
+
+
+Using a webhook to update a web application is not inherently secure; however, there are steps you can take to lower the attack surface while using them. This article
+will cover one specific aspect of lowering the attack surface of this paradigm by showing how to create a webhook for an Azure Automation Runbook, store it in an Azure
+Key Vault, and add then add webhook to a GitHub Repository while ensuring that the URL of the webhook is never displayed in plain text throughout the process.
 
 This article will cover the following:
 
@@ -211,7 +216,15 @@ Go to the **nano-deploy-demo** repository settings of where you added the Webhoo
 
 ![continuous-deployment-to-nano-server-in-azure-p3-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-003.jpg)
 
-Finally, you can run the command below to see the details of the Webhook in GitHub.
+Lastly, if you go into the Jobs view of the Azure Runbook, you should see a job running or completed that was triggered by the addition of the Webhook in GitHub.
+This is because once a Webhook is added to GitHub, GitHub will attempt to trigger the Webhook to verify connectivity with it's intended endpoint. This is sonething
+you will want to be aware of before adding Webhooks in your Production Environments to ensure you do not accidentally kick off a deployment process because of the wrong event.
+
+# Retrieve the Webhook URL using the GitHub API (Optional)
+
+Run the command below to see the full details of the Webhook in GitHub.
+
+*Warning: This will display the Webhook URL in clear text.*
 
 Syntax:
 
@@ -235,6 +248,7 @@ Invoke-RestMethod `
 
 ## Closing
 
-In this article we covered how to deploy an Azure Runbook to the Azure Automation account created in the previous article
-and how to configure it to trigger the deployment of a .NET Application from Github to the Nano Server using a Webhook.
+In this article we covered how to create a new Webhook for an Azure Runbook, store the Webhook in Azure Key Vault and then add the Webhook to
+GitHub without the Webhook ever appearing in clear text during this process.
 
+The next article will cover how to parse Webhook Data from GitHub in Azure Automation Runbooks.
