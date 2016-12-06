@@ -149,51 +149,87 @@ Set-AzureKeyVaultSecret `
     -SecretValue $SecuredWebhookURI
 ```
 
+# Add the Webhook to GitHub from Azure Key Vault using PowerShell
 
+In the same elevated PowerShell prompt from earlier, retrieve the value of the Personal Access Token in clear text and leave it in a variable.
 
+```powershell
+$Token = (Get-AzureKeyVaultSecret -VaultName nanokeyvaultf4ac -Name github-pat).SecretValueText
+```
 
-# Retrieve the existing Webhooks that exist in the repository
-Invoke-RestMethod `
-	-Method Get `
-	-UseBasicParsing `
-	-Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
-	-Headers @{ "Authorization" = "token e963d2cac7995d129fcc78e840040393761ba741" }
+Retrieve the value of the Webhook URI from the Azure Key Vault in clear text but leave it in a variable.
 
+```powershell
+$WebhookURI = (Get-AzureKeyVaultSecret -VaultName nanokeyvaultf4ac -Name webhook-uri).SecretValueText
+```
 
+Create the payload to add the webhook to GitHub.
 
-# Next, we can create a new Webhook in GitHub
+```powershell
 $GitHub_Webhook = @{
-	name = "web"
-	active = $true
-	events=@("push")
-	config=@{
-		content_type = "json"
-		insecure_ssl = 0
-		url = "https://s2events.azure-automation.net/webhooks?token=XT4mjzP2pobRJYztklO2ZzMQI%2bx38XXnkQxz8ra5Njw%3d"
-	}
+    name = "web"
+    active = $true
+    events=@("push")
+    config=@{
+        content_type = "json"
+        insecure_ssl = 0
+        url = "$WebhookURI"
+    }
 }
+```
 
+Convert the payload to JSON.
+
+```powershell
 $GitHub_Webhook_JSON = $GitHub_Webhook | ConvertTo-Json
+```
 
-$GitHub_Webhook_JSON
+Add the Webhook to GitHub using the GitHub API from PowerShell.
 
+Syntax:
+
+```powershell
 Invoke-RestMethod `
-	-Method Post `
-	-Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
-	-Body $GitHub_Webhook_JSON `
-	-Headers @{ "Authorization" = "token e963d2cac7995d129fcc78e840040393761ba741" }	
+    -Method Post `
+    -Uri https://api.github.com/repos/<GITHUB_USERNAME>/<REPOSITORY_NAME>/hooks `
+    -Body $GitHub_Webhook_JSON `
+    -Headers @{ "Authorization" = "token $Token" } | Out-Null
+```
+
+Example:
+
+```powershell
+Invoke-RestMethod `
+    -Method Post `
+    -Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
+    -Body $GitHub_Webhook_JSON `
+    -Headers @{ "Authorization" = "token $Token" } | Out-Null
+```
+
+Go to the repository settings of where you added the Webhook and verify it is there.
 
 
+Finally, you can run the command below to see the details of the Webhook in GitHub.
 
+Syntax:
 
+```powershell
+Invoke-RestMethod `
+    -Method Get `
+    -UseBasicParsing `
+    -Uri https://api.github.com/repos/<GITHUB_USERNAME>/<REPOSITORY_NAME>/hooks `
+    -Headers @{ "Authorization" = "token $Token" }
+```
 
+Example:
 
-
-
-
-
-
-
+```powershell
+Invoke-RestMethod `
+    -Method Get `
+    -UseBasicParsing `
+    -Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
+    -Headers @{ "Authorization" = "token $Token" }
+```
 
 ## Closing
 
