@@ -19,7 +19,7 @@ This article is the third in a series of blog posts on setting up continuous dep
 
 Using a webhook to update a web application is not inherently very secure in that as soon you have access to the URL, you have the ability to manipulate or trigger whatever endpoint it is pointing
 to. In most cases while you are developing an application, you can accidentally trigger a build process to kick-off without realizing it and cause your web application to tempoarily become unavailable.
-From an exploitation standpoint, you could trigger a webhook several times over and over causing a build process to run indefinitely, causing a web application to be unavailable, indefinitely.
+From an exploitation standpoint, you could constantly trigger a webhook causing a build process to run indefinitely thus keeping a web application in unstable state.
 
 This article will cover one method you can take to prevent this type of exploit from happening by explaining how to create a webhook for an Azure Automation Runbook, store it in an Azure Key Vault,
 and add then add webhook to a GitHub Repository while ensuring that the URL of the webhook is never displayed in plain text throughout the process.
