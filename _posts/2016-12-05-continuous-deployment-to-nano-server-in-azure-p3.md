@@ -6,12 +6,11 @@ date: 2016-12-05
 ---
 
 This blog post will cover how to create a new Webhook for an Azure Runbook, store the Webhook in Azure Key Vault and then add the Webhook to
-GitHub without the Webhook ever appearing in clear text during this process. 
-
+GitHub without the Webhook ever appearing in clear text during this process.
 
 # Overview
 
-This article is the third in a series of blog posts on setting up continuous deployment to Nano Server in Azure. 
+This article is the third in a series of blog posts on setting up continuous deployment to Nano Server in Azure.
 
 * [Setting up Continuous Deployment to Nano Server in Azure - Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
 * [Setting up Continuous Deployment to Nano Server in Azure - Part 2](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p2/)
@@ -19,14 +18,14 @@ This article is the third in a series of blog posts on setting up continuous dep
 
 This article will cover the following:
 
-* Create a new Webhook for the existing Azure Runbook (rb-Deploy-CoreWebAppDemo-To-Nano-Server) using PowerShell
+* Create a new Webhook for the existing Azure Runbook (**rb-Deploy-CoreWebAppDemo-To-Nano-Server**) using PowerShell
 * Store the Webhook URL in an existing Azure Key Vault
 * Create a new Personal Access Token in GitHub
 * Add the Webhook to GitHub using the GitHub API and PowerShell
 
 # Prerequisites
 
-**All of the resources that were deployed in Azure in the previous parts of this series are required to be in place before continuing.**
+**All resources previously deployed to Azure in this series are required to be in place before continuing.**
 
 Additionally the following items are required.
 
