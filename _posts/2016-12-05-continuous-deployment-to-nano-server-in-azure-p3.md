@@ -19,7 +19,7 @@ This article is the third in a series of blog posts on setting up continuous dep
 
 This article will cover the following:
 
-* Create a new Webhook for an existing Azure Runbook using PowerShell
+* Create a new Webhook for the existing Azure Runbook (rb-Deploy-CoreWebAppDemo-To-Nano-Server) using PowerShell
 * Store the Webhook URL in an existing Azure Key Vault
 * Create a new Personal Access Token in GitHub
 * Add the Webhook to GitHub using the GitHub API and PowerShell
@@ -34,7 +34,7 @@ Additionally the following items are required.
 * Verify that you have access to a Co-Administrator or an Azure Organizational Account with access to an existing Azure Subscription.
 * A basic understanding of GitHub as well as access to a Free GitHub Account is required.
 
-# Create a new Webhook for the rb-Deploy-CoreWebAppDemo-To-Nano-Server Runbook
+# Create a secure Webhook for the  Runbook
 
 Open up an elevated PowerShell prompt and login to Azure.
 
@@ -48,7 +48,7 @@ Make sure to change over to the Subscription where you deployed the resources in
 Select-AzureRmSubscription -SubscriptionId <SUBSCRIPTION_ID>
 ```
 
-Create a new Webhook for the **rb-Deploy-CoreWebAppDemo-To-Nano-Server** Runbook.
+Create a new Webhook for the Azure Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**.
 
 Syntax:
 
@@ -61,7 +61,7 @@ $WebhookURI = (New-AzureRmAutomationWebhook `
     -ResourceGroupName <AZURE_AUTOMATION_ACCOUNT_RESOURCE_GROUP> `
     -AutomationAccountName <AZURE_AUTOMATION_ACCOUNT> `
     -Force).WebhookURI
- ```
+```
 
 Example:
 
@@ -74,7 +74,7 @@ $WebhookURI = (New-AzureRmAutomationWebhook `
     -ResourceGroupName nano-automation `
     -AutomationAccountName nano-automation `
     -Force).WebhookURI
- ```
+```
 
 The Webhook URI that is normally shown when you run this command is stored in the **$WebhookURI** variable. At this point, you can echo out the variable
 in any manner you choose if you want to see the Webhook URL.
@@ -112,16 +112,16 @@ Set-AzureKeyVaultSecret `
 In order to add the Webhook URL programatically to GitHub, a Personal Access Token needs to be generated as an alternative for using Basic Authentication. Additionally,
 we can scope the type of access the Personal Access Token has in the GitHub Account as well as remove it at any point in time in the future.
 
-Start by going to https://github.com/settings/tokens and logging into your GitHub Account.
+Start by going to **[https://github.com/settings/tokens](https://github.com/settings/tokens)** and logging into your GitHub Account.
 
 You should be on the **Personal Access tokens** page, click on the **Generate new token** button.
 
-![continuous-deployment-to-nano-server-in-azure-p3-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-001.jpg)
+![continuous-deployment-to-nano-server-in-azure-p3-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-001.jpg)
 
 In the **Token description** section type in **azure automation webhook**. Grant the webhook **admin:repo_hook** rights and then scroll down to the bottom of the page
 and click on the **Generate token** button.
 
-![continuous-deployment-to-nano-server-in-azure-p3-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p2-002.jpg)
+![continuous-deployment-to-nano-server-in-azure-p3-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-002.jpg)
 
 # Add the new Personal Access Token to Azure Key Vault
 
