@@ -220,6 +220,8 @@ Lastly, if you go into the Jobs view of the Azure Runbook, you should see a job 
 This is because once a Webhook is added to GitHub, GitHub will attempt to trigger the Webhook to verify connectivity with it's intended endpoint. This is sonething
 you will want to be aware of before adding Webhooks in your Production Environments to ensure you do not accidentally kick off a deployment process because of the wrong event.
 
+![continuous-deployment-to-nano-server-in-azure-p3-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-004.jpg)
+
 # Retrieve the Webhook URL using the GitHub API (Optional)
 
 Run the command below to see the full details of the Webhook in GitHub.
