@@ -149,7 +149,4 @@ Create a Tag with this Key/Value pair on the Nano Server VM and retrigger the We
 In this article we covered how to deploy an Azure Runbook to the Azure Automation account created in the previous article
 and how to configure it to trigger the deployment of a .NET Application from Github to the Nano Server using a Webhook.
 
-The next article will cover the following:
-
-* Parsing Webhook Data from GitHub in the Azure Automation Runbook
-* Securing Webhooks in Azure Automation
+The next article will cover how to secure webhooks in Azure Automation and add them to GitHub using PowerShell.
