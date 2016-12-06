@@ -129,6 +129,8 @@ and click on the **Generate token** button.
 
 ![continuous-deployment-to-nano-server-in-azure-p3-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-002.jpg)
 
+*Note: If you include a Token somewhere in your GitHub Repository in clear text, GitHub will automatically revoke the Token and notify you via e-mail.*
+
 # Add the new Personal Access Token to Azure Key Vault
 
 Copy the Personal Access Token and convert it into a secure string in the elevated PowerShell prompt from earlier.
@@ -217,7 +219,7 @@ Go to the **nano-deploy-demo** repository settings of where you added the Webhoo
 ![continuous-deployment-to-nano-server-in-azure-p3-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-003.jpg)
 
 Lastly, if you go into the Jobs view of the Azure Runbook, you should see a job running or completed that was triggered by the addition of the Webhook in GitHub.
-This is because once a Webhook is added to GitHub, GitHub will attempt to trigger the Webhook to verify connectivity with it's intended endpoint. This is sonething
+This is because once a Webhook is added to GitHub, GitHub will attempt to trigger the Webhook to verify connectivity with it's intended endpoint. This is something
 you will want to be aware of before adding Webhooks in your Production Environments to ensure you do not accidentally kick off a deployment process because of the wrong event.
 
 ![continuous-deployment-to-nano-server-in-azure-p3-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-004.jpg)
