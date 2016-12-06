@@ -5,8 +5,8 @@ title: "Setting up Continuous Deployment to Nano Server in Azure - Part 3"
 date: 2016-12-05
 ---
 
-This blog post will cover how to create a new Webhook for an Azure Runbook, store the Webhook in Azure Key Vault and then add the Webhook to
-GitHub without the Webhook ever appearing in clear text during this process.
+This blog post will cover a way to securely create and store a webhook for an Azure Runbook and then add the webhook to GitHub using the GitHub API.
+
 
 # Overview
 
@@ -17,9 +17,12 @@ This article is the third in a series of blog posts on setting up continuous dep
 * [Setting up Continuous Deployment to Nano Server in Azure - Part 3](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p3/)
 
 
-Using a webhook to update a web application is not inherently secure; however, there are steps you can take to lower the attack surface while using them. This article
-will cover one specific aspect of lowering the attack surface of this paradigm by showing how to create a webhook for an Azure Automation Runbook, store it in an Azure
-Key Vault, and add then add webhook to a GitHub Repository while ensuring that the URL of the webhook is never displayed in plain text throughout the process.
+Using a webhook to update a web application is not inherently very secure in that as soon you have access to the URL, you have the ability to manipulate or trigger whatever endpoint it is pointing
+to. In most cases while you are developing an application, you can accidentally trigger a build process to kick-off without realizing it and cause your web application to tempoarily become unavailable.
+From an exploitation standpoint, you could trigger a webhook several times over and over causing a build process to run indefinitely, causing a web application to be unavailable, indefinitely.
+
+This article will cover one method you can take to prevent this type of exploit from happening by explaining how to create a webhook for an Azure Automation Runbook, store it in an Azure Key Vault,
+and add then add webhook to a GitHub Repository while ensuring that the URL of the webhook is never displayed in plain text throughout the process.
 
 This article will cover the following:
 
