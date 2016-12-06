@@ -18,7 +18,7 @@ This article is the third in a series of blog posts on setting up continuous dep
 
 This article will cover the following:
 
-* Create a new Webhook for the existing Azure Runbook (**rb-Deploy-CoreWebAppDemo-To-Nano-Server**) using PowerShell
+* Create a new Webhook for the existing Azure Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**
 * Store the Webhook URL in an existing Azure Key Vault
 * Create a new Personal Access Token in GitHub
 * Add the Webhook to GitHub using the GitHub API and PowerShell
