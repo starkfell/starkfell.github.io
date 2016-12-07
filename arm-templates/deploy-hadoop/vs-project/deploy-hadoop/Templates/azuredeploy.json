@@ -22,17 +22,17 @@
       "type": "string",
       "defaultValue": "10.0.1.0/24",
       "metadata": {
-        "description": "Ambari Server Subnet Prefix."
+        "description": "Hadoop Server Subnet Prefix."
       }
     },
-    "ambariServerNicIPAddress": {
+    "hadoopServerNicIPAddress": {
       "type": "string",
       "defaultValue": "10.0.1.4",
       "metadata": {
-        "description": "The Primary IP address of the new Ambari Server being deployed."
+        "description": "The Primary IP address of the new Hadoop Server being deployed."
       }
     },
-    "ambariServerStorageType": {
+    "hadoopServerStorageType": {
       "type": "string",
       "defaultValue": "Standard_LRS",
       "allowedValues": [
@@ -42,24 +42,24 @@
         "Standard_ZRS"
       ],
       "metadata": {
-        "Description": "The Type of Redundant Storage used for the Ambari Server being deployed."
+        "Description": "The Type of Redundant Storage used for the Hadoop Server being deployed."
       }
     },
-    "ambariServerAdminUsername": {
+    "hadoopServerAdminUsername": {
       "type": "string",
       "defaultValue": "linuxadmin",
       "metadata": {
-        "Description": "The Local Username of the account being created on the Ambari Server."
+        "Description": "The Local Username of the account being created on the Hadoop Server."
       }
     },
-    "ambariServerAdminPassword": {
+    "hadoopServerAdminPassword": {
       "type": "securestring",
       "defaultValue": "DataMein1!",
       "metadata": {
-        "Description": "The Local Password of the account being created on the Ambari Server."
+        "Description": "The Local Password of the account being created on the Hadoop Server."
       }
     },
-    "ambariServerImagePublisher": {
+    "hadoopServerImagePublisher": {
       "type": "string",
       "defaultValue": "OpenLogic",
       "allowedValues": [
@@ -67,10 +67,10 @@
         "Canonical"
       ],
       "metadata": {
-        "description": "The Publisher of the Linux Image being used for the Ambari Server."
+        "description": "The Publisher of the Linux Image being used for the Hadoop Server."
       }
     },
-    "ambariServerImageOffer": {
+    "hadoopServerImageOffer": {
       "type": "string",
       "defaultValue": "CentOS",
       "allowedValues": [
@@ -78,10 +78,10 @@
         "UbuntuServer"
       ],
       "metadata": {
-        "description": "The Linux Image Offer used for the Ambari Server."
+        "description": "The Linux Image Offer used for the Hadoop Server."
       }
     },
-    "ambariServerImageSku": {
+    "hadoopServerImageSku": {
       "type": "string",
       "defaultValue": "6.6",
       "allowedValues": [
@@ -91,10 +91,10 @@
         "16.04-LTS"
       ],
       "metadata": {
-        "description": "The Linux Image SKU used for the Ambari Server."
+        "description": "The Linux Image SKU used for the Hadoop Server."
       }
     },
-    "ambariServerImageVersion": {
+    "hadoopServerImageVersion": {
       "type": "string",
       "defaultValue": "latest",
       "allowedValues": [
@@ -104,14 +104,14 @@
         "description": "The Version Number of the fully patched Linux Image being deployed."
       }
     },
-    "ambariServerDataDiskSize": {
+    "hadoopServerDataDiskSize": {
       "type": "int",
       "defaultValue": 50,
       "metadata": {
-        "description": "The Size of the Ambari Server Data Disk in GB."
+        "description": "The Size of the Hadoop Server Data Disk in GB."
       }
     },
-    "ambariServerVMSize": {
+    "hadoopServerVMSize": {
       "type": "string",
       "defaultValue": "Standard_DS1_v2",
       "allowedValues": [
@@ -124,12 +124,12 @@
         "Standard_DS4"
       ],
       "metadata": {
-        "description": "The Size of the Ambari Server VM being deployed in Azure."
+        "description": "The Size of the Hadoop Server VM being deployed in Azure."
       }
     },
     "dataNodeInstances": {
       "type": "int",
-      "defaultValue": 2,
+      "defaultValue": 3,
       "metadata": {
         "description": "The number of DataNode Instances being deployed."
       }
@@ -240,12 +240,12 @@
   "variables": {
     "vNetName": "[concat(parameters('clientID'), '-VNet')]",
     "subnetName": "[concat(parameters('clientID'), '-Subnet')]",
-    "ambariServerNsgName": "[concat(parameters('clientID'), '-nsg-', substring(uniqueString(resourceGroup().id), 0, 2))]",
-    "ambariServerPubIPName": "[concat(parameters('clientID'), '-ambarisrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
-    "ambariServerStorageName": "[concat(parameters('clientID'), 'ambarisrvstr', substring(uniqueString(resourceGroup().id), 0, 4))]",
-    "ambariServerName": "[concat(parameters('clientID'), '-ambarisrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
-    "ambariServerOSDiskName": "[concat(variables('ambariServerName'), '-OSDisk')]",
-    "ambariServerDataDiskName": "[concat(variables('ambariServerName'), '-DataDisk')]",
+    "hadoopServerNsgName": "[concat(parameters('clientID'), '-nsg-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "hadoopServerPubIPName": "[concat(parameters('clientID'), '-hadoopsrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "hadoopServerStorageName": "[concat(parameters('clientID'), 'hadoopsrvstr', substring(uniqueString(resourceGroup().id), 0, 4))]",
+    "hadoopServerName": "[concat(parameters('clientID'), '-hadoopsrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "hadoopServerOSDiskName": "[concat(variables('hadoopServerName'), '-OSDisk')]",
+    "hadoopServerDataDiskName": "[concat(variables('hadoopServerName'), '-DataDisk')]",
     "dataNodeStorageName": "[concat(parameters('clientID'), 'datanodestr', substring(uniqueString(resourceGroup().id), 0, 4))]",
     "dataNodeName": "[concat(parameters('clientID'), '-datanode-', substring(uniqueString(resourceGroup().id), 0, 2))]",
     "dataNodeOSDiskName": "[concat(variables('dataNodeName'), '-OSDisk')]",
@@ -254,16 +254,16 @@
   },
   "resources": [
     {
-      "name": "[variables('ambariServerStorageName')]",
+      "name": "[variables('hadoopServerStorageName')]",
       "type": "Microsoft.Storage/storageAccounts",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [],
       "tags": {
-        "displayName": "[variables('ambariServerStorageName')]"
+        "displayName": "[variables('hadoopServerStorageName')]"
       },
       "properties": {
-        "accountType": "[parameters('ambariServerStorageType')]"
+        "accountType": "[parameters('hadoopServerStorageType')]"
       }
     },
     {
@@ -284,25 +284,25 @@
       }
     },
     {
-      "name": "[variables('ambariServerPubIPName')]",
+      "name": "[variables('hadoopServerPubIPName')]",
       "type": "Microsoft.Network/publicIPAddresses",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [],
       "tags": {
-        "displayName": "[variables('ambariServerPubIPName')]"
+        "displayName": "[variables('hadoopServerPubIPName')]"
       },
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[variables('ambariServerPubIPName')]"
+          "domainNameLabel": "[variables('hadoopServerPubIPName')]"
         }
       }
     },
     {
       "apiVersion": "[parameters('apiVersion')]",
       "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('ambariServerNsgName')]",
+      "name": "[variables('hadoopServerNsgName')]",
       "location": "[resourceGroup().location]",
       "properties": {
         "securityRules": [
@@ -321,9 +321,9 @@
             }
           },
           {
-            "name": "allow-ambari-rm-inbound",
+            "name": "allow-hadoop-rm-inbound",
             "properties": {
-              "description": "Allow Ambari Server Web UI traffic through port 8080.",
+              "description": "Allow Hadoop Server Web UI traffic through port 8080.",
               "protocol": "Tcp",
               "sourcePortRange": "*",
               "destinationPortRange": "8080",
@@ -343,7 +343,7 @@
       "name": "[variables('vNetName')]",
       "location": "[resourceGroup().location]",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', variables('ambariServerNsgName'))]"
+        "[concat('Microsoft.Network/networkSecurityGroups/', variables('hadoopServerNsgName'))]"
       ],
       "properties": {
         "addressSpace": {
@@ -357,7 +357,7 @@
             "properties": {
               "addressPrefix": "[parameters('subnetPrefix')]",
               "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('ambariServerNsgName'))]"
+                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('hadoopServerNsgName'))]"
               }
             }
           }
@@ -365,26 +365,26 @@
       }
     },
     {
-      "name": "[concat(variables('ambariServerName'), '-NIC')]",
+      "name": "[concat(variables('hadoopServerName'), '-NIC')]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('ambariServerPubIPName'))]",
+        "[concat('Microsoft.Network/publicIPAddresses/', variables('hadoopServerPubIPName'))]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
       ],
       "tags": {
-        "displayName": "[concat(variables('ambariServerName'), '-NIC')]"
+        "displayName": "[concat(variables('hadoopServerName'), '-NIC')]"
       },
       "properties": {
         "ipConfigurations": [
           {
-            "name": "[concat(variables('ambariServerName'), '-ipconfig')]",
+            "name": "[concat(variables('hadoopServerName'), '-ipconfig')]",
             "properties": {
-              "privateIPAddress": "[parameters('ambariServerNicIPAddress')]",
+              "privateIPAddress": "[parameters('hadoopServerNicIPAddress')]",
               "privateIPAllocationMethod": "Static",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('ambariServerPubIPName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('hadoopServerPubIPName'))]"
               },
               "subnet": {
                 "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('vNetName')), '/subnets/', variables('subnetName'))]"
@@ -404,7 +404,7 @@
         "count": "[parameters('dataNodeInstances')]"
       },
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('ambariServerName'), '-NIC')]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('hadoopServerName'), '-NIC')]",
         "[concat('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
       ],
       "tags": {
@@ -425,37 +425,37 @@
       }
     },
     {
-      "name": "[variables('ambariServerName')]",
+      "name": "[variables('hadoopServerName')]",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('ambariServerStorageName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('ambariServerName'), '-NIC')]"
+        "[concat('Microsoft.Storage/storageAccounts/', variables('hadoopServerStorageName'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', variables('hadoopServerName'), '-NIC')]"
       ],
       "tags": {
-        "displayName": "[variables('ambariServerName')]"
+        "displayName": "[variables('hadoopServerName')]"
       },
       "properties": {
         "hardwareProfile": {
-          "vmSize": "[parameters('ambariServerVMSize')]"
+          "vmSize": "[parameters('hadoopServerVMSize')]"
         },
         "osProfile": {
-          "computerName": "[variables('ambariServerName')]",
-          "adminUsername": "[parameters('ambariServerAdminUsername')]",
-          "adminPassword": "[parameters('ambariServerAdminPassword')]"
+          "computerName": "[variables('hadoopServerName')]",
+          "adminUsername": "[parameters('hadoopServerAdminUsername')]",
+          "adminPassword": "[parameters('hadoopServerAdminPassword')]"
         },
         "storageProfile": {
           "imageReference": {
-            "publisher": "[parameters('ambariServerImagePublisher')]",
-            "offer": "[parameters('ambariServerImageOffer')]",
-            "sku": "[parameters('ambariServerImageSku')]",
-            "version": "[parameters('ambariServerImageVersion')]"
+            "publisher": "[parameters('hadoopServerImagePublisher')]",
+            "offer": "[parameters('hadoopServerImageOffer')]",
+            "sku": "[parameters('hadoopServerImageSku')]",
+            "version": "[parameters('hadoopServerImageVersion')]"
           },
           "osDisk": {
-            "name": "[variables('ambariServerOSDiskName')]",
+            "name": "[variables('hadoopServerOSDiskName')]",
             "vhd": {
-              "uri": "[concat('http://', variables('ambariServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('ambariServerOSDiskName'), '.vhd')]"
+              "uri": "[concat('http://', variables('hadoopServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('hadoopServerOSDiskName'), '.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -463,12 +463,12 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://', variables('ambariServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('ambariServerDataDiskName'),'.vhd')]"
+                "uri": "[concat('http://', variables('hadoopServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('hadoopServerDataDiskName'),'.vhd')]"
               },
-              "name": "[concat(variables('ambariServerName'))]",
+              "name": "[concat(variables('hadoopServerName'))]",
               "caching": "None",
               "createOption": "Empty",
-              "diskSizeGB": "[parameters('ambariServerDataDiskSize')]",
+              "diskSizeGB": "[parameters('hadoopServerDataDiskSize')]",
               "lun": 0
             }
           ]
@@ -476,7 +476,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('ambariServerName'), '-NIC'))]",
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hadoopServerName'), '-NIC'))]",
               "properties": { "primary": true }
             }
           ]
@@ -497,7 +497,7 @@
       "dependsOn": [
         "dataNodeStorageLoop",
         "dataNodeNICLoop",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('ambariServerName'))]"
+        "[concat('Microsoft.Compute/virtualMachines/', variables('hadoopServerName'))]"
       ],
       "tags": {
         "displayName": "dataNodeVMs"
@@ -531,7 +531,7 @@
               "vhd": {
                 "uri": "[concat('http://', variables('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', variables('dataNodeDataDiskName'), copyindex(), '.vhd')]"
               },
-              "name": "[concat(variables('ambariServerName'))]",
+              "name": "[concat(variables('hadoopServerName'))]",
               "caching": "None",
               "createOption": "Empty",
               "diskSizeGB": "[parameters('dataNodeDataDiskSize')]",
