@@ -229,9 +229,9 @@ done
 # End of SSH Key section.
 echo "All SSH Keys copied over to Remote Hosts Successfully!"
 
-# Start Sleep for 30 seconds.
-echo "Pausing for 30 seconds while the DataNodes are restarting."
-sleep 30s
+# Start Sleep for 60 seconds.
+echo "Pausing for 60 seconds while the DataNodes are restarting."
+sleep 60s
 
 # IP Address of Ambari Server.
 AMBARI_SERVER_IP=$(ip addr | grep eth0 | awk '{ print $2 }' | sed -n '2'p | rev | cut -c 4- | rev)
