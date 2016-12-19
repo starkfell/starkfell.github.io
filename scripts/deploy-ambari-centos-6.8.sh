@@ -1,5 +1,7 @@
 #!/bin/bash
-
+# 
+# This Script needs to be ran as root.
+#
 # Parse Script Parameters.
 while getopts ":u:p:h:d:" opt; do
   case "${opt}" in
@@ -68,13 +70,13 @@ else
 fi
 
 # Updating yum.
-sudo yum update -y
+yum update -y
 
 # Installing NTP Service.
-sudo yum install ntp -y
+yum install ntp -y
 
 # Installing BIND DNS.
-sudo yum install bind bind-utils -y
+yum install bind bind-utils -y
 
 # Commenting out 'listen-on' to listen on all available interfaces.
 sed -e '/listen-on port/ s/^#*/#/' -i /etc/named.conf
@@ -122,10 +124,10 @@ www     IN  A       10.0.1.4' /var/named/$DOMAIN_NAME.zone
 sed -i '/new/d' /var/named/$DOMAIN_NAME.zone
 
 # Installing OpenSSH Server.
-sudo yum install openssh-server -y
+yum install openssh-server -y
 
 # Installing expect.
-sudo yum install expect -y
+yum install expect -y
 
 # Downloading the Ambari repository file.
 # wget -nv http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.1.0/ambari.repo -O /etc/yum.repos.d/ambari.repo
@@ -133,13 +135,13 @@ wget -nv http://public-repo-1.hortonworks.com/ambari/centos6/2.x/updates/2.2.2.0
 
 
 # Installing Ambari Server.
-sudo yum install ambari-server -y
+yum install ambari-server -y
 
 # Running setup of the Ambari Server.
-sudo ambari-server setup -s
+ambari-server setup -s
 
 # Starting the Ambari Server.
-sudo ambari-server start
+ambari-server start
 
 # Checking if SSH Key already exists.
 if [ -f "/root/.ssh/id_rsa" ]; then

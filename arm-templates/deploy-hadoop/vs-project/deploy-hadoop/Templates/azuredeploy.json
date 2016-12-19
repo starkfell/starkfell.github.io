@@ -229,6 +229,27 @@
         "description": "The Size of the DataNode Instance VM being deployed in Azure."
       }
     },
+    "deployAmbariServerScriptURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/deploy-ambari-centos-6.8.sh",
+      "metadata": {
+        "description": "The URI of the Ambari Server Deployment Script."
+      }
+    },
+    "deployAmbariServerScriptName": {
+      "type": "string",
+      "defaultValue": "deploy-ambari-centos-6.8.sh",
+      "metadata": {
+        "description": "The Name of the Ambari Server Deployment Script."
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "lumadeep.com",
+      "metadata": {
+        "description": "The Name of the Domain to create on the Ambari Server."
+      }
+    },
     "apiVersion": {
       "type": "string",
       "defaultValue": "2015-06-15",
@@ -483,6 +504,30 @@
         }
       },
       "resources": [
+        {
+          "type": "Microsoft.Compute/virtualMachines/extensions",
+          "name": "[concat(variables('hadoopServerName'), '/' ,'deployAmbariCentOS68')]",
+          "apiVersion": "2015-05-01-preview",
+          "location": "[resourceGroup().location]",
+          "dependsOn": [
+            "[concat('Microsoft.Compute/virtualMachines/', variables('hadoopServerName'))]",
+            "dataNodeVMLoop"
+          ],
+          "properties": {
+            "publisher": "Microsoft.OSTCExtensions",
+            "type": "CustomScriptForLinux",
+            "typeHandlerVersion": "1.4",
+            "autoUpgradeMinorVersion": true,
+            "settings": {
+              "fileUris": [
+                "[concat(parameters('deployAmbariServerScriptURI'))]"
+              ]
+            },
+            "protectedSettings": {
+              "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', 'rei-datanode-iy0;rei-datanode-iy1;', ' -d ', parameters('domainName'))]"
+            }
+          }
+        }
       ]
     },
     {
