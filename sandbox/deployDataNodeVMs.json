@@ -8,7 +8,7 @@
         "description": "Prefix for the Environment (2-5 characters) related to the Client ID or Name."
       }
     },
-    "dataNodeInstances": {
+    "indexValue": {
       "type": "int",
       "metadata": {
         "description": "The number of DataNode Instances being deployed."
@@ -116,7 +116,7 @@
         "description": "The Name of the DataNode Data Disk being deployed."
       }
     },
-    "dataNodeVMNames": {
+    "dataNodeVMs": {
       "type": "array",
       "defaultValue": [],
       "metadata": {
@@ -125,37 +125,30 @@
     }
   },
   "variables": {
+    "dataNodeFullName": "[concat(parameters('dataNodeName'), parameters('indexValue'))]"
   },
   "resources": [
     {
       "type": "Microsoft.Storage/storageAccounts",
-      "name": "[concat(parameters('dataNodeStorageName'), copyIndex())]",
+      "name": "[concat(parameters('dataNodeStorageName'), parameters('indexValue'))]",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [],
       "tags": {
-        "displayName": "dataNodeStorageAccounts"
-      },
-      "copy": {
-        "name": "dataNodeStorageLoop",
-        "count": "[parameters('dataNodeInstances')]"
+        "displayName": "[concat(parameters('dataNodeStorageName'), parameters('indexValue'))]"
       },
       "properties": {
         "accountType": "[parameters('dataNodeStorageAccountType')]"
       }
     },
     {
-      "name": "[concat(parameters('dataNodeName'), '-NIC-', copyindex())]",
+      "name": "[concat(parameters('dataNodeName'), '-NIC-', parameters('indexValue'))]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
-      "copy": {
-        "name": "dataNodeNICLoop",
-        "count": "[parameters('dataNodeInstances')]"
-      },
       "dependsOn": [],
       "tags": {
-        "displayName": "dataNodeNICs"
+        "displayName": "[concat(parameters('dataNodeName'), '-NIC-', parameters('indexValue'))]"
       },
       "properties": {
         "ipConfigurations": [
@@ -172,27 +165,23 @@
       }
     },
     {
-      "name": "[concat(parameters('dataNodeName'), copyindex())]",
+      "name": "[concat(parameters('dataNodeName'), parameters('indexValue'))]",
       "type": "Microsoft.Compute/virtualMachines",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
-      "copy": {
-        "name": "dataNodeVMLoop",
-        "count": "[parameters('dataNodeInstances')]"
-      },
       "dependsOn": [
-        "dataNodeStorageLoop",
-        "dataNodeNICLoop"
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('dataNodeStorageName'), parameters('indexValue'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('dataNodeName'), '-NIC', parameters('indexValue'))]"
       ],
       "tags": {
-        "displayName": "dataNodeVMs"
+        "displayName": "[concat(parameters('dataNodeName'), parameters('indexValue'))]"
       },
       "properties": {
         "hardwareProfile": {
           "vmSize": "[parameters('dataNodeVMSize')]"
         },
         "osProfile": {
-          "computerName": "[concat(parameters('dataNodeName'), copyindex())]",
+          "computerName": "[concat(parameters('dataNodeName'), parameters('indexValue'))]",
           "adminUsername": "[parameters('dataNodeAdminUsername')]",
           "adminPassword": "[parameters('dataNodeAdminPassword')]"
         },
@@ -204,9 +193,9 @@
             "version": "[parameters('dataNodeImageVersion')]"
           },
           "osDisk": {
-            "name": "[concat(parameters('dataNodeName'), copyIndex(), '-', parameters('dataNodeOSDiskName'))]",
+            "name": "[concat(parameters('dataNodeName'), parameters('indexValue'), '-', parameters('dataNodeOSDiskName'))]",
             "vhd": {
-              "uri": "[concat('http://', parameters('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', parameters('dataNodeOSDiskName'), copyindex(), '.vhd')]"
+              "uri": "[concat('http://', parameters('dataNodeStorageName'), parameters('indexValue'), '.blob.core.windows.net/vhds', '/', parameters('dataNodeOSDiskName'), parameters('indexValue'), '.vhd')]"
             },
             "caching": "ReadWrite",
             "createOption": "FromImage"
@@ -214,7 +203,7 @@
           "dataDisks": [
             {
               "vhd": {
-                "uri": "[concat('http://', parameters('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', parameters('dataNodeDataDiskName'), copyindex(), '.vhd')]"
+                "uri": "[concat('http://', parameters('dataNodeStorageName'), parameters('indexValue'), '.blob.core.windows.net/vhds', '/', parameters('dataNodeDataDiskName'), parameters('indexValue'), '.vhd')]"
               },
               "name": "[concat(parameters('dataNodeName'))]",
               "caching": "None",
@@ -227,7 +216,7 @@
         "networkProfile": {
           "networkInterfaces": [
             {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('dataNodeName'), '-NIC-', copyindex()))]"
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('dataNodeName'), '-NIC-', parameters('indexValue')))]"
             }
           ]
         }
@@ -237,7 +226,7 @@
   "outputs": {
     "result": {
       "type": "array",
-      "value": "[concat(parameters('dataNodeVMNames'),split(parameters('dataNodeName'), copyIndex()),';')]"
+      "value": "[concat(parameters('dataNodeVMs'),split(reference(variables('dataNodeFullName')),';'))]"
     }
   }
 }
