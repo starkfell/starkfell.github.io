@@ -171,7 +171,7 @@
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [
         "[concat('Microsoft.Storage/storageAccounts/', parameters('dataNodeStorageName'), parameters('indexValue'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', parameters('dataNodeName'), '-NIC', parameters('indexValue'))]"
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('dataNodeName'), '-NIC-', parameters('indexValue'))]"
       ],
       "tags": {
         "displayName": "[concat(parameters('dataNodeName'), parameters('indexValue'))]"
