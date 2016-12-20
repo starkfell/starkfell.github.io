@@ -226,7 +226,7 @@
   "outputs": {
     "result": {
       "type": "array",
-      "value": "[concat(parameters('dataNodeVMs'),split(reference(variables('dataNodeFullName')),','))]"
+      "value": "[concat(parameters('dataNodeVMs'),split(variables('dataNodeFullName'),';'))]"
     }
   }
 }
