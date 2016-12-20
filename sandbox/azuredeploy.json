@@ -1,0 +1,455 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clientID": {
+      "type": "string",
+      "minLength": 2,
+      "maxLength": 5,
+      "defaultValue": "rei",
+      "metadata": {
+        "description": "Prefix for the Environment (2-5 characters) related to the Client ID or Name."
+      }
+    },
+    "primaryAddressPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "Primary Address prefix."
+      }
+    },
+    "subnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.1.0/24",
+      "metadata": {
+        "description": "Hadoop Server Subnet Prefix."
+      }
+    },
+    "hadoopServerNicIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.1.4",
+      "metadata": {
+        "description": "The Primary IP address of the new Hadoop Server being deployed."
+      }
+    },
+    "hadoopServerStorageType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS"
+      ],
+      "metadata": {
+        "Description": "The Type of Redundant Storage used for the Hadoop Server being deployed."
+      }
+    },
+    "hadoopServerAdminUsername": {
+      "type": "string",
+      "defaultValue": "linuxadmin",
+      "metadata": {
+        "Description": "The Local Username of the account being created on the Hadoop Server."
+      }
+    },
+    "hadoopServerAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "DataMein1!",
+      "metadata": {
+        "Description": "The Local Password of the account being created on the Hadoop Server."
+      }
+    },
+    "hadoopServerImagePublisher": {
+      "type": "string",
+      "defaultValue": "OpenLogic",
+      "allowedValues": [
+        "OpenLogic",
+        "Canonical"
+      ],
+      "metadata": {
+        "description": "The Publisher of the Linux Image being used for the Hadoop Server."
+      }
+    },
+    "hadoopServerImageOffer": {
+      "type": "string",
+      "defaultValue": "CentOS",
+      "allowedValues": [
+        "CentOS",
+        "UbuntuServer"
+      ],
+      "metadata": {
+        "description": "The Linux Image Offer used for the Hadoop Server."
+      }
+    },
+    "hadoopServerImageSku": {
+      "type": "string",
+      "defaultValue": "6.6",
+      "allowedValues": [
+        "6.5",
+        "6.6",
+        "14.04.2-LTS",
+        "16.04-LTS"
+      ],
+      "metadata": {
+        "description": "The Linux Image SKU used for the Hadoop Server."
+      }
+    },
+    "hadoopServerImageVersion": {
+      "type": "string",
+      "defaultValue": "latest",
+      "allowedValues": [
+        "latest"
+      ],
+      "metadata": {
+        "description": "The Version Number of the fully patched Linux Image being deployed."
+      }
+    },
+    "hadoopServerDataDiskSize": {
+      "type": "int",
+      "defaultValue": 50,
+      "metadata": {
+        "description": "The Size of the Hadoop Server Data Disk in GB."
+      }
+    },
+    "hadoopServerVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1_v2",
+      "allowedValues": [
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_DS1_v2",
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "The Size of the Hadoop Server VM being deployed in Azure."
+      }
+    },
+    "indexValue": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "The number of DataNode Instances being deployed."
+      }
+    },
+    "dataNodeInstances": {
+      "type": "int",
+      "defaultValue": 2,
+      "metadata": {
+        "description": "The number of DataNode Instances being deployed."
+      }
+    },
+    "dataNodeStorageAccountType": {
+      "type": "string",
+      "defaultValue": "Standard_LRS",
+      "allowedValues": [
+        "Premium_LRS",
+        "Standard_LRS",
+        "Standard_GRS",
+        "Standard_ZRS"
+      ],
+      "metadata": {
+        "description": "The type of the Storage Account(s) being created for the DataNode Instances."
+      }
+    },
+    "dataNodeAdminUsername": {
+      "type": "string",
+      "defaultValue": "linuxadmin",
+      "metadata": {
+        "Description": "The Local Username of the account being created on the DataNode Instance."
+      }
+    },
+    "dataNodeAdminPassword": {
+      "type": "securestring",
+      "defaultValue": "DataMein1!",
+      "metadata": {
+        "Description": "The Local Password of the account being created on the DataNode Instance."
+      }
+    },
+    "dataNodeImagePublisher": {
+      "type": "string",
+      "defaultValue": "OpenLogic",
+      "allowedValues": [
+        "OpenLogic",
+        "Canonical"
+      ],
+      "metadata": {
+        "description": "The Publisher of the Linux Image being used for the DataNode Instance."
+      }
+    },
+    "dataNodeImageOffer": {
+      "type": "string",
+      "defaultValue": "CentOS",
+      "allowedValues": [
+        "CentOS",
+        "UbuntuServer"
+      ],
+      "metadata": {
+        "description": "The Linux Image Offer used for the DataNode Instance."
+      }
+    },
+    "dataNodeImageSku": {
+      "type": "string",
+      "defaultValue": "6.6",
+      "allowedValues": [
+        "6.5",
+        "6.6",
+        "14.04.2-LTS",
+        "16.04-LTS"
+      ],
+      "metadata": {
+        "description": "The Linux Image SKU used for the DataNode Instance."
+      }
+    },
+    "dataNodeImageVersion": {
+      "type": "string",
+      "defaultValue": "latest",
+      "allowedValues": [
+        "latest"
+      ],
+      "metadata": {
+        "description": "The Version Number of the fully patched Linux Image being deployed."
+      }
+    },
+    "dataNodeDataDiskSize": {
+      "type": "int",
+      "defaultValue": 50,
+      "metadata": {
+        "description": "The Size of the DataNode Instance Data Disk in GB."
+      }
+    },
+    "dataNodeVMSize": {
+      "type": "string",
+      "defaultValue": "Standard_DS1_v2",
+      "allowedValues": [
+        "Standard_A0",
+        "Standard_A1",
+        "Standard_DS1_v2",
+        "Standard_DS1",
+        "Standard_DS2",
+        "Standard_DS3",
+        "Standard_DS4"
+      ],
+      "metadata": {
+        "description": "The Size of the DataNode Instance VM being deployed in Azure."
+      }
+    },
+    "deployAmbariServerScriptURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/deploy-ambari-centos-6.8.sh",
+      "metadata": {
+        "description": "The URI of the Ambari Server Deployment Script."
+      }
+    },
+    "deployAmbariServerScriptName": {
+      "type": "string",
+      "defaultValue": "deploy-ambari-centos-6.8.sh",
+      "metadata": {
+        "description": "The Name of the Ambari Server Deployment Script."
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "defaultValue": "lumadeep.com",
+      "metadata": {
+        "description": "The Name of the Domain to create on the Ambari Server."
+      }
+    },
+    "deployAmbariVMTemplateURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployAmbariVM.json",
+      "metadata": {
+        "description": "The location of the deployAmbariVM.json ARM Template File."
+      }
+    },
+    "deployDataNodeVMsTemplateURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployDataNodeVMs.json",
+      "metadata": {
+        "description": "The location of the deployDataNodeVMs.json ARM Template File."
+      }
+    },
+    "apiVersion": {
+      "type": "string",
+      "defaultValue": "2015-06-15",
+      "metadata": {
+        "description": "The Azure Resource Manager API Version to use during the Deployment."
+      }
+    }
+  },
+  "variables": {
+    "deploymentResourceGroupName": "[concat(resourceGroup().name)]",
+    "vNetName": "[concat(parameters('clientID'), '-VNet')]",
+    "subnetName": "[concat(parameters('clientID'), '-Subnet')]",
+    "hadoopServerNsgName": "[concat(parameters('clientID'), '-nsg-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "hadoopServerPubIPName": "[concat(parameters('clientID'), '-hadoopsrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "hadoopServerStorageName": "[concat(parameters('clientID'), 'hadoopsrvstr', substring(uniqueString(resourceGroup().id), 0, 4))]",
+    "hadoopServerName": "[concat(parameters('clientID'), '-hadoopsrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "hadoopServerOSDiskName": "[concat(variables('hadoopServerName'), '-OSDisk')]",
+    "hadoopServerDataDiskName": "[concat(variables('hadoopServerName'), '-DataDisk')]",
+    "dataNodeStorageName": "[concat(parameters('clientID'), 'datanodestr', substring(uniqueString(resourceGroup().id), 0, 4))]",
+    "dataNodeName": "[concat(parameters('clientID'), '-datanode-', substring(uniqueString(resourceGroup().id), 0, 2))]",
+    "dataNodeOSDiskName": "[concat(variables('dataNodeName'), '-OSDisk')]",
+    "dataNodeDataDiskName": "[concat(variables('dataNodeName'), '-DataDisk')]"
+  },
+  "resources": [
+    {
+      "name": "deployAmbariVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "comments": "This resource will deploy the Ambari Server and its respective resources.",
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('deployAmbariVMTemplateURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "clientID": {
+            "value": "[parameters('clientID')]"
+          },
+          "primaryAddressPrefix": {
+            "value": "[parameters('primaryAddressPrefix')]"
+          },
+          "subnetPrefix": {
+            "value": "[parameters('subnetPrefix')]"
+          },
+          "hadoopServerNicIPAddress": {
+            "value": "[parameters('hadoopServerNicIPAddress')]"
+          },
+          "hadoopServerStorageType": {
+            "value": "[parameters('hadoopServerStorageType')]"
+          },
+          "hadoopServerAdminUsername": {
+            "value": "[parameters('hadoopServerAdminUsername')]"
+          },
+          "hadoopServerAdminPassword": {
+            "value": "[parameters('hadoopServerAdminPassword')]"
+          },
+          "hadoopServerImagePublisher": {
+            "value": "[parameters('hadoopServerImagePublisher')]"
+          },
+          "hadoopServerImageOffer": {
+            "value": "[parameters('hadoopServerImageOffer')]"
+          },
+          "hadoopServerImageSku": {
+            "value": "[parameters('hadoopServerImageSku')]"
+          },
+          "hadoopServerImageVersion": {
+            "value": "[parameters('hadoopServerImageVersion')]"
+          },
+          "hadoopServerDataDiskSize": {
+            "value": "[parameters('hadoopServerDataDiskSize')]"
+          },
+          "hadoopServerVMSize": {
+            "value": "[parameters('hadoopServerVMSize')]"
+          },
+          "apiVersion": {
+            "value": "[parameters('apiVersion')]"
+          },
+          "vNetName": {
+            "value": "[variables('vNetName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "hadoopServerNSGName": {
+            "value": "[variables('hadoopServerNSGName')]"
+          },
+          "hadoopServerPubIPName": {
+            "value": "[variables('hadoopServerPubIPName')]"
+          },
+          "hadoopServerStorageName": {
+            "value": "[variables('hadoopServerStorageName')]"
+          },
+          "hadoopServerName": {
+            "value": "[variables('hadoopServerName')]"
+          },
+          "hadoopServerOSDiskName": {
+            "value": "[variables('hadoopServerOSDiskName')]"
+          },
+          "hadoopServerDataDiskName": {
+            "value": "[variables('hadoopServerDataDiskName')]"
+          }
+        }
+      }
+    },
+    {
+      "name": "deployFirstDataNodeVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "comments": "This resource will deploy the First Hadoop Servers and their respective resources.",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/deployAmbariVM"
+      ],
+      "properties": {
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('deployDataNodeVMsTemplateURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "clientID": {
+            "value": "[parameters('clientID')]"
+          },
+          "indexValue": {
+            "value": "[parameters('indexValue')]"
+          },
+          "dataNodeStorageAccountType": {
+            "value": "[parameters('dataNodeStorageAccountType')]"
+          },
+          "dataNodeAdminUsername": {
+            "value": "[parameters('dataNodeAdminUsername')]"
+          },
+          "dataNodeAdminPassword": {
+            "value": "[parameters('dataNodeAdminPassword')]"
+          },
+          "dataNodeImagePublisher": {
+            "value": "[parameters('dataNodeImagePublisher')]"
+          },
+          "dataNodeImageOffer": {
+            "value": "[parameters('dataNodeImageOffer')]"
+          },
+          "dataNodeImageSku": {
+            "value": "[parameters('dataNodeImageSku')]"
+          },
+          "dataNodeImageVersion": {
+            "value": "[parameters('dataNodeImageVersion')]"
+          },
+          "dataNodeDataDiskSize": {
+            "value": "[parameters('dataNodeDataDiskSize')]"
+          },
+          "dataNodeVMSize": {
+            "value": "[parameters('dataNodeVMSize')]"
+          },
+          "apiVersion": {
+            "value": "[parameters('apiVersion')]"
+          },
+          "deploymentResourceGroupName": {
+            "value": "[variables('deploymentResourceGroupName')]"
+          },
+          "vNetName": {
+            "value": "[variables('vNetName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "dataNodeStorageName": {
+            "value": "[variables('dataNodeStorageName')]"
+          },
+          "dataNodeName": {
+            "value": "[variables('dataNodeName')]"
+          },
+          "dataNodeOSDiskName": {
+            "value": "[variables('dataNodeOSDiskName')]"
+          },
+          "dataNodeDataDiskName": {
+            "value": "[variables('dataNodeDataDiskName')]"
+          }
+        }
+      }
+    }
+  ]
+}
