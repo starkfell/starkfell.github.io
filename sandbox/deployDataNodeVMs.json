@@ -1,0 +1,245 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clientID": {
+      "type": "string",
+      "metadata": {
+        "description": "Prefix for the Environment (2-5 characters) related to the Client ID or Name."
+      }
+    },
+    "dataNodeInstances": {
+      "type": "int",
+      "metadata": {
+        "description": "The number of DataNode Instances being deployed."
+      }
+    },
+    "dataNodeStorageAccountType": {
+      "type": "string",
+      "metadata": {
+        "description": "The type of the Storage Account(s) being created for the DataNode Instances."
+      }
+    },
+    "dataNodeAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "Description": "The Local Username of the account being created on the DataNode Instance."
+      }
+    },
+    "dataNodeAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "Description": "The Local Password of the account being created on the DataNode Instance."
+      }
+    },
+    "dataNodeImagePublisher": {
+      "type": "string",
+      "metadata": {
+        "description": "The Publisher of the Linux Image being used for the DataNode Instance."
+      }
+    },
+    "dataNodeImageOffer": {
+      "type": "string",
+      "metadata": {
+        "description": "The Linux Image Offer used for the DataNode Instance."
+      }
+    },
+    "dataNodeImageSku": {
+      "type": "string",
+      "metadata": {
+        "description": "The Linux Image SKU used for the DataNode Instance."
+      }
+    },
+    "dataNodeImageVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Version Number of the fully patched Linux Image being deployed."
+      }
+    },
+    "dataNodeDataDiskSize": {
+      "type": "int",
+      "metadata": {
+        "description": "The Size of the DataNode Instance Data Disk in GB."
+      }
+    },
+    "dataNodeVMSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The Size of the DataNode Instance VM being deployed in Azure."
+      }
+    },
+    "apiVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure Resource Manager API Version to use during the Deployment."
+      }
+    },
+    "deploymentResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Deployment Resource Group Name from the azuredeploy.json Variables section."
+      }
+    },
+    "vNetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The vNet Name from the azuredeploy.json Variables section."
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Subnet Name from the azuredeploy.json Variables section."
+      }
+    },
+    "dataNodeStorageName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Storage Account for the DataNode Servers being deployed."
+      }
+    },
+    "dataNodeName": {
+      "type": "string",
+      "metadata": {
+        "description": "The dataNode Name from the azuredeploy.json Variables section."
+      }
+    },
+    "dataNodeOSDiskName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the DataNode OS Disk being deployed."
+      }
+    },
+    "dataNodeDataDiskName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the DataNode Data Disk being deployed."
+      }
+    },
+    "dataNodeVMNames": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "This is an array structure of all of the DataNode VM Names that will be used later during the Ambari Server Deployment."
+      }
+    }
+  },
+  "variables": {
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[concat(parameters('dataNodeStorageName'), copyIndex())]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "dataNodeStorageAccounts"
+      },
+      "copy": {
+        "name": "dataNodeStorageLoop",
+        "count": "[parameters('dataNodeInstances')]"
+      },
+      "properties": {
+        "accountType": "[parameters('dataNodeStorageAccountType')]"
+      }
+    },
+    {
+      "name": "[concat(parameters('dataNodeName'), '-NIC-', copyindex())]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "copy": {
+        "name": "dataNodeNICLoop",
+        "count": "[parameters('dataNodeInstances')]"
+      },
+      "dependsOn": [
+        "[concat('Microsoft.Network/virtualNetworks/', parameters('vNetName'))]"
+      ],
+      "tags": {
+        "displayName": "dataNodeNICs"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "primary-ipconfig",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/', parameters('deploymentResourceGroupName'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vNetName'), '/subnets/', parameters('subnetName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[concat(parameters('dataNodeName'), copyindex())]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "copy": {
+        "name": "dataNodeVMLoop",
+        "count": "[parameters('dataNodeInstances')]"
+      },
+      "dependsOn": [
+        "dataNodeStorageLoop",
+        "dataNodeNICLoop"
+      ],
+      "tags": {
+        "displayName": "dataNodeVMs"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('dataNodeVMSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('dataNodeName'), copyindex())]",
+          "adminUsername": "[parameters('dataNodeAdminUsername')]",
+          "adminPassword": "[parameters('dataNodeAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('dataNodeImagePublisher')]",
+            "offer": "[parameters('dataNodeImageOffer')]",
+            "sku": "[parameters('dataNodeImageSku')]",
+            "version": "[parameters('dataNodeImageVersion')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('dataNodeName'), copyIndex(), '-', parameters('dataNodeOSDiskName'))]",
+            "vhd": {
+              "uri": "[concat('http://', parameters('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', parameters('dataNodeOSDiskName'), copyindex(), '.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://', parameters('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', parameters('dataNodeDataDiskName'), copyindex(), '.vhd')]"
+              },
+              "name": "[concat(parameters('dataNodeName'))]",
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "[parameters('dataNodeDataDiskSize')]",
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('dataNodeName'), '-NIC-', copyindex()))]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "array",
+      "value": "[concat(parameters('dataNodeVMNames'),split(reference(parameters('dataNodeName')),';'))]"
+    }
+  }
+}
