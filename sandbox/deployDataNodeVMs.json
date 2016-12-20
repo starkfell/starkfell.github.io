@@ -239,7 +239,7 @@
   "outputs": {
     "result": {
       "type": "array",
-      "value": "[concat(parameters('dataNodeVMNames'),split(reference(parameters('dataNodeName')),';'))]"
+      "value": "[concat(parameters('dataNodeVMNames'),split(reference(parameters('dataNodeName'), copyIndex()),';'))]"
     }
   }
 }
