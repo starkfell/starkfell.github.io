@@ -153,9 +153,7 @@
         "name": "dataNodeNICLoop",
         "count": "[parameters('dataNodeInstances')]"
       },
-      "dependsOn": [
-        "[concat('Microsoft.Network/virtualNetworks/', parameters('vNetName'))]"
-      ],
+      "dependsOn": [],
       "tags": {
         "displayName": "dataNodeNICs"
       },
