@@ -46,7 +46,7 @@
     }
   },
   "variables": {
-    "dataNodeVMs": "[split(string(parameters('dataNodeVMs')), ',')]"
+    "dataNodeVMs": "[string(parameters('dataNodeVMs'))]"
   },
   "resources": [
     {
