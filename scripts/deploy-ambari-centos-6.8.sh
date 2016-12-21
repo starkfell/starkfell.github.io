@@ -24,7 +24,7 @@ while getopts ":u:p:h:d:" opt; do
             echo -e "-h HOSTNAMES                - List of Hosts to work on."
             echo -e "-d DOMAIN_NAME              - The Domain Name to create on the Ambari Server."
             echo -e "An Example of how to use this script is shown below:"
-            echo -e "./deploy-ambari-centos-6.8.sh -u linuxadmin -p DataMein1! -h \"rei-datanode-bo0;rei-datanode-bo1\" -d \"lumadeep.com\" "\\n
+            echo -e "./deploy-ambari-centos-6.8.sh -u linuxadmin -p DataMein1! -h \"rei-datanode-bo0,rei-datanode-bo1\" -d \"lumadeep.com\" "\\n
             exit 2
             ;;
   esac
@@ -171,7 +171,7 @@ else
 fi
 
 # Adding HOSTNAMES into the HOSTS Array, using the semi-colon as the delimiter.
-HOSTS=$(echo $HOSTNAMES | tr ";" "\n")
+HOSTS=$(echo $HOSTNAMES | tr "," "\n")
 
 # Start of expect section.
 for HOST in $HOSTS
