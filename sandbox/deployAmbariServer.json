@@ -66,11 +66,9 @@
         "typeHandlerVersion": "1.4",
         "autoUpgradeMinorVersion": true,
         "settings": {
-          "fileUris": [
-            "[concat(parameters('deployAmbariServerScriptURI'))]"
-          ]
-        },
-        "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', variables('dataNodeVMNames'), ' -d ', parameters('domainName'))]"
+          "fileUris": [ "[concat(parameters('deployAmbariServerScriptURI'))]" ],
+          "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', variables('dataNodeVMNames'), ' -d ', parameters('domainName'))]"
+        }
       }
     }
   ]
