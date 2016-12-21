@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "hadoopServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Hadoop Server Name from the azuredeploy.json Variables section."
+      }
+    },
+    "deployAmbariServerScriptURI": {
+      "type": "string",
+      "metadata": {
+        "description": "The URI of the Ambari Server Deployment Script."
+      }
+    },
+    "deployAmbariServerScriptName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Ambari Server Deployment Script."
+      }
+    },
+    "hadoopServerAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "Description": "The Local Username of the account being created on the Hadoop Server."
+      }
+    },
+    "hadoopServerAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "Description": "The Local Password of the account being created on the Hadoop Server."
+      }
+    },
+    "dataNodeVMs": {
+      "type": "string",
+      "metadata": {
+        "description": "The Names of the Data Nodes that were deployed."
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Domain to create on the Ambari Server."
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "name": "[concat(parameters('hadoopServerName'), '/' ,'deployAmbariServer')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "[resourceGroup().location]",
+      "dependsOn": [
+      ],
+      "properties": {
+        "publisher": "Microsoft.OSTCExtensions",
+        "type": "CustomScriptForLinux",
+        "typeHandlerVersion": "1.4",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "fileUris": [
+            "[concat(parameters('deployAmbariServerScriptURI'))]"
+          ]
+        },
+        "protectedSettings": {
+          "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', parameters('dataNodeVMs'), ' -d ', parameters('domainName'))]"
+        }
+      }
+    }
+  ]
+}
