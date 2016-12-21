@@ -33,7 +33,7 @@
       }
     },
     "dataNodeVMs": {
-      "type": "string",
+      "type": "array",
       "metadata": {
         "description": "The Names of the Data Nodes that were deployed."
       }
@@ -44,6 +44,9 @@
         "description": "The Name of the Domain to create on the Ambari Server."
       }
     }
+  },
+  "variables": {
+    "dataNodeVMs": "[split(string(parameters('dataNodeVMs')), ',')]"
   },
   "resources": [
     {
@@ -64,7 +67,7 @@
           ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', parameters('dataNodeVMs'), ' -d ', parameters('domainName'))]"
+          "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', variables('dataNodeVMs'), ' -d ', parameters('domainName'))]"
         }
       }
     }
