@@ -264,11 +264,11 @@
         "description": "The location of the deployAmbariVM.json ARM Template File."
       }
     },
-    "deployHadoopServerVMsTemplateURI": {
+    "deployHadoopVMTemplateURI": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/arm-templates/deploy-hadoop/vs-project/deploy-hadoop/Templates/nested-templates/deployHadoopServerVMs.json",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/arm-templates/deploy-hadoop/vs-project/deploy-hadoop/Templates/nested-templates/deployHadoopVMs.json",
       "metadata": {
-        "description": "The location of the deployHadoopServerVMs.json ARM Template File."
+        "description": "The location of the deployHadoopVMs.json ARM Template File."
       }
     },
     "deployAmbariServerTemplateURI": {
@@ -384,7 +384,7 @@
       }
     },
     {
-      "name": "deployFirstHadoopServerVM",
+      "name": "deployFirstHadoopVM",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
       "comments": "This resource will deploy the First Hadoop Servers and their respective resources.",
@@ -394,7 +394,7 @@
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[parameters('deployHadoopServerVMsTemplateURI')]",
+          "uri": "[parameters('deployHadoopVMTemplateURI')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -459,21 +459,21 @@
       }
     },
     {
-      "name": "[concat('deployAdditionalHadoopServerVM', copyIndex(1))]",
+      "name": "[concat('deployAdditionalHadoopVMs', copyIndex(1))]",
       "type": "Microsoft.Resources/deployments",
       "copy": {
-        "name": "deployRemainingHadoopServerVMsCopy",
+        "name": "deployAdditionalHadoopVMsLoop",
         "count": "[sub(parameters('hadoopServerInstances'), 1)]"
       },
       "apiVersion": "2016-09-01",
       "comments": "This resource will deploy the remaining Hadoop Servers and their respective resources.",
       "dependsOn": [
-        "Microsoft.Resources/deployments/deployFirstHadoopServerVM"
+        "Microsoft.Resources/deployments/deployFirstHadoopVM"
       ],
       "properties": {
         "mode": "Incremental",
         "templateLink": {
-          "uri": "[parameters('deployHadoopServerVMsTemplateURI')]",
+          "uri": "[parameters('deployHadoopVMTemplateURI')]",
           "contentVersion": "1.0.0.0"
         },
         "parameters": {
@@ -535,7 +535,7 @@
             "value": "[variables('hadoopServerDataDiskName')]"
           },
           "hadoopServerVMs": {
-            "value": "[reference(concat('deployFirstHadoopServerVM')).outputs.result.value]"
+            "value": "[reference(concat('deployFirstHadoopVM')).outputs.result.value]"
           }
         }
       }
@@ -571,7 +571,7 @@
             "value": "[parameters('ambariServerAdminPassword')]"
           },
           "hadoopServerVMs": {
-            "value": "[reference(concat('deployAdditionalHadoopServerVM', sub(parameters('hadoopServerInstances'), 1))).outputs.result.value]"
+            "value": "[reference(concat('deployAdditionalHadoopVMs', sub(parameters('hadoopServerInstances'), 1))).outputs.result.value]"
           },
           "domainName": {
             "value": "[parameters('domainName')]"

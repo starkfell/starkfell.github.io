@@ -36,7 +36,7 @@
     <Content Include="Templates\azuredeploy.parameters.json" />
     <None Include="Templates\nested-templates\deployAmbariServer.json" />
     <None Include="Templates\nested-templates\deployAmbariVM.json" />
-    <None Include="Templates\nested-templates\deployHadoopServerVMs.json" />
+    <None Include="Templates\nested-templates\deployHadoopVMs.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>
