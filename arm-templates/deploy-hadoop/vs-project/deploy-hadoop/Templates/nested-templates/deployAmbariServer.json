@@ -32,7 +32,7 @@
         "Description": "The Local Password of the account being created on the Ambari Server."
       }
     },
-    "dataNodeVMs": {
+    "hadoopServerVMs": {
       "type": "array",
       "metadata": {
         "description": "The Names of the Data Nodes that were deployed."
@@ -46,11 +46,11 @@
     }
   },
   "variables": {
-    "dataNodeVMsArrayConvertToString": "[string(parameters('dataNodeVMs'))]",
-    "dataNodeVMsRemoveOpenBracket": "[replace(variables('dataNodeVMsArrayConvertToString'),'[','')]",
-    "dataNodeVMsRemoveClosingBracket": "[replace(variables('dataNodeVMsRemoveOpenBracket'),']','')]",
-    "dataNodeVMsAddCommaDelimiter": "[replace(variables('dataNodeVMsRemoveClosingBracket'),' ',',')]",
-    "dataNodeVMNames": "[variables('dataNodeVMsAddCommaDelimiter')]"
+    "hadoopServerVMsArrayConvertToString": "[string(parameters('hadoopServerVMs'))]",
+    "hadoopServerVMsRemoveOpenBracket": "[replace(variables('hadoopServerVMsArrayConvertToString'),'[','')]",
+    "hadoopServerVMsRemoveClosingBracket": "[replace(variables('hadoopServerVMsRemoveOpenBracket'),']','')]",
+    "hadoopServerVMsAddCommaDelimiter": "[replace(variables('hadoopServerVMsRemoveClosingBracket'),' ',',')]",
+    "hadoopServerVMNames": "[variables('hadoopServerVMsAddCommaDelimiter')]"
   },
   "resources": [
     {
@@ -69,7 +69,7 @@
           "fileUris": [ "[concat(parameters('deployAmbariServerScriptURI'))]" ]
         },
         "protectedSettings": {
-          "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('ambariServerAdminUsername'), ' -p ', parameters('ambariServerAdminPassword'), ' -h ', variables('dataNodeVMNames'), ' -d ', parameters('domainName'))]"
+          "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('ambariServerAdminUsername'), ' -p ', parameters('ambariServerAdminPassword'), ' -h ', variables('hadoopServerVMNames'), ' -d ', parameters('domainName'))]"
         }
       }
     }

@@ -131,12 +131,12 @@
       "type": "int",
       "defaultValue": 0,
       "metadata": {
-        "description": "The number of Hadoop Server Instances being deployed."
+        "description": "This is required so the multi-VM Hadoop Server deployment will return the names of the VMs to the Ambari Server Deployment Script."
       }
     },
     "hadoopServerInstances": {
       "type": "int",
-      "defaultValue": 2,
+      "defaultValue": 3,
       "metadata": {
         "description": "The number of Hadoop Server Instances being deployed."
       }
@@ -546,7 +546,7 @@
       "apiVersion": "2015-01-01",
       "comments": "This resource will deploy the Ambari Server and DNS on the Ambari VM.",
       "dependsOn": [
-        "deployRemainingHadoopServerVMsCopy"
+        "deployAdditionalHadoopVMsLoop"
       ],
       "properties": {
         "mode": "Incremental",
