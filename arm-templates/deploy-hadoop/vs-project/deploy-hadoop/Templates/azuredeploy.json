@@ -384,7 +384,7 @@
       }
     },
     {
-      "name": "deployFirstHadoopVM",
+      "name": "deployHadoopVM-0",
       "type": "Microsoft.Resources/deployments",
       "apiVersion": "2016-09-01",
       "comments": "This resource will deploy the First Hadoop Servers and their respective resources.",
@@ -459,16 +459,16 @@
       }
     },
     {
-      "name": "[concat('deployAdditionalHadoopVMs', copyIndex(1))]",
+      "name": "[concat('deployHadoopVM-', copyIndex(1))]",
       "type": "Microsoft.Resources/deployments",
       "copy": {
         "name": "deployAdditionalHadoopVMsLoop",
         "count": "[sub(parameters('hadoopServerInstances'), 1)]"
       },
       "apiVersion": "2016-09-01",
-      "comments": "This resource will deploy the remaining Hadoop Servers and their respective resources.",
+      "comments": "This resource will deploy the remaining Hadoop Servers and their respective resources using the copy function and offsetting by 1.",
       "dependsOn": [
-        "Microsoft.Resources/deployments/deployFirstHadoopVM"
+        "Microsoft.Resources/deployments/deployHadoopVM-0"
       ],
       "properties": {
         "mode": "Incremental",
@@ -535,7 +535,7 @@
             "value": "[variables('hadoopServerDataDiskName')]"
           },
           "hadoopServerVMs": {
-            "value": "[reference(concat('deployFirstHadoopVM')).outputs.result.value]"
+            "value": "[reference(concat('deployHadoopVM-', copyIndex())).outputs.result.value]"
           }
         }
       }
@@ -571,7 +571,7 @@
             "value": "[parameters('ambariServerAdminPassword')]"
           },
           "hadoopServerVMs": {
-            "value": "[reference(concat('deployAdditionalHadoopVMs', sub(parameters('hadoopServerInstances'), 1))).outputs.result.value]"
+            "value": "[reference(concat('deployHadoopVM-', sub(parameters('hadoopServerInstances'), 1))).outputs.result.value]"
           },
           "domainName": {
             "value": "[parameters('domainName')]"
