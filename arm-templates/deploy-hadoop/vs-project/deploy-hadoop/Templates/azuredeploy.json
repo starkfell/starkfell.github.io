@@ -238,7 +238,7 @@
     },
     "deployAmbariServerScriptURI": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/scripts/deploy-ambari-centos-6.8.sh",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/arm-templates/deploy-hadoop/vs-project/deploy-hadoop/Scripts/deploy-ambari-centos-6.8.sh",
       "metadata": {
         "description": "The URI of the Ambari Server Deployment Script."
       }
@@ -259,21 +259,21 @@
     },
     "deployAmbariVMTemplateURI": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployAmbariVM.json",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/arm-templates/deploy-hadoop/vs-project/deploy-hadoop/Templates/nested-templates/deployAmbariVM.json",
       "metadata": {
         "description": "The location of the deployAmbariVM.json ARM Template File."
       }
     },
     "deployDataNodeVMsTemplateURI": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployDataNodeVMs.json",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/arm-templates/deploy-hadoop/vs-project/deploy-hadoop/Templates/nested-templates/deployDataNodeVMs.json",
       "metadata": {
         "description": "The location of the deployDataNodeVMs.json ARM Template File."
       }
     },
     "deployAmbariServerTemplateURI": {
       "type": "string",
-      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployAmbariServer.json",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/arm-templates/deploy-hadoop/vs-project/deploy-hadoop/Templates/nested-templates/deployAmbariServer.json",
       "metadata": {
         "description": "The location of the deployAmbariServer.json ARM Template File."
       }
