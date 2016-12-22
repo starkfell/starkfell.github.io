@@ -524,7 +524,7 @@
               ]
             },
             "protectedSettings": {
-              "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', 'rei-datanode-iy0;rei-datanode-iy1;', ' -d ', parameters('domainName'))]"
+              "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', 'rei-datanode-iy0;rei-datanode-iy1;rei-datanode-iy2', ' -d ', parameters('domainName'))]"
             }
           }
         }

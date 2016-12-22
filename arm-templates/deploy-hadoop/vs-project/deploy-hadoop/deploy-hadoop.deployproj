@@ -34,6 +34,9 @@
     <Content Include="Scripts\Deploy-AzureResourceGroup.ps1" />
     <Content Include="Templates\azuredeploy.json" />
     <Content Include="Templates\azuredeploy.parameters.json" />
+    <None Include="Templates\nested-templates\deployAmbariServer.json" />
+    <None Include="Templates\nested-templates\deployAmbariVM.json" />
+    <None Include="Templates\nested-templates\deployDataNodeVMs.json" />
   </ItemGroup>
   <Target Name="GetReferenceAssemblyPaths" />
 </Project>

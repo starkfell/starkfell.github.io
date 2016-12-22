@@ -127,9 +127,16 @@
         "description": "The Size of the Hadoop Server VM being deployed in Azure."
       }
     },
+    "indexValue": {
+      "type": "int",
+      "defaultValue": 0,
+      "metadata": {
+        "description": "The number of DataNode Instances being deployed."
+      }
+    },
     "dataNodeInstances": {
       "type": "int",
-      "defaultValue": 3,
+      "defaultValue": 2,
       "metadata": {
         "description": "The number of DataNode Instances being deployed."
       }
@@ -250,6 +257,27 @@
         "description": "The Name of the Domain to create on the Ambari Server."
       }
     },
+    "deployAmbariVMTemplateURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployAmbariVM.json",
+      "metadata": {
+        "description": "The location of the deployAmbariVM.json ARM Template File."
+      }
+    },
+    "deployDataNodeVMsTemplateURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployDataNodeVMs.json",
+      "metadata": {
+        "description": "The location of the deployDataNodeVMs.json ARM Template File."
+      }
+    },
+    "deployAmbariServerTemplateURI": {
+      "type": "string",
+      "defaultValue": "https://raw.githubusercontent.com/starkfell/starkfell.github.io/master/sandbox/deployAmbariServer.json",
+      "metadata": {
+        "description": "The location of the deployAmbariServer.json ARM Template File."
+      }
+    },
     "apiVersion": {
       "type": "string",
       "defaultValue": "2015-06-15",
@@ -259,6 +287,7 @@
     }
   },
   "variables": {
+    "deploymentResourceGroupName": "[concat(resourceGroup().name)]",
     "vNetName": "[concat(parameters('clientID'), '-VNet')]",
     "subnetName": "[concat(parameters('clientID'), '-Subnet')]",
     "hadoopServerNsgName": "[concat(parameters('clientID'), '-nsg-', substring(uniqueString(resourceGroup().id), 0, 2))]",
@@ -271,325 +300,282 @@
     "dataNodeName": "[concat(parameters('clientID'), '-datanode-', substring(uniqueString(resourceGroup().id), 0, 2))]",
     "dataNodeOSDiskName": "[concat(variables('dataNodeName'), '-OSDisk')]",
     "dataNodeDataDiskName": "[concat(variables('dataNodeName'), '-DataDisk')]"
-
   },
   "resources": [
     {
-      "name": "[variables('hadoopServerStorageName')]",
-      "type": "Microsoft.Storage/storageAccounts",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
-      "dependsOn": [],
-      "tags": {
-        "displayName": "[variables('hadoopServerStorageName')]"
-      },
+      "name": "deployAmbariVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "comments": "This resource will deploy the Ambari Server and its respective resources.",
       "properties": {
-        "accountType": "[parameters('hadoopServerStorageType')]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('deployAmbariVMTemplateURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "clientID": {
+            "value": "[parameters('clientID')]"
+          },
+          "primaryAddressPrefix": {
+            "value": "[parameters('primaryAddressPrefix')]"
+          },
+          "subnetPrefix": {
+            "value": "[parameters('subnetPrefix')]"
+          },
+          "hadoopServerNicIPAddress": {
+            "value": "[parameters('hadoopServerNicIPAddress')]"
+          },
+          "hadoopServerStorageType": {
+            "value": "[parameters('hadoopServerStorageType')]"
+          },
+          "hadoopServerAdminUsername": {
+            "value": "[parameters('hadoopServerAdminUsername')]"
+          },
+          "hadoopServerAdminPassword": {
+            "value": "[parameters('hadoopServerAdminPassword')]"
+          },
+          "hadoopServerImagePublisher": {
+            "value": "[parameters('hadoopServerImagePublisher')]"
+          },
+          "hadoopServerImageOffer": {
+            "value": "[parameters('hadoopServerImageOffer')]"
+          },
+          "hadoopServerImageSku": {
+            "value": "[parameters('hadoopServerImageSku')]"
+          },
+          "hadoopServerImageVersion": {
+            "value": "[parameters('hadoopServerImageVersion')]"
+          },
+          "hadoopServerDataDiskSize": {
+            "value": "[parameters('hadoopServerDataDiskSize')]"
+          },
+          "hadoopServerVMSize": {
+            "value": "[parameters('hadoopServerVMSize')]"
+          },
+          "apiVersion": {
+            "value": "[parameters('apiVersion')]"
+          },
+          "vNetName": {
+            "value": "[variables('vNetName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "hadoopServerNSGName": {
+            "value": "[variables('hadoopServerNSGName')]"
+          },
+          "hadoopServerPubIPName": {
+            "value": "[variables('hadoopServerPubIPName')]"
+          },
+          "hadoopServerStorageName": {
+            "value": "[variables('hadoopServerStorageName')]"
+          },
+          "hadoopServerName": {
+            "value": "[variables('hadoopServerName')]"
+          },
+          "hadoopServerOSDiskName": {
+            "value": "[variables('hadoopServerOSDiskName')]"
+          },
+          "hadoopServerDataDiskName": {
+            "value": "[variables('hadoopServerDataDiskName')]"
+          }
+        }
       }
     },
     {
-      "type": "Microsoft.Storage/storageAccounts",
-      "name": "[concat(variables('dataNodeStorageName'), copyIndex())]",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
-      "dependsOn": [],
-      "tags": {
-        "displayName": "dataNodeStorageAccounts"
-      },
-      "copy": {
-        "name": "dataNodeStorageLoop",
-        "count": "[parameters('dataNodeInstances')]"
-      },
+      "name": "deployFirstDataNodeVM",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2016-09-01",
+      "comments": "This resource will deploy the First Hadoop Servers and their respective resources.",
+      "dependsOn": [
+        "Microsoft.Resources/deployments/deployAmbariVM"
+      ],
       "properties": {
-        "accountType": "[parameters('dataNodeStorageAccountType')]"
-      }
-    },
-    {
-      "name": "[variables('hadoopServerPubIPName')]",
-      "type": "Microsoft.Network/publicIPAddresses",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
-      "dependsOn": [],
-      "tags": {
-        "displayName": "[variables('hadoopServerPubIPName')]"
-      },
-      "properties": {
-        "publicIPAllocationMethod": "Dynamic",
-        "dnsSettings": {
-          "domainNameLabel": "[variables('hadoopServerPubIPName')]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('deployDataNodeVMsTemplateURI')]",
+          "contentVersion": "1.0.0.0"
+        },
+        "parameters": {
+          "clientID": {
+            "value": "[parameters('clientID')]"
+          },
+          "indexValue": {
+            "value": "[parameters('indexValue')]"
+          },
+          "dataNodeStorageAccountType": {
+            "value": "[parameters('dataNodeStorageAccountType')]"
+          },
+          "dataNodeAdminUsername": {
+            "value": "[parameters('dataNodeAdminUsername')]"
+          },
+          "dataNodeAdminPassword": {
+            "value": "[parameters('dataNodeAdminPassword')]"
+          },
+          "dataNodeImagePublisher": {
+            "value": "[parameters('dataNodeImagePublisher')]"
+          },
+          "dataNodeImageOffer": {
+            "value": "[parameters('dataNodeImageOffer')]"
+          },
+          "dataNodeImageSku": {
+            "value": "[parameters('dataNodeImageSku')]"
+          },
+          "dataNodeImageVersion": {
+            "value": "[parameters('dataNodeImageVersion')]"
+          },
+          "dataNodeDataDiskSize": {
+            "value": "[parameters('dataNodeDataDiskSize')]"
+          },
+          "dataNodeVMSize": {
+            "value": "[parameters('dataNodeVMSize')]"
+          },
+          "apiVersion": {
+            "value": "[parameters('apiVersion')]"
+          },
+          "deploymentResourceGroupName": {
+            "value": "[variables('deploymentResourceGroupName')]"
+          },
+          "vNetName": {
+            "value": "[variables('vNetName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "dataNodeStorageName": {
+            "value": "[variables('dataNodeStorageName')]"
+          },
+          "dataNodeName": {
+            "value": "[variables('dataNodeName')]"
+          },
+          "dataNodeOSDiskName": {
+            "value": "[variables('dataNodeOSDiskName')]"
+          },
+          "dataNodeDataDiskName": {
+            "value": "[variables('dataNodeDataDiskName')]"
+          }
         }
       }
     },
     {
-      "apiVersion": "[parameters('apiVersion')]",
-      "type": "Microsoft.Network/networkSecurityGroups",
-      "name": "[variables('hadoopServerNsgName')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "securityRules": [
-          {
-            "name": "allow-ssh-inbound",
-            "properties": {
-              "description": "Allow SSH traffic through port 22.",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "22",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
-              "access": "Allow",
-              "priority": 100,
-              "direction": "Inbound"
-            }
-          },
-          {
-            "name": "allow-hadoop-rm-inbound",
-            "properties": {
-              "description": "Allow Hadoop Server Web UI traffic through port 8080.",
-              "protocol": "Tcp",
-              "sourcePortRange": "*",
-              "destinationPortRange": "8080",
-              "sourceAddressPrefix": "*",
-              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
-              "access": "Allow",
-              "priority": 101,
-              "direction": "Inbound"
-            }
-          }
-        ]
-      }
-    },
-    {
-      "apiVersion": "[parameters('apiVersion')]",
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[variables('vNetName')]",
-      "location": "[resourceGroup().location]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/networkSecurityGroups/', variables('hadoopServerNsgName'))]"
-      ],
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[parameters('primaryAddressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[variables('subnetName')]",
-            "properties": {
-              "addressPrefix": "[parameters('subnetPrefix')]",
-              "networkSecurityGroup": {
-                "id": "[resourceId('Microsoft.Network/networkSecurityGroups', variables('hadoopServerNsgName'))]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "[concat(variables('hadoopServerName'), '-NIC')]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
-      "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', variables('hadoopServerPubIPName'))]",
-        "[concat('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
-      ],
-      "tags": {
-        "displayName": "[concat(variables('hadoopServerName'), '-NIC')]"
-      },
-      "properties": {
-        "ipConfigurations": [
-          {
-            "name": "[concat(variables('hadoopServerName'), '-ipconfig')]",
-            "properties": {
-              "privateIPAddress": "[parameters('hadoopServerNicIPAddress')]",
-              "privateIPAllocationMethod": "Static",
-              "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', variables('hadoopServerPubIPName'))]"
-              },
-              "subnet": {
-                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('vNetName')), '/subnets/', variables('subnetName'))]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "[concat(variables('dataNodeName'), '-NIC-', copyindex())]",
-      "type": "Microsoft.Network/networkInterfaces",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
+      "name": "[concat('deployAdditionalDataNodeVM', copyIndex(1))]",
+      "type": "Microsoft.Resources/deployments",
       "copy": {
-        "name": "dataNodeNICLoop",
-        "count": "[parameters('dataNodeInstances')]"
+        "name": "deployRemainingDataNodeVMsCopy",
+        "count": "[sub(parameters('dataNodeInstances'), 1)]"
       },
+      "apiVersion": "2016-09-01",
+      "comments": "This resource will deploy the remaining Hadoop Servers and their respective resources.",
       "dependsOn": [
-        "[concat('Microsoft.Network/networkInterfaces/', variables('hadoopServerName'), '-NIC')]",
-        "[concat('Microsoft.Network/virtualNetworks/', variables('vNetName'))]"
+        "Microsoft.Resources/deployments/deployFirstDataNodeVM"
       ],
-      "tags": {
-        "displayName": "dataNodeNICs"
-      },
       "properties": {
-        "ipConfigurations": [
-          {
-            "name": "primary-ipconfig",
-            "properties": {
-              "privateIPAllocationMethod": "Dynamic",
-              "subnet": {
-                "id": "[concat(resourceId('Microsoft.Network/virtualNetworks', variables('vNetName')), '/subnets/', variables('subnetName'))]"
-              }
-            }
-          }
-        ]
-      }
-    },
-    {
-      "name": "[variables('hadoopServerName')]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
-      "dependsOn": [
-        "[concat('Microsoft.Storage/storageAccounts/', variables('hadoopServerStorageName'))]",
-        "[concat('Microsoft.Network/networkInterfaces/', variables('hadoopServerName'), '-NIC')]"
-      ],
-      "tags": {
-        "displayName": "[variables('hadoopServerName')]"
-      },
-      "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('hadoopServerVMSize')]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('deployDataNodeVMsTemplateURI')]",
+          "contentVersion": "1.0.0.0"
         },
-        "osProfile": {
-          "computerName": "[variables('hadoopServerName')]",
-          "adminUsername": "[parameters('hadoopServerAdminUsername')]",
-          "adminPassword": "[parameters('hadoopServerAdminPassword')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "[parameters('hadoopServerImagePublisher')]",
-            "offer": "[parameters('hadoopServerImageOffer')]",
-            "sku": "[parameters('hadoopServerImageSku')]",
-            "version": "[parameters('hadoopServerImageVersion')]"
+        "parameters": {
+          "clientID": {
+            "value": "[parameters('clientID')]"
           },
-          "osDisk": {
-            "name": "[variables('hadoopServerOSDiskName')]",
-            "vhd": {
-              "uri": "[concat('http://', variables('hadoopServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('hadoopServerOSDiskName'), '.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+          "indexValue": {
+            "value": "[copyIndex(1)]"
           },
-          "dataDisks": [
-            {
-              "vhd": {
-                "uri": "[concat('http://', variables('hadoopServerStorageName'), '.blob.core.windows.net/vhds', '/', variables('hadoopServerDataDiskName'),'.vhd')]"
-              },
-              "name": "[concat(variables('hadoopServerName'))]",
-              "caching": "None",
-              "createOption": "Empty",
-              "diskSizeGB": "[parameters('hadoopServerDataDiskSize')]",
-              "lun": 0
-            }
-          ]
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('hadoopServerName'), '-NIC'))]",
-              "properties": { "primary": true }
-            }
-          ]
-        }
-      },
-      "resources": [
-        {
-          "type": "Microsoft.Compute/virtualMachines/extensions",
-          "name": "[concat(variables('hadoopServerName'), '/' ,'deployAmbariCentOS68')]",
-          "apiVersion": "2015-05-01-preview",
-          "location": "[resourceGroup().location]",
-          "dependsOn": [
-            "[concat('Microsoft.Compute/virtualMachines/', variables('hadoopServerName'))]",
-            "dataNodeVMLoop"
-          ],
-          "properties": {
-            "publisher": "Microsoft.OSTCExtensions",
-            "type": "CustomScriptForLinux",
-            "typeHandlerVersion": "1.4",
-            "autoUpgradeMinorVersion": true,
-            "settings": {
-              "fileUris": [
-                "[concat(parameters('deployAmbariServerScriptURI'))]"
-              ]
-            },
-            "protectedSettings": {
-              "commandToExecute": "[concat('bash ', parameters('deployAmbariServerScriptName'), ' -u ', parameters('hadoopServerAdminUsername'), ' -p ', parameters('hadoopServerAdminPassword'), ' -h ', 'rei-datanode-iy0;rei-datanode-iy1;', ' -d ', parameters('domainName'))]"
-            }
+          "dataNodeStorageAccountType": {
+            "value": "[parameters('dataNodeStorageAccountType')]"
+          },
+          "dataNodeAdminUsername": {
+            "value": "[parameters('dataNodeAdminUsername')]"
+          },
+          "dataNodeAdminPassword": {
+            "value": "[parameters('dataNodeAdminPassword')]"
+          },
+          "dataNodeImagePublisher": {
+            "value": "[parameters('dataNodeImagePublisher')]"
+          },
+          "dataNodeImageOffer": {
+            "value": "[parameters('dataNodeImageOffer')]"
+          },
+          "dataNodeImageSku": {
+            "value": "[parameters('dataNodeImageSku')]"
+          },
+          "dataNodeImageVersion": {
+            "value": "[parameters('dataNodeImageVersion')]"
+          },
+          "dataNodeDataDiskSize": {
+            "value": "[parameters('dataNodeDataDiskSize')]"
+          },
+          "dataNodeVMSize": {
+            "value": "[parameters('dataNodeVMSize')]"
+          },
+          "apiVersion": {
+            "value": "[parameters('apiVersion')]"
+          },
+          "deploymentResourceGroupName": {
+            "value": "[variables('deploymentResourceGroupName')]"
+          },
+          "vNetName": {
+            "value": "[variables('vNetName')]"
+          },
+          "subnetName": {
+            "value": "[variables('subnetName')]"
+          },
+          "dataNodeStorageName": {
+            "value": "[variables('dataNodeStorageName')]"
+          },
+          "dataNodeName": {
+            "value": "[variables('dataNodeName')]"
+          },
+          "dataNodeOSDiskName": {
+            "value": "[variables('dataNodeOSDiskName')]"
+          },
+          "dataNodeDataDiskName": {
+            "value": "[variables('dataNodeDataDiskName')]"
+          },
+          "dataNodeVMs": {
+            "value": "[reference(concat('deployFirstDataNodeVM')).outputs.result.value]"
           }
         }
-      ]
+      }
     },
     {
-      "name": "[concat(variables('dataNodeName'), copyindex())]",
-      "type": "Microsoft.Compute/virtualMachines",
-      "location": "[resourceGroup().location]",
-      "apiVersion": "[parameters('apiVersion')]",
-      "copy": {
-        "name": "dataNodeVMLoop",
-        "count": "[parameters('dataNodeInstances')]"
-      },
+      "name": "deployAmbariServer",
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2015-01-01",
+      "comments": "This resource will deploy the Ambari Server and DNS on the Ambari VM.",
       "dependsOn": [
-        "dataNodeStorageLoop",
-        "dataNodeNICLoop",
-        "[concat('Microsoft.Compute/virtualMachines/', variables('hadoopServerName'))]"
+        "deployRemainingDataNodeVMsCopy"
       ],
-      "tags": {
-        "displayName": "dataNodeVMs"
-      },
       "properties": {
-        "hardwareProfile": {
-          "vmSize": "[parameters('dataNodeVMSize')]"
+        "mode": "Incremental",
+        "templateLink": {
+          "uri": "[parameters('deployAmbariServerTemplateURI')]",
+          "contentVersion": "1.0.0.0"
         },
-        "osProfile": {
-          "computerName": "[concat(variables('dataNodeName'), copyindex())]",
-          "adminUsername": "[parameters('dataNodeAdminUsername')]",
-          "adminPassword": "[parameters('dataNodeAdminPassword')]"
-        },
-        "storageProfile": {
-          "imageReference": {
-            "publisher": "[parameters('dataNodeImagePublisher')]",
-            "offer": "[parameters('dataNodeImageOffer')]",
-            "sku": "[parameters('dataNodeImageSku')]",
-            "version": "[parameters('dataNodeImageVersion')]"
+        "parameters": {
+          "hadoopServerName": {
+            "value": "[variables('hadoopServerName')]"
           },
-          "osDisk": {
-            "name": "[concat(variables('dataNodeName'), copyIndex(), '-', variables('dataNodeOSDiskName'))]",
-            "vhd": {
-              "uri": "[concat('http://', variables('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', variables('dataNodeOSDiskName'), copyindex(), '.vhd')]"
-            },
-            "caching": "ReadWrite",
-            "createOption": "FromImage"
+          "deployAmbariServerScriptURI": {
+            "value": "[parameters('deployAmbariServerScriptURI')]"
           },
-          "dataDisks": [
-            {
-              "vhd": {
-                "uri": "[concat('http://', variables('dataNodeStorageName'), copyIndex(), '.blob.core.windows.net/vhds', '/', variables('dataNodeDataDiskName'), copyindex(), '.vhd')]"
-              },
-              "name": "[concat(variables('hadoopServerName'))]",
-              "caching": "None",
-              "createOption": "Empty",
-              "diskSizeGB": "[parameters('dataNodeDataDiskSize')]",
-              "lun": 0
-            }
-          ]
-        },
-        "networkProfile": {
-          "networkInterfaces": [
-            {
-              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(variables('dataNodeName'), '-NIC-', copyindex()))]"
-            }
-          ]
+          "deployAmbariServerScriptName": {
+            "value": "[parameters('deployAmbariServerScriptName')]"
+          },
+          "hadoopServerAdminUsername": {
+            "value": "[parameters('hadoopServerAdminUsername')]"
+          },
+          "hadoopServerAdminPassword": {
+            "value": "[parameters('hadoopServerAdminPassword')]"
+          },
+          "dataNodeVMs": {
+            "value": "[reference(concat('deployAdditionalDataNodeVM', sub(parameters('dataNodeInstances'), 1))).outputs.result.value]"
+          },
+          "domainName": {
+            "value": "[parameters('domainName')]"
+          }
         }
       }
     }
