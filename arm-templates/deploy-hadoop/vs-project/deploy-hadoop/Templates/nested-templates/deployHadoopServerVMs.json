@@ -1,0 +1,232 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "clientID": {
+      "type": "string",
+      "metadata": {
+        "description": "Prefix for the Environment (2-5 characters) related to the Client ID or Name."
+      }
+    },
+    "indexValue": {
+      "type": "int",
+      "metadata": {
+        "description": "The number of Hadoop Server Instances being deployed."
+      }
+    },
+    "hadoopServerStorageAccountType": {
+      "type": "string",
+      "metadata": {
+        "description": "The type of the Storage Account(s) being created for the Hadoop Server Instances."
+      }
+    },
+    "hadoopServerAdminUsername": {
+      "type": "string",
+      "metadata": {
+        "Description": "The Local Username of the account being created on the Hadoop Server Instance."
+      }
+    },
+    "hadoopServerAdminPassword": {
+      "type": "securestring",
+      "metadata": {
+        "Description": "The Local Password of the account being created on the Hadoop Server Instance."
+      }
+    },
+    "hadoopServerImagePublisher": {
+      "type": "string",
+      "metadata": {
+        "description": "The Publisher of the Linux Image being used for the Hadoop Server Instance."
+      }
+    },
+    "hadoopServerImageOffer": {
+      "type": "string",
+      "metadata": {
+        "description": "The Linux Image Offer used for the Hadoop Server Instance."
+      }
+    },
+    "hadoopServerImageSku": {
+      "type": "string",
+      "metadata": {
+        "description": "The Linux Image SKU used for the Hadoop Server Instance."
+      }
+    },
+    "hadoopServerImageVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Version Number of the fully patched Linux Image being deployed."
+      }
+    },
+    "hadoopServerDataDiskSize": {
+      "type": "int",
+      "metadata": {
+        "description": "The Size of the Hadoop Server Instance Data Disk in GB."
+      }
+    },
+    "hadoopServerVMSize": {
+      "type": "string",
+      "metadata": {
+        "description": "The Size of the Hadoop Server Instance VM being deployed in Azure."
+      }
+    },
+    "apiVersion": {
+      "type": "string",
+      "metadata": {
+        "description": "The Azure Resource Manager API Version to use during the Deployment."
+      }
+    },
+    "deploymentResourceGroupName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Deployment Resource Group Name from the azuredeploy.json Variables section."
+      }
+    },
+    "vNetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The vNet Name from the azuredeploy.json Variables section."
+      }
+    },
+    "subnetName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Subnet Name from the azuredeploy.json Variables section."
+      }
+    },
+    "hadoopServerStorageName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Storage Account for the Hadoop Server Servers being deployed."
+      }
+    },
+    "hadoopServerName": {
+      "type": "string",
+      "metadata": {
+        "description": "The hadoopServer Name from the azuredeploy.json Variables section."
+      }
+    },
+    "hadoopServerOSDiskName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Hadoop Server OS Disk being deployed."
+      }
+    },
+    "hadoopServerDataDiskName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Hadoop Server Data Disk being deployed."
+      }
+    },
+    "hadoopServerVMs": {
+      "type": "array",
+      "defaultValue": [],
+      "metadata": {
+        "description": "This is an array structure of all of the Hadoop Server VM Names that will be used later during the Ambari Server Deployment."
+      }
+    }
+  },
+  "variables": {
+    "hadoopServerFullName": "[concat(parameters('hadoopServerName'), parameters('indexValue'))]"
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Storage/storageAccounts",
+      "name": "[concat(parameters('hadoopServerStorageName'), parameters('indexValue'))]",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "[concat(parameters('hadoopServerStorageName'), parameters('indexValue'))]"
+      },
+      "properties": {
+        "accountType": "[parameters('hadoopServerStorageAccountType')]"
+      }
+    },
+    {
+      "name": "[concat(parameters('hadoopServerName'), '-NIC-', parameters('indexValue'))]",
+      "type": "Microsoft.Network/networkInterfaces",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "[concat(parameters('hadoopServerName'), '-NIC-', parameters('indexValue'))]"
+      },
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "primary-ipconfig",
+            "properties": {
+              "privateIPAllocationMethod": "Dynamic",
+              "subnet": {
+                "id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/', parameters('deploymentResourceGroupName'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vNetName'), '/subnets/', parameters('subnetName'))]"
+              }
+            }
+          }
+        ]
+      }
+    },
+    {
+      "name": "[concat(parameters('hadoopServerName'), parameters('indexValue'))]",
+      "type": "Microsoft.Compute/virtualMachines",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "dependsOn": [
+        "[concat('Microsoft.Storage/storageAccounts/', parameters('hadoopServerStorageName'), parameters('indexValue'))]",
+        "[concat('Microsoft.Network/networkInterfaces/', parameters('hadoopServerName'), '-NIC-', parameters('indexValue'))]"
+      ],
+      "tags": {
+        "displayName": "[concat(parameters('hadoopServerName'), parameters('indexValue'))]"
+      },
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('hadoopServerVMSize')]"
+        },
+        "osProfile": {
+          "computerName": "[concat(parameters('hadoopServerName'), parameters('indexValue'))]",
+          "adminUsername": "[parameters('hadoopServerAdminUsername')]",
+          "adminPassword": "[parameters('hadoopServerAdminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "[parameters('hadoopServerImagePublisher')]",
+            "offer": "[parameters('hadoopServerImageOffer')]",
+            "sku": "[parameters('hadoopServerImageSku')]",
+            "version": "[parameters('hadoopServerImageVersion')]"
+          },
+          "osDisk": {
+            "name": "[concat(parameters('hadoopServerName'), parameters('indexValue'), '-', parameters('hadoopServerOSDiskName'))]",
+            "vhd": {
+              "uri": "[concat('http://', parameters('hadoopServerStorageName'), parameters('indexValue'), '.blob.core.windows.net/vhds', '/', parameters('hadoopServerOSDiskName'), parameters('indexValue'), '.vhd')]"
+            },
+            "caching": "ReadWrite",
+            "createOption": "FromImage"
+          },
+          "dataDisks": [
+            {
+              "vhd": {
+                "uri": "[concat('http://', parameters('hadoopServerStorageName'), parameters('indexValue'), '.blob.core.windows.net/vhds', '/', parameters('hadoopServerDataDiskName'), parameters('indexValue'), '.vhd')]"
+              },
+              "name": "[concat(parameters('hadoopServerName'))]",
+              "caching": "None",
+              "createOption": "Empty",
+              "diskSizeGB": "[parameters('hadoopServerDataDiskSize')]",
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', concat(parameters('hadoopServerName'), '-NIC-', parameters('indexValue')))]"
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "result": {
+      "type": "array",
+      "value": "[concat(parameters('hadoopServerVMs'),split(variables('hadoopServerFullName'),','))]"
+    }
+  }
+}
