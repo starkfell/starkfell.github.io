@@ -35,7 +35,7 @@
     "hadoopServerVMs": {
       "type": "array",
       "metadata": {
-        "description": "The Names of the Data Nodes that were deployed."
+        "description": "The Names of the Hadoop Servers that were deployed."
       }
     },
     "domainName": {
