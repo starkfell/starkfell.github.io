@@ -1,0 +1,24 @@
+<cluster xmlns='uri:falcon:cluster:0.1' name='primaryCluster' description='This is the Primary Cluster' colo='primaryColo'>
+  <tags>EntityType=Cluster</tags>
+  <interfaces>
+    <interface type='readonly' endpoint='hftp://hortonsand.westeurope.cloudapp.azure.com/:50070' version='2.2.0'>
+    </interface>
+    <interface type='write' endpoint='hdfs://hortonsand.westeurope.cloudapp.azure.com:8020' version='2.2.0'>
+    </interface>
+    <interface type='execute' endpoint='hortonsand.westeurope.cloudapp.azure.com:8050' version='2.2.0'>
+    </interface>
+    <interface type='workflow' endpoint='http://hortonsand.westeurope.cloudapp.azure.com:11000/oozie/' version='4.0.0'>
+    </interface>
+    <interface type='messaging' endpoint='tcp://hortonsand.westeurope.cloudapp.azure.com:61616?daemon=true' version='5.4.3'>
+    </interface>
+  </interfaces>
+  <locations>
+    <location name='staging' path='/apps/falcon/primaryCluster/staging'>
+    </location>
+    <location name='temp' path='/tmp'>
+    </location>
+    <location name='working' path='/apps/falcon/primaryCluster/working'>
+    </location>
+  </locations>
+  <ACL owner='falcon' group='users' permission='0755'/>
+</cluster>

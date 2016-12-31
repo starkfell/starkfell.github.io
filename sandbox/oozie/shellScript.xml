@@ -1,0 +1,17 @@
+<workflow-app name="oozieScript" xmlns="uri:oozie:workflow:0.4?>
+<start to="oozieScript"/>
+<action name="oozieScript">
+<shell xmlns="uri:oozie:shell-action:0.1">
+<job-tracker>${jobTracker}</job-tracker>
+<name-node>${nameNode}</name-node>
+<exec>oozieScript.sh</exec>
+<file>/user/root/scripts/OozieTest/oozieScript.sh#oozieScript.sh</file>
+</shell>
+<ok to="end"/>
+<error to="kill"/>
+</action>
+<kill name="kill">
+<message>Action failed, error message[${wf:errorMessage(wf:lastErrorNode())}]</message>
+</kill>
+<end name="end"/>
+</workflow-app>

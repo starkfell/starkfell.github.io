@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<process name="rawEmailIngestProcess" xmlns="uri:falcon:process:0.1">
+    <tags>email=testemail</tags>
+    <clusters>
+        <cluster name="primaryCluster">
+            <validity start="2016-12-27T00:00Z" end="2016-12-31T00:00Z"/>
+        </cluster>
+    </clusters>
+    <parallel>1</parallel>
+    <order>FIFO</order>
+    <frequency>hours(1)</frequency>
+    <timezone>UTC</timezone>
+    <outputs>
+        <output name="output" feed="rawEmailFeed" instance="now(0,0)"/>
+    </outputs>
+    <workflow name="emailIngestWorkflow" version="4.0.1" engine="oozie" path="/user/ambari-qa/falcon/demo/apps/ingest/fs"/>
+    <retry policy="exp-backoff" delay="minutes(3)" attempts="3"/>
+    <ACL owner="ambari-qa" group="users" permission="0755"/>
+</process>

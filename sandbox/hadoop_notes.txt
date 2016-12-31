@@ -1,0 +1,6 @@
+
+When setting up the NSG for Hadoop make sure to:
+
+- Create an inbound rule for ActiveMQ on port 61616, otherwise notification/messaging will not function properly in Falcon if you setup your
+  connections via the FQDN of the Hadoop Server; instead it will only work with http://localhost.
+

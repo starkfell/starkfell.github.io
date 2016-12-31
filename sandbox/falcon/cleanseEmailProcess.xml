@@ -1,0 +1,23 @@
+<process xmlns='uri:falcon:process:0.1' name='cleanseEmailProcess'>
+  <tags>cleanse=yes</tags>
+  <clusters>
+    <cluster name='primaryCluster'>
+      <validity start='2016-12-27T00:00Z' end='2016-12-31T00:00Z'/>
+    </cluster>
+  </clusters>
+  <parallel>1</parallel>
+  <order>FIFO</order>
+  <frequency>hours(1)</frequency>
+  <timezone>UTC</timezone>
+  <inputs>
+    <input name='input' feed='rawEmailFeed' start='now(0,0)' end='now(0,0)'>
+    </input>
+  </inputs>
+  <outputs>
+    <output name='output' feed='cleansedEmailFeed' instance='now(0,0)'>
+    </output>
+  </outputs>
+  <workflow name='emailCleanseWorkflow' engine='pig' path='/user/ambari-qa/falcon/demo/apps/pig/id.pig'/>
+  <retry policy='exp-backoff' delay='minutes(3)' attempts='3'/>
+  <ACL owner='ambari-qa' group='users' permission='0755'/>
+</process>
