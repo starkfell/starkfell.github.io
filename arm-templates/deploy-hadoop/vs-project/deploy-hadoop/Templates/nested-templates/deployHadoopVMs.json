@@ -168,7 +168,9 @@
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
-      "dependsOn": [],
+      "dependsOn": [
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('hadoopServerPubIPName'))]"
+      ],
       "tags": {
         "displayName": "[concat(parameters('hadoopServerName'), '-NIC-', parameters('indexValue'))]"
       },
