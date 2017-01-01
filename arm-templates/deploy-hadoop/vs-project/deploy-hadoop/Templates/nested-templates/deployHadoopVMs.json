@@ -181,7 +181,7 @@
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
               "publicIPAddress": {
-                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('hadoopServerPubIPName'))]"
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('hadoopServerPubIPName'), parameters('indexValue'))]"
               },
               "subnet": {
                 "id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/', parameters('deploymentResourceGroupName'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vNetName'), '/subnets/', parameters('subnetName'))]"
