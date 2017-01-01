@@ -250,9 +250,9 @@
     },
     "domainName": {
       "type": "string",
-      "defaultValue": "lumadeep.com",
+      "defaultValue": "[concat(resourceGroup().location, '.cloudapp.azure.com')]",
       "metadata": {
-        "description": "The Name of the Domain to create on the Ambari Server."
+        "description": "The Name of the Domain to create on the Ambari Server. The name created is based on the Resource Group location of the deployment."
       }
     },
     "deployAmbariVMTemplateURI": {
@@ -294,6 +294,7 @@
     "ambariServerName": "[concat(parameters('clientID'), '-ambarisrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
     "ambariServerOSDiskName": "[concat(variables('ambariServerName'), '-OSDisk')]",
     "ambariServerDataDiskName": "[concat(variables('ambariServerName'), '-DataDisk')]",
+    "hadoopServerPubIPName": "[concat(parameters('clientID'), '-hadoopsrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
     "hadoopServerStorageName": "[concat(parameters('clientID'), 'hadoopsrvstr', substring(uniqueString(resourceGroup().id), 0, 4))]",
     "hadoopServerName": "[concat(parameters('clientID'), '-hadoopsrv-', substring(uniqueString(resourceGroup().id), 0, 2))]",
     "hadoopServerOSDiskName": "[concat(variables('hadoopServerName'), '-OSDisk')]",
@@ -444,6 +445,9 @@
           "hadoopServerStorageName": {
             "value": "[variables('hadoopServerStorageName')]"
           },
+          "hadoopServerPubIPName": {
+            "value": "[variables('hadoopServerPubIPName')]"
+          },
           "hadoopServerName": {
             "value": "[variables('hadoopServerName')]"
           },
@@ -519,6 +523,9 @@
           },
           "subnetName": {
             "value": "[variables('subnetName')]"
+          },
+          "hadoopServerPubIPName": {
+            "value": "[variables('hadoopServerPubIPName')]"
           },
           "hadoopServerStorageName": {
             "value": "[variables('hadoopServerStorageName')]"

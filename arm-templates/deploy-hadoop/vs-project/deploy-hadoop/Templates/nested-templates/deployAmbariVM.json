@@ -191,6 +191,20 @@
             }
           },
           {
+            "name": "allow-spark-env-inbound",
+            "properties": {
+              "description": "Allow Spark Environment traffic through port 4040.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "4040",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
             "name": "allow-ambari-web-ui-inbound",
             "properties": {
               "description": "Allow Ambari Server Web UI traffic through port 8080.",
@@ -200,7 +214,77 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 101,
+              "priority": 102,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-zeppelin-web-ui-inbound",
+            "properties": {
+              "description": "Allow Oozie Web UI traffic through port 9995.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "9995",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-oozie-web-ui-inbound",
+            "properties": {
+              "description": "Allow Oozie Web UI traffic through port 11000.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "11000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 104,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-falcon-web-ui-inbound",
+            "properties": {
+              "description": "Allow Falcon Web UI traffic through port 15000.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "15000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 105,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-spark-web-ui-inbound",
+            "properties": {
+              "description": "Allow Spark Web UI traffic through port 18080.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "18080",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 106,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-active-mq-inbound",
+            "properties": {
+              "description": "Allow ActiveMQ traffic through port 61616.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "61616",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 107,
               "direction": "Inbound"
             }
           }

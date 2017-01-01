@@ -92,6 +92,12 @@
         "description": "The Subnet Name from the azuredeploy.json Variables section."
       }
     },
+    "hadoopServerPubIPName": {
+      "type": "string",
+      "metadata": {
+        "description": "The Name of the Hadoop Server's Public IP Address."
+      }
+    },
     "hadoopServerStorageName": {
       "type": "string",
       "metadata": {
@@ -142,6 +148,22 @@
       }
     },
     {
+      "name": "[concat(parameters('hadoopServerPubIPName'), parameters('indexValue'))]",
+      "type": "Microsoft.Network/publicIPAddresses",
+      "location": "[resourceGroup().location]",
+      "apiVersion": "[parameters('apiVersion')]",
+      "dependsOn": [],
+      "tags": {
+        "displayName": "[concat(parameters('hadoopServerPubIPName'), parameters('indexValue'))]"
+      },
+      "properties": {
+        "publicIPAllocationMethod": "Dynamic",
+        "dnsSettings": {
+          "domainNameLabel": "[parameters('hadoopServerPubIPName')]"
+        }
+      }
+    },
+    {
       "name": "[concat(parameters('hadoopServerName'), '-NIC-', parameters('indexValue'))]",
       "type": "Microsoft.Network/networkInterfaces",
       "location": "[resourceGroup().location]",
@@ -156,6 +178,9 @@
             "name": "primary-ipconfig",
             "properties": {
               "privateIPAllocationMethod": "Dynamic",
+              "publicIPAddress": {
+                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('hadoopServerPubIPName'))]"
+              },
               "subnet": {
                 "id": "[concat('/subscriptions/',subscription().subscriptionId,'/resourceGroups/', parameters('deploymentResourceGroupName'), '/providers/Microsoft.Network/virtualNetworks/', parameters('vNetName'), '/subnets/', parameters('subnetName'))]"
               }
