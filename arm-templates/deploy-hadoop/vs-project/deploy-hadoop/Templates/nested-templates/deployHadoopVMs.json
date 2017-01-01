@@ -159,7 +159,7 @@
       "properties": {
         "publicIPAllocationMethod": "Dynamic",
         "dnsSettings": {
-          "domainNameLabel": "[parameters('hadoopServerPubIPName')]"
+          "domainNameLabel": "[concat(parameters('hadoopServerPubIPName'), parameters('indexValue'))]"
         }
       }
     },
@@ -169,7 +169,7 @@
       "location": "[resourceGroup().location]",
       "apiVersion": "[parameters('apiVersion')]",
       "dependsOn": [
-        "[concat('Microsoft.Network/publicIPAddresses/', parameters('hadoopServerPubIPName'))]"
+        "[concat('Microsoft.Network/publicIPAddresses/', parameters('hadoopServerPubIPName'), parameters('indexValue'))]"
       ],
       "tags": {
         "displayName": "[concat(parameters('hadoopServerName'), '-NIC-', parameters('indexValue'))]"
