@@ -219,6 +219,34 @@
             }
           },
           {
+            "name": "allow-yarn-resource-manager-web-ui-inbound",
+            "properties": {
+              "description": "Allow YARN Resource Manager Web UI traffic through port 8088.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8088",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 103,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-yarn-timeline-server-webapp-inbound",
+            "properties": {
+              "description": "Allow YARN Timeline Server web App traffic through port 8188.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8188",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 104,
+              "direction": "Inbound"
+            }
+          },
+          {
             "name": "allow-zeppelin-web-ui-inbound",
             "properties": {
               "description": "Allow Oozie Web UI traffic through port 9995.",
@@ -228,7 +256,35 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 103,
+              "priority": 105,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-spark-thrift-server-inbound",
+            "properties": {
+              "description": "Allow MapReduce Job History traffic through port 10015.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "10015",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 106,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-mapreduce-job-history-inbound",
+            "properties": {
+              "description": "Allow MapReduce Job History traffic through port 10020.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "10020",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 107,
               "direction": "Inbound"
             }
           },
@@ -242,7 +298,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 104,
+              "priority": 108,
               "direction": "Inbound"
             }
           },
@@ -256,7 +312,63 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 105,
+              "priority": 109,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-hbase-master-inbound",
+            "properties": {
+              "description": "Allow HBase Master traffic through port 16000.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "16000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 110,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-hbase-web-ui-info-inbound",
+            "properties": {
+              "description": "Allow HBase Web UI Info traffic through port 16010.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "16010",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 111,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-hbase-region-server-16020-inbound",
+            "properties": {
+              "description": "Allow HBase Region Server traffic through port 16020.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "16020",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 112,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-hbase-region-server-16030-inbound",
+            "properties": {
+              "description": "Allow HBase Region Server traffic through port 16030.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "16030",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 113,
               "direction": "Inbound"
             }
           },
@@ -270,7 +382,35 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 106,
+              "priority": 114,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-mapreduce-job-history-webapp-inbound",
+            "properties": {
+              "description": "Allow MapReduce Job History WebApp traffic through port 19888.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "19888",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 115,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-hdfs-namenode-web-ui",
+            "properties": {
+              "description": "Allow HDFS NameNode Web UI traffic through port 50070.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "50070",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 116,
               "direction": "Inbound"
             }
           },
@@ -284,7 +424,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 107,
+              "priority": 117,
               "direction": "Inbound"
             }
           }
