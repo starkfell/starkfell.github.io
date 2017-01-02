@@ -255,6 +255,6 @@ This article covers how to deploy a Hadoop Cluster using Apache Ambari running o
 
 ## Additional Resources
 
-**[Apache Ambari]**(https://cwiki.apache.org/confluence/display/AMBARI/Ambari)
+[Apache Ambari](https://cwiki.apache.org/confluence/display/AMBARI/Ambari)
 
-**[Hortonworks Sandbox]**(http://hortonworks.com/products/sandbox/)
+[Hortonworks Sandbox](http://hortonworks.com/products/sandbox/)
