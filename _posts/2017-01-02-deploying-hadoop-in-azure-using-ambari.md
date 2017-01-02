@@ -88,6 +88,75 @@ Below is a list of default links for accessing the deployed Hadoop Resources.
 
 
 
+# Retrieve the SSH Private Key and Hadoop FQDNs
+
+Login to the Ambari Server via SSH using the DNS Name of it's associated Public IP Address. Syntax is below:
+
+```bash
+<AMBARI_SERVER_NAME>.<LOCATION>.cloudapp.azure.com
+```
+
+Once you are logged in, change over to root. Type the password of the **linuxadmin** user when prompted.
+
+```bash
+sudo su
+```
+
+Run the following command to retrieve the FQDNs of all of the Hadoop Servers.
+
+```bash
+cat /etc/hosts
+```
+
+Sample Result:
+
+```bash
+10.0.1.4 rei-ambarisrv-iy.westeurope.cloudapp.azure.com rei-ambarisrv-iy
+10.0.1.5 rei-hadoopsrv-iy0.westeurope.cloudapp.azure.com rei-hadoopsrv-iy0
+10.0.1.6 rei-hadoopsrv-iy1.westeurope.cloudapp.azure.com rei-hadoopsrv-iy1
+127.0.0.1   localhost localhost.localdomain localhost4 localhost4.localdomain4
+::1         localhost localhost.localdomain localhost6 localhost6.localdomain6
+```
+
+Next, run the following command to retrieve the SSH Private Key generated during the installation of Ambari.
+
+```bash
+cat /root/.ssh/id_rsa
+```
+
+Sample Result:
+
+```bash
+-----BEGIN RSA PRIVATE KEY-----
+MIIEowIBAAKCAQEA3T/N3ShLdpHdosAQ02nsgf3a9aIsv5BRJJMolIkWuiG7xrox
+T8L1T+m1/2BsizVdGdjR6gjNSl2HEGsHeBd49kza5SipmnI1W3PYE4YCGzP3/Hor
+qjscMfZ5fMVcv9SKnwF2MVDoPcoj+Z/YBeXDcyUP1ygb/o56VnkWyo44KqQCqJ11
+zGelmPAm2TrqNxGJk8pWqNqwBSNe2dfxgGpOAUM9cUlQ+JpCkACasQ6RJQcxSRVc
+2swrqf3bNb+aWwYNc7r37oOG0L8i3XEzK6LCEOz6NgKORxlpjQ47rC0NkWMevG+H
+jC9awZHtI9/wdNI4i91vt2GVRh260sm2cU5nUQIBIwKCAQEA1u2GJ0u3BXfBXEWM
+sB3BLdIH500VhuP3DZZErYx8ekynyF0Z9bYS3+pZBrVwwb7PeDG1+UphBml75BAz
+JDQPGyYWeDYhGbDGHlNG7mTsGmz/h4yfcirK7rTrC33lEh7tD33DRdmRJhTSfXa0
+mAPFLga+7kQ4c6BZldS3Dek94EW+2n+eyBmEySQ2YedDkX1rcr7Fu+aH4ih4q++e
+r7IPnRjw4lTjLkD4+JdD0ozg2TMhWMrw2s3apmCzEQkU9wQJ3/s21n1opPHn2TQO
+CvxELLzkI4KZEiJGiLDI2xqg4sk24CdbxSTfYVghYRE6Q8z9RW3/wcOWw0e2vDss
+MQ00gwKBgQD2+qTnSvwmbRNrlhdfuxiW4C7jXWC3b/nIqIVJO9QXdJ5ZDnczp6jd
+Q6Uga5gcpc/MgKVFnp+P5N98RemS8Pi2l5GdHH4OcTtzRxk75we0gxwgaGkmNzNK
+98qe7VBipnjQiiVUWy+AfeZk8kfA3YexDBj3lkQcu4xHdl0Bd7i+kwKBgQDlVJNM
+76uUmQpHC4hMdUMiNfUvRkjlLFpHJfobgKo1iQs3thFRkkUZtd3hoWz2cnOzZYEQ
+PNEroWB5bVu9IHofhKbAfMCbtbfXggvKscSLI4bf5UesXx0wU9jsGYyM1EhZeLhF
+qdJdudDPPp0KM2DsMMQtFeMwKvTN1uR/9ERNCwKBgQDhzzeu5XjSrN6OQBVe1vHp
+B3tTiJLw22gH6oh9eIdl5vcs2gaVoJpj5hNQ12aAl5lqhD9VmFde/SQZ2YUYoc1z
+vcb2C2vv8n9/VvJ/6SudubNQ1H1kxMEumWjL0aiUtXXF+qXJd/Dqgby0ELahtJlR
+aiV0pqSsjjccw/1DK6GYSwKBgQCWs+vE2AMJ4Ol/JNXpGduoxF9K86w+1ADPqz30
+0OThWg6vlObPNDwJlMUB/F2MAhGEhIgDWypef/2Rn6Kve733dG2Ubzy+GFQ9KZK4
+ZjCzNJp139ADjvXsjt8BjSHY40V8n8mM3U+57yLRVQgcpWuT5Yg64n9aKttisclb
+ZgD/bQKBgAUKeiA2JYmTn2t22h18wV67XOSPN01/xS1IFGRsKQ6n8K1OisqMIayc
+KUmPqnroe2ThQssgae9DDzXY2RnnIOzAfkyUX70KpaFv0bv2xLXjn6pMbjE2N7qc
+sym5R8bYdwc4ighupztwMw8HT3uf5DMO7A6uGihaoq1Z+VWYPYKA
+-----END RSA PRIVATE KEY-----
+```
+
+Make note of the SSH Private Key for the next section.
 
 # Deploying the Hadoop Cluster using Ambari
 
@@ -162,8 +231,17 @@ The selected Services will then be installed and started; on average, the entire
 
 ![deploying-hadoop-in-azure-using-ambari-012]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-012.jpg)
 
+Once the installation is completed, ignore the warnings and click Next.
 
+![deploying-hadoop-in-azure-using-ambari-013]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-013.jpg)
 
+Review the installation Summary and click on Complete.
+
+![deploying-hadoop-in-azure-using-ambari-014]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-014.jpg)
+
+Afterwards, you will be redirected to the Ambari Dashboard.
+
+![deploying-hadoop-in-azure-using-ambari-015]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-015.jpg)
 
 # Closing
 
