@@ -123,42 +123,44 @@ Next, make sure **HDP-2.5.3.0** is already selected, scroll down to the bottom o
 Next, copy in the FQDN values of the Hadoop Servers that you deployed and the SSH Private Key that you retrieved earlier from the Ambari Server. Afterwards,
 click on the **Register and Confirm** button.
 
+![deploying-hadoop-in-azure-using-ambari-004]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-004.jpg)
+
 The Hadoop Hosts will be registered and checked for any potential issues, the entire process should only take a couple minutes.
 
-![deploying-hadoop-in-azure-using-ambari-004]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-004.jpg)
+![deploying-hadoop-in-azure-using-ambari-005]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-005.jpg)
 
 After the registration is completed, ignore the warnings and click on Next.
 
-![deploying-hadoop-in-azure-using-ambari-005]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-005.jpg)
+![deploying-hadoop-in-azure-using-ambari-006]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-006.jpg)
 
 In the Choose Services section, you have the option to add or remove any of the services you want to install on the Cluster; better still, if you choose a combination that
 is missing a dependency, you will be prompted what you are missing and to add it. For the purpose of this walkthrough, scroll down to the bottom of the page and click Next.
 
-![deploying-hadoop-in-azure-using-ambari-006]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-006.jpg)
+![deploying-hadoop-in-azure-using-ambari-007]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-007.jpg)
 
 In the Assign Masters section, you have the option to assign the master components to whichever server you want them to reside on. Leave the configuration as is by default,
 scroll down to the bottom of the page and click Next.
 
-![deploying-hadoop-in-azure-using-ambari-007]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-007.jpg)
+![deploying-hadoop-in-azure-using-ambari-008]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-008.jpg)
 
 In the Assign Slaves and Clients section, leave the default values as is and click Next.
 
-![deploying-hadoop-in-azure-using-ambari-008]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-008.jpg)
+![deploying-hadoop-in-azure-using-ambari-009]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-009.jpg)
 
 In the Customize Services section, any of the Services that have a red number beside them require your attention. In all of the cases of this walkthrough, each of the matching
 services requires that you type in a password. Do this for each service as required, scroll down to the bottom of the page and click Next.
 
 *Note: After clicking on Next, if you recieve any configuration warnings, choose to proceed anyway.*
 
-![deploying-hadoop-in-azure-using-ambari-009]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-009.jpg)
+![deploying-hadoop-in-azure-using-ambari-010]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-010.jpg)
 
 Review the configuration and then click on Deploy.
 
-![deploying-hadoop-in-azure-using-ambari-010]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-010.jpg)
+![deploying-hadoop-in-azure-using-ambari-011]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-011.jpg)
 
 The selected Services will then be installed and started; on average, the entire process takes 30 minutes.
 
-![deploying-hadoop-in-azure-using-ambari-011]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-011.jpg)
+![deploying-hadoop-in-azure-using-ambari-012]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-012.jpg)
 
 
 
