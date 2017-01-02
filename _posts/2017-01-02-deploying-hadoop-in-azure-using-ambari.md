@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Deploying a Hadoop Cluster on standard Linux VMs in Azure from an ARM Template"
+title: "Deploying a Hadoop Cluster on Linux VMs in Azure from an ARM Template"
 date: 2017-01-02
 ---
 
@@ -17,42 +17,11 @@ In my case, I wanted the ability to deploy Hadoop in Azure on Linux VMs of any s
 The reason I wanted to go to this level of effort was so that I could learn Hadoop from the standpoint of both an Administrator and a Developer while being able to manage a Hadoop Cluster as a single or 
 multi-node deployment.
 
-## Introduction to Apache Amabri
-
-Apache Ambari enables system administrators to provision, manage and monitor a Hadoop cluster as well as to integrate with an existing enterprise infrastructure. By using Ambari, you can control the deployment,
-management, and removal of the following Hadoop related services in a Hadoop Cluster.
-
-* HDFS
-* YARN + MapReduce2
-* Tez
-* Hive
-* HBase
-* Pig
-* Sqoop
-* Oozie
-* ZooKeeper
-* Falcon
-* Storm
-* Flume
-* Accumulo
-* Ambari Infra
-* Ambari Metrics
-* Atlas
-* Kafka
-* Knox
-* Log Search
-* SmartSense
-* Spark
-* Spark2
-* Zeppelin Notebook
-* Mahout
-* Slider
-
-# Prerequisites
+## Prerequisites
 
 Before deploying the ARM Template below, make sure you have enough VM cores available in your Azure Subscription.
 
-# Deploy the new Hadoop Infrastructure to Azure using an ARM Template
+## Deploy the new Hadoop Infrastructure to Azure using an ARM Template
 
 *Note: This ARM Template should be used for learning and testing purposes, ONLY!*
 
@@ -86,11 +55,9 @@ breaking it was one of my primary reasons for writing this ARM Template. From my
 
 All of the deployed VMs are externally accesssible via SSH on Port 22 from their respective Public IP Addresses.
 
-Below is a list of default links for accessing the deployed Hadoop Resources.
+List of all Open Ports for all Hadoop Services can be found in the Network Security Group deployed in the Resource Group.
 
-
-
-# Retrieve the SSH Private Key and Hadoop FQDNs
+## Retrieve the SSH Private Key and Hadoop FQDNs
 
 For this section, the Name of the Ambari Server will be **rei-ambarisrv-iy.westeurope.cloudapp.azure.com** and the Linux User will be **linuxadmin**.
 
@@ -162,7 +129,37 @@ sym5R8bYdwc4ighupztwMw8HT3uf5DMO7A6uGihaoq1Z+VWYPYKA
 
 Make note of the SSH Private Key for the next section.
 
-# Deploying the Hadoop Cluster using Ambari
+## Deploying the Hadoop Cluster using Ambari
+
+Apache Ambari enables system administrators to provision, manage and monitor a Hadoop cluster as well as to integrate with an existing enterprise infrastructure. By using Ambari, you can control the deployment,
+management, and removal of the following Hadoop related services in a Hadoop Cluster.
+
+* HDFS
+* YARN + MapReduce2
+* Tez
+* Hive
+* HBase
+* Pig
+* Sqoop
+* Oozie
+* ZooKeeper
+* Falcon
+* Storm
+* Flume
+* Accumulo
+* Ambari Infra
+* Ambari Metrics
+* Atlas
+* Kafka
+* Knox
+* Log Search
+* SmartSense
+* Spark
+* Spark2
+* Zeppelin Notebook
+* Mahout
+* Slider
+
 
 For this section, the Ambari Web UI will be [**http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080**](http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080).
 
@@ -247,11 +244,11 @@ Afterwards, you will be redirected to the Ambari Dashboard.
 
 ![deploying-hadoop-in-azure-using-ambari-015]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-015.jpg)
 
-# Closing
+## Closing
 
 This article covers how to deploy a Hadoop Cluster using Apache Ambari running on Linux Virtual Machines in Azure from an ARM Template.
 
-# Additional Resources
+## Additional Resources
 
 [Apache Ambari](https://cwiki.apache.org/confluence/display/AMBARI/Ambari)
 
