@@ -59,6 +59,10 @@ List of all Open Ports for all Hadoop Services can be found in the Network Secur
 
 ## Retrieve the SSH Private Key and Hadoop FQDNs
 
+In order to deploy a Hadoop Cluster from Ambari without having to manually install agents on all the Servers you want in the Hadoop Cluster, an SSH Private Key must be generated and added
+to all the Servers. This was previously done as part of the Custom Script that was deployed on the Ambari Server at the very end of the ARM Template Deployment. Now all that is required is to retreive
+the SSH Private Key.
+
 For this section, the Name of the Ambari Server will be **rei-ambarisrv-iy.westeurope.cloudapp.azure.com** and the Linux User will be **linuxadmin**.
 
 Login to the Ambari Server via SSH using the DNS Name of it's associated Public IP Address. Syntax is below:
@@ -73,7 +77,8 @@ Once you are logged in, change over to **root**. Type the password of the **linu
 sudo su
 ```
 
-Run the following command to retrieve the FQDNs of all of the Hadoop Servers.
+Run the following command to retrieve the FQDNs of all of the Hadoop Servers. This is optional As this information can also be found on the Public IP Address resources associated
+with the Hadoop Servers.
 
 ```bash
 cat /etc/hosts
