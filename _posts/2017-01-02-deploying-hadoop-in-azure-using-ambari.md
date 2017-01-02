@@ -1,11 +1,11 @@
 ---
 layout: post
 comments: true
-title: "Deploying Hadoop in Azure using Ambari"
+title: "Deploying a Hadoop Cluster on standard Linux VMs in Azure from an ARM Template"
 date: 2017-01-02
 ---
 
-This article covers how to deploy a Hadoop Cluster running on CentOS 6.8 in Azure using Apache Ambari from an ARM Template.
+This article covers how to deploy a Hadoop Cluster using Apache Ambari running on Linux Virtual Machines in Azure from an ARM Template.
 
 # Overview
 
@@ -14,7 +14,8 @@ you can have a cluster setup and ready in less than 30 minutes. Additionally, th
 HDP 2.4.This will install almost all of the currently available Hadoop services onto a single stand-alone VM.
 
 In my case, I wanted the ability to deploy Hadoop in Azure on Linux VMs of any size of my choosing and to be able to control the entire deployment of Hadoop and Hadoop related services using Apache Ambari.
-The reason I wanted to go to this level of effort was so that I could learn Hadoop all the way from an Administration standpoint to Development.
+The reason I wanted to go to this level of effort was so that I could learn Hadoop from the standpoint of both an Administrator and a Developer while being able to manage a Hadoop Cluster as a single or 
+multi-node deployment.
 
 ## Introduction to Apache Amabri
 
@@ -49,10 +50,11 @@ management, and removal of the following Hadoop related services in a Hadoop Clu
 
 # Prerequisites
 
-Before deploying the ARM Template below, make sure you have enough VM cores available in your Subscription before deploying.
-This ARM Template should be used **only** for learning and testing purposes.
+Before deploying the ARM Template below, make sure you have enough VM cores available in your Azure Subscription.
 
 # Deploy the new Hadoop Infrastructure to Azure using an ARM Template
+
+*Note: This ARM Template should be used for learning and testing purposes, ONLY!*
 
 Clicking on the **Deploy to Azure** button below will deploy the following
 
@@ -90,13 +92,15 @@ Below is a list of default links for accessing the deployed Hadoop Resources.
 
 # Retrieve the SSH Private Key and Hadoop FQDNs
 
+For this section, the Name of the Ambari Server will be **rei-ambarisrv-iy.westeurope.cloudapp.azure.com** and the Linux User will be **linuxadmin**.
+
 Login to the Ambari Server via SSH using the DNS Name of it's associated Public IP Address. Syntax is below:
 
 ```bash
 <AMBARI_SERVER_NAME>.<LOCATION>.cloudapp.azure.com
 ```
 
-Once you are logged in, change over to root. Type the password of the **linuxadmin** user when prompted.
+Once you are logged in, change over to **root**. Type the password of the **linuxadmin** user when prompted.
 
 ```bash
 sudo su
@@ -108,7 +112,7 @@ Run the following command to retrieve the FQDNs of all of the Hadoop Servers.
 cat /etc/hosts
 ```
 
-Sample Result:
+Sample Output:
 
 ```bash
 10.0.1.4 rei-ambarisrv-iy.westeurope.cloudapp.azure.com rei-ambarisrv-iy
@@ -124,7 +128,7 @@ Next, run the following command to retrieve the SSH Private Key generated during
 cat /root/.ssh/id_rsa
 ```
 
-Sample Result:
+Sample Output:
 
 ```bash
 -----BEGIN RSA PRIVATE KEY-----
@@ -160,13 +164,13 @@ Make note of the SSH Private Key for the next section.
 
 # Deploying the Hadoop Cluster using Ambari
 
-Once the ARM Template Deployment is complete, use the following syntax access the Amabari Web UI.
+For this section, the Ambari Web UI will be [**http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080**](http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080).
+
+Once the ARM Template Deployment is complete, use the following syntax to access the **Ambari Web UI**.
 
 ```powershell
 http://<AMBARI_SERVER_NAME>.<LOCATION>.cloudapp.azure.com:8080
 ```
-
-For the rest of this section, the Ambari Web UI will be **http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080**
 
 ![deploying-hadoop-in-azure-using-ambari-000]({{ site.github.url }}/media/deploying-hadoop-in-azure-using-ambari-000.jpg)
 
@@ -245,3 +249,10 @@ Afterwards, you will be redirected to the Ambari Dashboard.
 
 # Closing
 
+This article covers how to deploy a Hadoop Cluster using Apache Ambari running on Linux Virtual Machines in Azure from an ARM Template.
+
+# Additional Resources
+
+[Apache Ambari](https://cwiki.apache.org/confluence/display/AMBARI/Ambari)
+
+[Hortonworks Sandbox] (http://hortonworks.com/products/sandbox/)
