@@ -191,6 +191,20 @@
             }
           },
           {
+            "name": "allow-grafana-inbound",
+            "properties": {
+              "description": "Allow Grafana traffic through port 3000.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "3000",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 101,
+              "direction": "Inbound"
+            }
+          },
+          {
             "name": "allow-spark-env-inbound",
             "properties": {
               "description": "Allow Spark Environment traffic through port 4040.",
@@ -200,7 +214,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 101,
+              "priority": 102,
               "direction": "Inbound"
             }
           },
@@ -214,7 +228,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 102,
+              "priority": 103,
               "direction": "Inbound"
             }
           },
@@ -228,7 +242,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 103,
+              "priority": 104,
               "direction": "Inbound"
             }
           },
@@ -242,7 +256,35 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 104,
+              "priority": 105,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-storm-ui-inbound",
+            "properties": {
+              "description": "Allow Storm UI traffic through port 8744.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8744",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 106,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-solr-admin-ui-inbound",
+            "properties": {
+              "description": "Allow Solr Admin UI traffic through port 8886.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "8886",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 107,
               "direction": "Inbound"
             }
           },
@@ -256,7 +298,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 105,
+              "priority": 108,
               "direction": "Inbound"
             }
           },
@@ -270,7 +312,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 106,
+              "priority": 109,
               "direction": "Inbound"
             }
           },
@@ -284,7 +326,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 107,
+              "priority": 110,
               "direction": "Inbound"
             }
           },
@@ -298,7 +340,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 108,
+              "priority": 111,
               "direction": "Inbound"
             }
           },
@@ -312,7 +354,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 109,
+              "priority": 112,
               "direction": "Inbound"
             }
           },
@@ -326,7 +368,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 110,
+              "priority": 113,
               "direction": "Inbound"
             }
           },
@@ -340,7 +382,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 111,
+              "priority": 114,
               "direction": "Inbound"
             }
           },
@@ -354,7 +396,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 112,
+              "priority": 115,
               "direction": "Inbound"
             }
           },
@@ -368,7 +410,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 113,
+              "priority": 116,
               "direction": "Inbound"
             }
           },
@@ -382,7 +424,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 114,
+              "priority": 117,
               "direction": "Inbound"
             }
           },
@@ -396,7 +438,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 115,
+              "priority": 118,
               "direction": "Inbound"
             }
           },
@@ -410,7 +452,21 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 116,
+              "priority": 119,
+              "direction": "Inbound"
+            }
+          },
+          {
+            "name": "allow-accumulo-monitor-ui",
+            "properties": {
+              "description": "Allow Accumulo Monitor UI traffic through port 50095.",
+              "protocol": "Tcp",
+              "sourcePortRange": "*",
+              "destinationPortRange": "50095",
+              "sourceAddressPrefix": "*",
+              "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
+              "access": "Allow",
+              "priority": 120,
               "direction": "Inbound"
             }
           },
@@ -424,7 +480,7 @@
               "sourceAddressPrefix": "*",
               "destinationAddressPrefix": "[concat(parameters('subnetPrefix'))]",
               "access": "Allow",
-              "priority": 117,
+              "priority": 121,
               "direction": "Inbound"
             }
           }
