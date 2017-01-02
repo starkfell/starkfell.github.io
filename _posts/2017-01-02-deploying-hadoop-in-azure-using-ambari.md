@@ -2,266 +2,96 @@
 layout: post
 comments: true
 title: "Deploying Hadoop in Azure using Ambari"
-date: 2016-12-05
+date: 2017-01-02
 ---
+
+This article covers how to deploy a Hadoop Cluster in Azure using Apache Ambari from an ARM Template.
+
+# Overview
 
 Setting up an HDInsight Cluster in Azure is easy to do using the Marketplace Offering in the Azure Portal. If you are already familiar with Hadoop, you can have a cluster setup and ready
 for Production use in less than 30 minutes.
 
-However, if you are just trying to get started to use Hadoop; the default configuration of deploying a hadoop Cluster in Azure can be quite expensive, roughly $3.50/hr. (This can be reduced to $1.75/hr
-by changing the default configuration from 4 worker nodes to 1.)
+However, if you are just trying to get started to use Hadoop; the default configuration of deploying a Hadoop Cluster in Azure can be quite expensive, roughly $3.50/hr. (This can be reduced to $1.75/hr
+by changing the default configuration from 4 worker nodes to 1.). Additionally, the smallest Azure VMs that you can deploy in HDInsight are A3 or DS3 Servers.
+
+Another option available to you to learn Hadoop is to deploy the Hortonworks Sandbox with HDP 2.4 VM in the Azure Marketplace. This will install almost all of the currently available Hadoop services onto
+a single stand-alone VM.
 
 
+In my case, I wanted the ability to deploy Hadoop in Azure on Linux VMs on any size of my choosing and to be able to control the entire deployment of Hadoop and Hadoop related services using Apache Ambari.
+This means that you have several options available to you if you decide to test out Hadoop using the ARM Template below, such as:
+
+* Deploying Hadoop to VMs smaller than A3 or DS1v2.
+* Deploy Hadoop into a multi-node environment.
+* Deploying minimal Hadoop features.
+* Deploying only the Hadoop features you want.
 
 
-# Overview
-
-This article is the third in a series of blog posts on setting up continuous deployment to Nano Server in Azure.
-
-* [Setting up Continuous Deployment to Nano Server in Azure - Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)
-* [Setting up Continuous Deployment to Nano Server in Azure - Part 2](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p2/)
-* [Setting up Continuous Deployment to Nano Server in Azure - Part 3](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p3/)
+While the ability to deploy a Hadoop Cluster to a set of A1 or DS1v2 VMs isn't recommended, it allows you to the opportunity to figure out several different ways to *break* Hadoop; and from my personal
+experience, *breaking* a product is a great way to learn it.
 
 
-Using a webhook to update a web application is not inherently very secure in that as soon you have access to the URL, you have the ability to manipulate or trigger whatever endpoint it is pointing
-to. In most cases while you are developing an application, you can accidentally trigger a build process to kick-off without realizing it and cause your web application to tempoarily become unavailable.
-From an exploitation standpoint, you could constantly trigger a webhook causing a build process to run indefinitely thus keeping a web application in unstable state.
+## Introduction to Apache Amabri
 
-This article will cover one method you can take to prevent this type of exploit from happening by explaining how to create a webhook for an Azure Automation Runbook, store it in an Azure Key Vault,
-and add then add webhook to a GitHub Repository while ensuring that the URL of the webhook is never displayed in plain text throughout the process.
+Apache Ambari enables system administrators to provision, manage and monitor a Hadoop cluster as well as to integrate with an existing enterprise infrastructure. By using Ambari, you can control the deployment,
+management, and removal of the following Hadoop related services in a Hadoop Cluster.
 
-This article will cover the following:
-
-* Create a new Webhook for the existing Azure Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**
-* Store the Webhook URL in an existing Azure Key Vault
-* Create a new Personal Access Token in GitHub
-* Add the Webhook to GitHub using the GitHub API and PowerShell
+* HDFS
+* YARN + MapReduce2
+* Tez
+* Hive
+* HBase
+* Pig
+* Sqoop
+* Oozie
+* ZooKeeper
+* Falcon
+* Storm
+* Flume
+* Accumulo
+* Ambari Infra
+* Ambari Metrics
+* Atlas
+* Kafka
+* Knox
+* Log Search
+* SmartSense
+* Spark
+* Spark2
+* Zeppelin Notebook
+* Mahout
+* Slider
 
 # Prerequisites
 
-**All resources previously deployed to Azure in this series are required to be in place before continuing.**
+Before deployuing the ARM Template below, make sure you have enough Azure Core Resources available before deploying.
 
-Additionally the following items are required.
+# Deploy the new Hadoop Infrastructure to Azure using an ARM Template
 
-* Follow the instructions below on a host running Windows 8.1 and higher or Windows Server 2016 RTM.
-* Verify that you have access to a Co-Administrator or an Azure Organizational Account with access to an existing Azure Subscription.
-* A basic understanding of GitHub as well as access to a Free GitHub Account is required.
+Clicking on the **Deploy to Azure** button below will deploy the following
 
-# Create a secure Webhook for the Runbook
+* Single Ambari Server VM
+* Multiple Hadoop Server VMs
 
-Open up an elevated PowerShell prompt and login to Azure.
+Once the Infrastructure is deployed, the following actions will take place on the Ambari Server VM
 
-```powershell
-Add-AzureRmAccount
-```
+* DNS will be installed and the provided Domain Name in the ARM Template will be registered
+* The Ambari Server repo is downloaded and installed on the Ambari VM.
+* All deployed Servers will have their **/etc/hosts** file modified to contain the IP Address, FQDN, and Hostname of all deployed Servers
+* iptables and Transparent Huge Pages is disabled on all Servers
 
-Make sure to change over to the Subscription where you deployed the resources in the previous posts.
+<a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstarkfell%2Fstarkfell.github.io%2Fmaster%2Farm-templates%2Fdeploy-hadoop%2Fvs-project%2Fdeploy-hadoop%2FTemplates%2Fazuredeploy.json" target="_blank">
+    <img src="http://azuredeploy.net/deploybutton.png"/>
+</a>
 
-```powershell
-Select-AzureRmSubscription -SubscriptionId <SUBSCRIPTION_ID>
-```
+All of the deployed VMs are externally accesssible via SSH on Port 22.
 
-Create a new Webhook for the Azure Runbook, **rb-Deploy-CoreWebAppDemo-To-Nano-Server**.
+Below is a list of links you will find useful in accessing the deployed Hadoop Resources.
 
-Syntax:
 
-```powershell
-$WebhookURI = (New-AzureRmAutomationWebhook `
-    -Name secure-webhook `
-    -RunbookName rb-Deploy-CoreWebAppDemo-To-Nano-Server `
-    -IsEnabled:$true `
-    -ExpiryTime (Get-Date).AddYears(1) `
-    -ResourceGroupName <AZURE_AUTOMATION_ACCOUNT_RESOURCE_GROUP> `
-    -AutomationAccountName <AZURE_AUTOMATION_ACCOUNT> `
-    -Force).WebhookURI
-```
+# Deploying the Hadoop Cluster using Ambari
 
-Example:
 
-```powershell
-$WebhookURI = (New-AzureRmAutomationWebhook `
-    -Name secure-webhook `
-    -RunbookName rb-Deploy-CoreWebAppDemo-To-Nano-Server `
-    -IsEnabled:$true `
-    -ExpiryTime (Get-Date).AddYears(1) `
-    -ResourceGroupName nano-automation `
-    -AutomationAccountName nano-automation `
-    -Force).WebhookURI
-```
+# Closing
 
-The Webhook URI that is normally shown when you run this command is stored in the **$WebhookURI** variable. At this point, you can echo out the variable
-in any manner you choose if you want to see the Webhook URL.
-
-# Add the new Webhook to Azure Key Vault
-
-In order to store the Webhook URI in Azure Key Vault, the value of the Webhook needs to be converted into a secure string.
-
-```powershell
-$SecuredWebhookURI = ConvertTo-SecureString -String $WebhookURI -AsPlainText -Force
-```
-
-Add the Webhook URI to the Azure Key Vault created in **[Part 1](http://starkfell.github.io/continuous-deployment-to-nano-server-in-azure-p1/)**
-
-Syntax:
-
-```powershell
-Set-AzureKeyVaultSecret `
-    -VaultName <KEY_VAULT_NAME> `
-    -Name webhook-uri `
-    -SecretValue $SecuredWebhookURI `
-    | Out-Null
-```
-
-Example:
-
-```powershell
-Set-AzureKeyVaultSecret `
-    -VaultName nanokeyvaultf4ac `
-    -Name webhook-uri `
-    -SecretValue $SecuredWebhookURI `
-    | Out-Null
-```
-
-# Create a new Personal Access Token in GitHub
-
-In order to add the Webhook URL programatically to GitHub, a Personal Access Token needs to be generated as an alternative for using Basic Authentication. Additionally,
-we can scope the type of access the Personal Access Token has in the GitHub Account as well as remove it at any point in time in the future.
-
-Start by going to **[https://github.com/settings/tokens](https://github.com/settings/tokens)** and logging into your GitHub Account.
-
-You should be on the **Personal Access tokens** page, click on the **Generate new token** button.
-
-![continuous-deployment-to-nano-server-in-azure-p3-001]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-001.jpg)
-
-In the **Token description** section type in **azure automation webhook**. Grant the webhook **admin:repo_hook** rights and then scroll down to the bottom of the page
-and click on the **Generate token** button.
-
-![continuous-deployment-to-nano-server-in-azure-p3-002]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-002.jpg)
-
-*Note: If you include a Token somewhere in your GitHub Repository in clear text, GitHub will automatically revoke the Token and notify you via e-mail.*
-
-# Add the new Personal Access Token to Azure Key Vault
-
-Copy the Personal Access Token and convert it into a secure string in the elevated PowerShell prompt from earlier.
-
-```powershell
-$SecuredToken = ConvertTo-SecureString -String "fff9af39fe47f89e54e87866adc1ee9e9dec000d" -AsPlainText -Force
-```
-
-Syntax:
-
-```powershell
-Set-AzureKeyVaultSecret `
-    -VaultName <KEY_VAULT_NAME> `
-    -Name github-pat `
-    -SecretValue $SecuredToken
-```
-
-Example:
-
-```powershell
-Set-AzureKeyVaultSecret `
-    -VaultName nanokeyvaultf4ac `
-    -Name github-pat `
-    -SecretValue $SecuredToken
-```
-
-# Add the Webhook to GitHub from Azure Key Vault using PowerShell
-
-In the same elevated PowerShell prompt from earlier, retrieve the value of the Personal Access Token in clear text and leave it in a variable.
-
-```powershell
-$Token = (Get-AzureKeyVaultSecret -VaultName nanokeyvaultf4ac -Name github-pat).SecretValueText
-```
-
-Retrieve the value of the Webhook URI from the Azure Key Vault in clear text but leave it in a variable.
-
-```powershell
-$WebhookURI = (Get-AzureKeyVaultSecret -VaultName nanokeyvaultf4ac -Name webhook-uri).SecretValueText
-```
-
-Create the payload to add the webhook to GitHub.
-
-```powershell
-$GitHub_Webhook = @{
-    name = "web"
-    active = $true
-    events=@("push")
-    config=@{
-        content_type = "json"
-        insecure_ssl = 0
-        url = "$WebhookURI"
-    }
-}
-```
-
-Convert the payload to JSON.
-
-```powershell
-$GitHub_Webhook_JSON = $GitHub_Webhook | ConvertTo-Json
-```
-
-Add the Webhook to GitHub using the GitHub API from PowerShell.
-
-Syntax:
-
-```powershell
-Invoke-RestMethod `
-    -Method Post `
-    -Uri https://api.github.com/repos/<GITHUB_USERNAME>/<REPOSITORY_NAME>/hooks `
-    -Body "$GitHub_Webhook_JSON" `
-    -Headers @{ "Authorization" = "token $Token" } | Out-Null
-```
-
-Example:
-
-```powershell
-Invoke-RestMethod `
-    -Method Post `
-    -Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
-    -Body "$GitHub_Webhook_JSON" `
-    -Headers @{ "Authorization" = "token $Token" } | Out-Null
-```
-
-Go to the **nano-deploy-demo** repository settings of where you added the Webhook and verify it is there.
-
-![continuous-deployment-to-nano-server-in-azure-p3-003]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-003.jpg)
-
-Lastly, if you go into the Jobs view of the Azure Runbook, you should see a job running or completed that was triggered by the addition of the Webhook in GitHub.
-This is because once a Webhook is added to GitHub, GitHub will attempt to trigger the Webhook to verify connectivity with it's intended endpoint. This is something
-you will want to be aware of before adding Webhooks in your Production Environments to ensure you do not accidentally kick off a deployment process because of the wrong event.
-
-![continuous-deployment-to-nano-server-in-azure-p3-004]({{ site.github.url }}/media/continuous-deployment-to-nano-server-in-azure-p3-004.jpg)
-
-# Retrieve the Webhook URL using the GitHub API (Optional)
-
-Run the command below to see the full details of the Webhook in GitHub.
-
-*Warning: This will display the Webhook URL in clear text.*
-
-Syntax:
-
-```powershell
-Invoke-RestMethod `
-    -Method Get `
-    -UseBasicParsing `
-    -Uri https://api.github.com/repos/<GITHUB_USERNAME>/<REPOSITORY_NAME>/hooks `
-    -Headers @{ "Authorization" = "token $Token" }
-```
-
-Example:
-
-```powershell
-Invoke-RestMethod `
-    -Method Get `
-    -UseBasicParsing `
-    -Uri https://api.github.com/repos/starkfell/nano-deploy-demo/hooks `
-    -Headers @{ "Authorization" = "token $Token" }
-```
-
-## Closing
-
-In this article we covered how to create a new Webhook for an Azure Runbook, store the Webhook in Azure Key Vault and then add the Webhook to
-GitHub without the Webhook ever appearing in clear text during this process.
-
-The next article will cover how to parse Webhook Data from GitHub in Azure Automation Runbooks.
