@@ -35,7 +35,7 @@ Once the Infrastructure is deployed, the following actions will take place on th
 * The Ambari Server repo is downloaded and installed on the Ambari VM.
 * All deployed Servers will have their **/etc/hosts** file modified to contain the IP Address, FQDN, and Hostname of all deployed Servers.
 * The FQDN for each Server will be based upon the location where the ARM Template is deployed to, i.e. - West Europe = westeurope.cloudapp.azure.com.
-* iptables and Transparent Huge Pages is disabled on all Servers
+* iptables and Transparent Huge Pages is disabled on all Servers.
 
 <a href="https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fstarkfell%2Fstarkfell.github.io%2Fmaster%2Farm-templates%2Fdeploy-hadoop%2Fvs-project%2Fdeploy-hadoop%2FTemplates%2Fazuredeploy.json" target="_blank">
     <img src="http://azuredeploy.net/deploybutton.png"/>
@@ -255,6 +255,6 @@ This article covers how to deploy a Hadoop Cluster using Apache Ambari running o
 
 ## Additional Resources
 
-[Apache Ambari](https://cwiki.apache.org/confluence/display/AMBARI/Ambari)
+**[Apache Ambari](https://cwiki.apache.org/confluence/display/AMBARI/Ambari)**
 
-[Hortonworks Sandbox](http://hortonworks.com/products/sandbox/)
+**[Hortonworks Sandbox](http://hortonworks.com/products/sandbox/)**
