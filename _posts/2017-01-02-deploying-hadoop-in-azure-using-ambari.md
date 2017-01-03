@@ -166,7 +166,7 @@ management, and removal of the following Hadoop related services in a Hadoop Clu
 * Slider
 
 
-For this section, the Ambari Web UI will be [**http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080**](http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080).
+For this section, the Ambari Web UI will be **[http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080](http://rei-ambarisrv-iy.westeurope.cloudapp.azure.com:8080)**.
 
 Once the ARM Template Deployment is complete, use the following syntax to access the **Ambari Web UI**.
 
