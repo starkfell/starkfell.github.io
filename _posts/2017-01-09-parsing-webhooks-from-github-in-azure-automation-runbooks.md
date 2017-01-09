@@ -2,7 +2,7 @@
 layout: post
 comments: true
 title: "Parsing Webhook Data from GitHub in Azure Automation Runbooks"
-date: 2016-12-05
+date: 2017-01-09
 ---
 
 The article covers how to parse Webhook Data from GitHub in Azure Automation Runbooks.
