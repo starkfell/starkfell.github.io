@@ -251,14 +251,14 @@ As you can see, both have a similar overall structure, however they have differe
 | hook | after |
 | respository | created |
 | sender | deleted |
-| ---- | forced |
-| ---- | base_ref |
-| ---- | compare |
-| ---- | commits |
-| ---- | head_commit |
-| ---- | repository |
-| ---- | pusher |
-| ---- | sender |
+|  | forced |
+|  | base_ref |
+|  | compare |
+|  | commits |
+|  | head_commit |
+|  | repository |
+|  | pusher |
+|  | sender |
 
 Because of these differences, it is necessary to parse the Payloads from each of these sources based on their structure.
 
