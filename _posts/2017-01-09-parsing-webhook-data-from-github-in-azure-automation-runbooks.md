@@ -244,8 +244,9 @@ from a Webhook that was triggered from a Repo Commit. Some value pairs have been
 
 As you can see, both have a similar overall structure, however they have different primary sections as well as unique data.
 
-| **Inital Webhook JSON Payload**          | **Triggered Webhook from Repo Commit Payload**          |
+|                                          |                                                         |
 |:----------------------------------------:|:-------------------------------------------------------:|
+| **Inital Webhook JSON Payload**          | **Triggered Webhook from Repo Commit Payload**          |
 | zen                                      | ref                                                     |
 | hook_id                                  | before                                                  |
 | hook                                     | after                                                   |
