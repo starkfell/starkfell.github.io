@@ -246,7 +246,7 @@ As you can see, both have a similar overall structure, however they have differe
 
 |                                               |                                                         |
 |:---------------------------------------------:|:-------------------------------------------------------:|
-| **Inital Webhook JSON Payload**               | **Triggered Webhook from Repo Commit Payload**          |
+|      --**Inital Webhook Payload**--           |     --**Triggered Webhook from Repo Commit Payload**--  |
 | zen                                           | ref                                                     |
 | hook_id                                       | before                                                  |
 | hook                                          | after                                                   |
