@@ -244,21 +244,21 @@ from a Webhook that was triggered from a Repo Commit. Some value pairs have been
 
 As you can see, both have a similar overall structure, however they have different primary sections as well as unique data.
 
-| 1 | Inital Webhook JSON Payload Sections | Triggered Webhook from Repo Commit Payload Sections |
-| - | ------------------------------------ | --------------------------------------------------- |
-| 1 | zen | ref |
-| 1 | hook_id | before |
-| 1 | hook | after |
-| 1 | respository | created |
-| 1 | sender | deleted |
-| 1 | ---- | forced |
-| 1 | ---- | base_ref |
-| 1 | ---- | compare |
-| 1 | ---- | commits |
-| 1 | ---- | head_commit |
-| 1 | ---- | repository |
-| 1 | ---- | pusher |
-| 1 | ---- | sender |
+| Inital Webhook JSON Payload Sections | Triggered Webhook from Repo Commit Payload Sections |
+|:------------------------------------:|:---------------------------------------------------:|
+| zen | ref |
+| hook_id | before |
+| hook | after |
+| respository | created |
+| sender | deleted |
+| ---- | forced |
+| ---- | base_ref |
+| ---- | compare |
+| ---- | commits |
+| ---- | head_commit |
+| ---- | repository |
+| ---- | pusher |
+| ---- | sender |
 
 Because of these differences, it is necessary to parse the Payloads from each of these sources based on their structure.
 
