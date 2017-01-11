@@ -288,7 +288,7 @@ that when added to an Azure Automation Account and configured with a Webhook in 
 * The Username of the person who made the commit
 * The E-mail Address of the person who made the commit
 
-The Runbook code is below.
+The Runbook code is below. The details of how it works are included in the Description and inline comments.
 
 ```powershell
 <#
@@ -355,10 +355,12 @@ If ($WebhookData)
     # E-mail address of the person pushed the update.
     $Email = $RequestBody.pusher.email
 
+    # Results are returned and the Runbook exits.
     Write-Output "Commit Message:  $Message "
     Write-Output "Name:            $Name "
     Write-Output "Username:        $Username "
     Write-Output "E-mail Address:  $Email "
+    exit 0
 }
 
 # If this Runbook is not triggered from a Webhook or no WebhookData is found, exit.
