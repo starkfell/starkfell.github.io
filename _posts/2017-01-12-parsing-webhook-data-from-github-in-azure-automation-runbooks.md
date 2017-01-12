@@ -377,7 +377,7 @@ If (!$WebhookData)
 ## Closing
 
 This article covered the basic structure of how Webhook Data from GitHub is passed to an Azure Automation Runbook and how it can be parsed
-in an Azure Automation Runbook using the included sample Runbook in this post.
+using the sample Runbook included in this post.
 
 ## Additional Resources
 
