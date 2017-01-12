@@ -2,7 +2,7 @@
 layout: post
 comments: true
 title: "Parsing Webhook Data from GitHub in Azure Automation Runbooks"
-date: 2017-01-09
+date: 2017-01-12
 ---
 
 The article covers the basic structure of how Webhook Data from GitHub is passed to an Azure Automation Runbook and how it can be parsed using a sample Runbook included in this post.
