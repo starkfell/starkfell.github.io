@@ -5,8 +5,7 @@ title: "Parsing Webhook Data from GitHub in Azure Automation Runbooks"
 date: 2017-01-09
 ---
 
-The article covers the basic structure of how Webhook Data from GitHub is passed to an Azure Automation Runbook and how it can be parsed
-in an Azure Automation Runbook using the included sample Runbook in this post.
+The article covers the basic structure of how Webhook Data from GitHub is passed to an Azure Automation Runbook and how it can be parsed using a sample Runbook included in this post.
 
 # Overview
 
@@ -24,12 +23,16 @@ This article will cover the following:
 
 ## Prerequisites
 
-* Access to an existing Azure Subscription and the rights to deploy or manage an Azure Automation Account.
+* Access to an existing Azure Subscription with the rights to deploy and manage an Azure Automation Account.
 * An existing GitHub Account.
 
-## Overview of GitHub Webhook JSON Structure
+## GitHub Webhook Payloads
 
-Below are two different Webhook Payloads. The first examples is part of a from a Webhook that has just been created in GitHub. The second is from a Webhook Payload
+GitHub Webhooks can be setup for a variety of different events that may take place against a specific organization or repository in GitHub. By default, webhooks are
+subscribed to *push* events. Be aware that there a webhook will not be fired from GitHub if the payload is larger than 5 MB. Additional documentation about GitHub Webhooks
+can be found in the *Additional Resources* section at the end of this article.
+
+Below are two different Webhook Payloads from GitHub. The first examples is part of a from a Webhook that has just been created in GitHub. The second is from a Webhook Payload
 from a Webhook that was triggered from a Repo Commit. Some value pairs have been removed from each example to keep the Some Values have been removed to keep the size of the sample small.
 
 ### Inital Webhook JSON Payload
@@ -379,3 +382,5 @@ in an Azure Automation Runbook using the included sample Runbook in this post.
 ## Additional Resources
 
 **[Azure Automation Webhooks](https://docs.microsoft.com/en-us/azure/automation/automation-webhooks)**
+
+**[GitHub Webhooks](https://developer.github.com/webhooks/)**
