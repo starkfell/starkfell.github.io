@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Notes on using the acs-engine to deploy K8s in Azure - In Progress."
+title: "Using the acs-engine to deploy K8s in Azure - In Progress."
 date: 2018-02-08
 ---
 
