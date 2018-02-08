@@ -41,12 +41,24 @@ Below is a quick way to generate an SSH Key using Bash.
 ssh-keygen -t rsa -b 2048 -C "azure-k8s-dev-access-key" -f ~/.ssh/azure-k8s-dev-access-key -N ''
 ```
 
+## Create a Service Principal in the Azure Subscription
+
+Use the following code to create a Service Principal in the Azure Subscription using bash.
+
+```bash
+    az ad sp create-for-rbac \
+    --role="Contributor" \
+    --name="azure-k8s-dev" \
+    --password="UseAzureKeyVault1!" \
+    --scopes="/subscriptions/d5b31b94-d91c-4ef8-b9d0-30193e6308ee"
+```
+
 The acs-engine Cluster Definition Files are JSON files that allow you to configure several options about your K8s Cluster. Below are the primary options that you should probably be most aware of.
 
 ```text
-orchestratorType     - Kubernetes
-orchestratorVersion
-masterProfile
+orchestratorType         - Kubernetes
+orchestratorVersion      - 1.6.1, 1.7.3, 1.8.2, etc...
+masterProfile            
 agentPoolProfiles
 linuxProfile
 windowsProfile
@@ -106,11 +118,3 @@ azure-k8s-dev --> kubeconfig
                   kubeconfig --> kubeconfig.westus.json
 ```
 
-## GitHub Webhook Payloads
-
-GitHub Webhooks can be setup for a variety of different events that may take place against a specific organization or repository in GitHub. By default, webhooks are
-subscribed to *push* events. Be aware that there a webhook will not be fired from GitHub if the payload is larger than 5 MB. Additional documentation about GitHub Webhooks
-can be found in the *Additional Resources* section at the end of this article.
-
-Below are two different Webhook Payloads from GitHub. The first examples is part of a from a Webhook that has just been created in GitHub. The second is from a Webhook Payload
-from a Webhook that was triggered from a Repo Commit. Some value pairs have been removed from each example to keep the Some Values have been removed to keep the size of the sample small.
