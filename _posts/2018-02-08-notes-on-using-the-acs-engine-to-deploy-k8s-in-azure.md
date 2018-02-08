@@ -1,37 +1,31 @@
 ---
 layout: post
 comments: true
-title: "Quick Notes on using the acs-engine to deploy K8s in Azure"
+title: "Notes on using the acs-engine to deploy K8s in Azure - In Progress."
 date: 2018-02-08
 ---
 
-The article covers the basic structure of how Webhook Data from GitHub is passed to an Azure Automation Runbook and how it can be parsed using a sample Runbook included in this post.
+Over the past 6 months, I have had to use the acs-engine to deploy and maintain K8s Clusters in Azure that are running both Linux and Windows Nodes in the same cluster. This type of configuration is only possible to deploy using the acs-engine and isn't supported by Microsoft (Surprise!). The first time you use the acs-engine can be incredibly daunting as it is the complete opposite experience of deploying a Kubernetes cluster using acs or aks in the Azure CLI; instead of having everything managed for you, you are responsible for managing the configuration and deployment of the Cluster. As such, you can configure just about every aspect of your Kubernetes Cluster before deploying it.
+
+While I recommend going through the **[Official Documenation](https://github.com/Azure/acs-engine)**. I wanted to provide a more succinct version for reference and to help speed up the on-boarding process for others getting started.
 
 # Overview
 
-This article will cover the following:
+This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine.
 
-* Basic structure of Webhook Data Payloads from GitHub.
-* Sample Runbook showing how to parse Webhook Data Payloads triggered from GitHub.
-
-The Name of the Service Principal and DNS Prefix for the documentation below is **azure-k8s-dev**.
+* Installing the ACS Engine
+* Generating an SSH Key
+* Create a Service Principal in the Azure Subscription
 
 ## Prerequisites
 
-* Access to an existing Azure Subscription with the rights to deploy and manage an Azure Automation Account.
-* An existing GitHub Account.
+* Access to an existing Azure Subscription and Administrative Rights to the Subscription
+* A Linux VM with the Azure CLI Installed
+* 5 to 10 CPU Cores available in your Azure Subscription for Standard_D2_v2 VMs.
 
-## acs-engine Workflow
+The Name of the Service Principal and DNS Prefix for the documentation below is **azure-k8s-dev**.
 
-Below is a diagram of the order you should take to deploy a K8s Cluster using the acs-engine.
-
-```mermaid
-graph TD;
-id1[Generate SSH Key]-->id2[Create a Service Principal in Azure or use an existing one];
-id2[Create a Service Principal in Azure or use an existing one]-->id3[Edit your Cluster Definition File];
-id3[Edit your Cluster Definition File]-->id4[Generate ARM Templates from the Cluster Definition File];
-id4[Generate ARM Templates from the Cluster Definition File]-->id5[Deploy the ARM Templates in Azure];
-```
+The steps below *should* work on Bash on Ubuntu for Windows but haven't been tested.
 
 ## Install the ACS Engine
 
