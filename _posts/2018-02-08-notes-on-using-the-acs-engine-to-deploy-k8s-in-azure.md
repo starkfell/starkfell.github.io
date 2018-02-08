@@ -13,21 +13,60 @@ While I recommend going through the **[Official Documenation](https://github.com
 
 This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine.
 
+* Installing Azure CLI 2.0
+* Instll the latest version of kubectl
 * Installing the ACS Engine
 * Generating an SSH Key
 * Create a Service Principal in the Azure Subscription
+* Create a Cluster Definition File
 
 ## Prerequisites
 
 * Access to an existing Azure Subscription and Administrative Rights to the Subscription
 * A Linux VM with the Azure CLI Installed
-* 5 to 10 CPU Cores available in your Azure Subscription for Standard_D2_v2 VMs.
+* 5 to 10 CPU Cores available in your Azure Subscription for Standard_D2_v2 VMs
 
 The Name of the Service Principal and DNS Prefix for the documentation below is **azure-k8s-dev**.
 
 The steps below *should* work on Bash on Ubuntu for Windows but haven't been tested.
 
+## Installing Azure CLI 2.0
+
+Run the following command to install Azure CLI 2.0.
+
+```bash
+echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main" | sudo tee /etc/apt/sources.list.d/azure-cli.list && \
+sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 417A0893 && \
+sudo apt-get install -y apt-transport-https && \
+sudo apt-get update && sudo apt-get install -y azure-cli
+```
+
+## Install the latest version of kubectl
+
+Run the following command to install the latest version of **kubectl**.
+
+```bash
+curl -LO https://storage.googleapis.com/kubernetes-release/release/$(curl -s https://storage.googleapis.com/kubernetes-release/release/stable.txt)/bin/linux/amd64/kubectl && \
+chmod +x ./kubectl && \
+sudo mv ./kubectl /usr/local/bin/kubectl
+```
+
 ## Install the ACS Engine
+
+If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.12.5**, run the following command.
+
+```bash
+wget https://github.com/Azure/acs-engine/releases/download/v0.12.5/acs-engine-v0.12.5-linux-amd64.tar.gz && \
+tar -xzvf acs-engine-v0.12.5-linux-amd64.tar.gz && \
+sudo cp acs-engine-v0.12.5-linux-amd64/acs-engine /usr/bin/acs-engine && \
+sudo cp acs-engine-v0.12.5-linux-amd64/acs-engine /usr/local/bin/acs-engine
+```
+
+If you want to install a particular version of the acs-engine, run the following command.
+
+```bash
+https://github.com/Azure/acs-engine/tags
+```
 
 ## Generate an SSH Key
 
@@ -49,9 +88,9 @@ Use the following code to create a Service Principal in the Azure Subscription u
     --scopes="/subscriptions/d5b31b94-d91c-4ef8-b9d0-30193e6308ee"
 ```
 
-## Create or Edit a Cluster Definition File
+## Create a Cluster Definition File
 
-Several Cluster Definition File examples can be found in the **[ACS Engine GitHub Repository](https://github.com/Azure/acs-engine/tree/master/examples)**.
+Several Cluster Definition File examples can be found in the **[ACS Engine GitHub Repository](https://github.com/Azure/acs-engine/tree/master/examples)**. The Cluster Definition File that we will be using here will be a modified version of an existing example.
 
 The acs-engine Cluster Definition Files are JSON files that allow you to configure several options about your K8s Cluster. Below are the some of the more common options you will modify.
 
