@@ -62,11 +62,7 @@ sudo cp acs-engine-v0.12.5-linux-amd64/acs-engine /usr/bin/acs-engine && \
 sudo cp acs-engine-v0.12.5-linux-amd64/acs-engine /usr/local/bin/acs-engine
 ```
 
-If you want to install a particular version of the acs-engine, run the following command.
-
-```bash
-https://github.com/Azure/acs-engine/tags
-```
+If you want to install a particular version of the acs-engine, visit https://github.com/Azure/acs-engine/tags.
 
 ## Generate an SSH Key
 
@@ -78,7 +74,21 @@ ssh-keygen -t rsa -b 2048 -C "azure-k8s-dev-access-key" -f ~/.ssh/azure-k8s-dev-
 
 ## Create a Service Principal in the Azure Subscription
 
-Use the following code to create a Service Principal in the Azure Subscription using bash.
+Run the commands below using the Azure CLI.
+
+Login to your Azure Subscription.
+
+```bash
+az login -u account.name@microsoft.com
+```
+
+Set the Azure Subscription you want to work with.
+
+```bash
+az account set -s d5b31b94-d91c-4ef8-b9d0-30193e6308ee
+```
+
+Run the following command create a Service Principal in the Azure Subscription.
 
 ```bash
     az ad sp create-for-rbac \
@@ -86,6 +96,20 @@ Use the following code to create a Service Principal in the Azure Subscription u
     --name="azure-k8s-dev" \
     --password="UseAzureKeyVault1!" \
     --scopes="/subscriptions/d5b31b94-d91c-4ef8-b9d0-30193e6308ee"
+```
+
+You should get a similar response back after a few seconds. Additionally, you should see the App in the **App Registrations** section in the [Azure Portal](https://portal.azure.com)
+
+```bash
+Retrying role assignment creation: 1/36
+Retrying role assignment creation: 2/36
+{
+  "appId": "fc045a69-cc77-4331-aa07-e70b682a414e",
+  "displayName": "azure-k8s-dev",
+  "name": "http://azure-k8s-dev",
+  "password": "UseAzureKeyVault1!",
+  "tenant": "b7ede2be-6495-48d3-ace8-24d68a53cf2d"
+}
 ```
 
 ## Create a Cluster Definition File
@@ -104,9 +128,169 @@ windowsProfile           - the admin Username and Password used to access the Wi
 servicePrincipalProfile  - The Service Principal Client ID and Service Principal Password.
 ```
 
-the agentPoolProfiles section allows you to define multiple Pools of whatever OS type you want; this is how you can run Linux and Windows Nodes in a single K8s Cluster in Azure.
+For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.9.2 using the following cluster defintion file.
 
-An sample definition is shown below:
+```json
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes",
+      "orchestratorRelease": "1.9"
+    },
+    "masterProfile": {
+      "count": 1,
+      "dnsPrefix": "",
+      "vmSize": "Standard_D2_v2"
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "linuxpool1",
+        "count": 2,
+        "vmSize": "Standard_D2_v2",
+        "availabilityProfile": "AvailabilitySet"
+      }
+    ],
+    "linuxProfile": {
+      "adminUsername": "linuxadmin",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": ""
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "clientId": "",
+      "secret": ""
+    }
+  }
+}
+```
+
+You'll notice the following name-pair values in the definition above need to be filled in with their respective values.
+
+```text
+dnsPrefix = azure-k8s-dev
+keyData   = {SSH_PUBLIC_KEY}
+clientId  = appId
+secret    = UseAzureKeyVault1!
+```
+
+```json
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes",
+      "orchestratorRelease": "1.9"
+    },
+    "masterProfile": {
+      "count": 1,
+      "dnsPrefix": "azure-k8s-dev",
+      "vmSize": "Standard_D2_v2"
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "linuxpool1",
+        "count": 2,
+        "vmSize": "Standard_D2_v2",
+        "availabilityProfile": "AvailabilitySet"
+      }
+    ],
+    "linuxProfile": {
+      "adminUsername": "linuxadmin",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQDQrDd2IyLZIYn02wrltHKwC3UXXkkO2Br1jiYdJ1yYA8Q2Wm7LJj4c2lnKD9c/VCtR2w5cBwTz9D/JGwFJtHEPUZXOq3CDxWcPRE8GfRK9f1OZlvFwuTHTEJaza8KRVRhrXX9Tjtl2a94R7uSXr7NIKFgopjGkJ9BgSlufh0lUiWoAg1/e7cNXi3tiewu6lI+bG1v5aKmgKfITpbe56YIBYNzQEnxjCQdIye5hafz3XoxVkGaKst072cByygERqFPV6QFcJ9CITMgL3SoI3/XTPdg+hKYFU2VL5Xc6Chi2q3WVM69IkxnGpZOES8nxWRfkEAX08zsWtjpVu18DlEm/ azure-k8s-dev-access-key"
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "clientId": "fc045a69-cc77-4331-aa07-e70b682a414e",
+      "secret": "UseAzureKeyVault1!"
+    }
+  }
+}
+```
+
+Save your final configuration in a file called **sample-deployment.json**.
+
+*Note: The full list of customizable options you can modify can be found in the **[Cluster Definition Documentation](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)**.*
+
+## Generate the deployment ARM Temaplates using the ACS Engine
+
+Run the following command to generate the deployment ARM Templates.
+
+```bash
+acs-engine generate sample-deployment.json
+```
+
+The ARM Templates will generated in a few seconds and you should see the following response.
+
+```bash
+INFO[0000] Generating assets into _output/azure-k8s-dev...
+```
+
+The acs-engine generates the following folder structure based off of the **DNS Prefix** that is defined in the **masterProfile** in the cluster-definition file. Shown below is what the folder structure when the DNS Prefix is set to **azure-k8s-dev**, as was done in the previous steps.
+
+```text
+_output/azure-k8s-dev --> apimodel.json
+_output/azure-k8s-dev --> apiserver.crt
+_output/azure-k8s-dev --> apiserver.key
+_output/azure-k8s-dev --> azuredeploy.json
+_output/azure-k8s-dev --> azuredeploy.parameters.json
+_output/azure-k8s-dev --> ca.crt
+_output/azure-k8s-dev --> ca.key
+_output/azure-k8s-dev --> client.crt
+_output/azure-k8s-dev --> client.key
+_output/azure-k8s-dev --> kubectlClient.crt
+_output/azure-k8s-dev --> kubectlClient.key
+_output/azure-k8s-dev --> kubeconfig
+                          kubeconfig --> kubeconfig.australiaeast.json
+                          kubeconfig --> kubeconfig.australiasoutheast.json
+                          kubeconfig --> kubeconfig.brazilsouth.json
+                          kubeconfig --> kubeconfig.canadacentral.json
+                          kubeconfig --> kubeconfig.canadaeast.json
+                          kubeconfig --> kubeconfig.centralindia.json
+                          kubeconfig --> kubeconfig.centraluseuap.json
+                          kubeconfig --> kubeconfig.centralus.json
+                          kubeconfig --> kubeconfig.chinaeast.json
+                          kubeconfig --> kubeconfig.chinanorth.json
+                          kubeconfig --> kubeconfig.eastasia.json
+                          kubeconfig --> kubeconfig.eastus2euap.json
+                          kubeconfig --> kubeconfig.eastus2.json
+                          kubeconfig --> kubeconfig.eastus.json
+                          kubeconfig --> kubeconfig.germanycentral.json
+                          kubeconfig --> kubeconfig.germanynortheast.json
+                          kubeconfig --> kubeconfig.japaneast.json
+                          kubeconfig --> kubeconfig.japanwest.json
+                          kubeconfig --> kubeconfig.koreacentral.json
+                          kubeconfig --> kubeconfig.koreasouth.json
+                          kubeconfig --> kubeconfig.northcentralus.json
+                          kubeconfig --> kubeconfig.northeurope.json
+                          kubeconfig --> kubeconfig.southcentralus.json
+                          kubeconfig --> kubeconfig.southeastasia.json
+                          kubeconfig --> kubeconfig.southindia.json
+                          kubeconfig --> kubeconfig.uksouth.json
+                          kubeconfig --> kubeconfig.ukwest.json
+                          kubeconfig --> kubeconfig.usgoviowa.json
+                          kubeconfig --> kubeconfig.usgovvirginia.json
+                          kubeconfig --> kubeconfig.westcentralus.json
+                          kubeconfig --> kubeconfig.westeurope.json
+                          kubeconfig --> kubeconfig.westindia.json
+                          kubeconfig --> kubeconfig.westus2.json
+                          kubeconfig --> kubeconfig.westus.json
+```
+
+## Other
+
+The agentPoolProfiles section allows you to define multiple Pools of whatever OS type you want; this is how you can run Linux and Windows Nodes in a single K8s Cluster in Azure.
+
+An **agentPoolProfiles** sample is shown below:
 
 ```json
       "agentPoolProfiles": [
@@ -128,57 +312,4 @@ An sample definition is shown below:
           "osType": "Windows"
         }
       ],
-```
-
-The full list of customizable options you can modify can be found in the **[Cluster Definition Documentation](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)**.
-
-The acs-engine generates the following folder based off of the **DNS Prefix** that is defined in the **masterProfile** in the cluster-definition file. Shown below is what the folder structure would like if the DNS Prefix was called **azure-k8s-dev**.
-
-```text
-azure-k8s-dev --> apimodel.json
-azure-k8s-dev --> apiserver.crt
-azure-k8s-dev --> apiserver.key
-azure-k8s-dev --> azuredeploy.json
-azure-k8s-dev --> azuredeploy.parameters.json
-azure-k8s-dev --> ca.crt
-azure-k8s-dev --> ca.key
-azure-k8s-dev --> client.crt
-azure-k8s-dev --> client.key
-azure-k8s-dev --> kubectlClient.crt
-azure-k8s-dev --> kubectlClient.key
-azure-k8s-dev --> kubeconfig
-                  kubeconfig --> kubeconfig.australiaeast.json
-                  kubeconfig --> kubeconfig.australiasoutheast.json
-                  kubeconfig --> kubeconfig.brazilsouth.json
-                  kubeconfig --> kubeconfig.canadacentral.json
-                  kubeconfig --> kubeconfig.canadaeast.json
-                  kubeconfig --> kubeconfig.centralindia.json
-                  kubeconfig --> kubeconfig.centraluseuap.json
-                  kubeconfig --> kubeconfig.centralus.json
-                  kubeconfig --> kubeconfig.chinaeast.json
-                  kubeconfig --> kubeconfig.chinanorth.json
-                  kubeconfig --> kubeconfig.eastasia.json
-                  kubeconfig --> kubeconfig.eastus2euap.json
-                  kubeconfig --> kubeconfig.eastus2.json
-                  kubeconfig --> kubeconfig.eastus.json
-                  kubeconfig --> kubeconfig.germanycentral.json
-                  kubeconfig --> kubeconfig.germanynortheast.json
-                  kubeconfig --> kubeconfig.japaneast.json
-                  kubeconfig --> kubeconfig.japanwest.json
-                  kubeconfig --> kubeconfig.koreacentral.json
-                  kubeconfig --> kubeconfig.koreasouth.json
-                  kubeconfig --> kubeconfig.northcentralus.json
-                  kubeconfig --> kubeconfig.northeurope.json
-                  kubeconfig --> kubeconfig.southcentralus.json
-                  kubeconfig --> kubeconfig.southeastasia.json
-                  kubeconfig --> kubeconfig.southindia.json
-                  kubeconfig --> kubeconfig.uksouth.json
-                  kubeconfig --> kubeconfig.ukwest.json
-                  kubeconfig --> kubeconfig.usgoviowa.json
-                  kubeconfig --> kubeconfig.usgovvirginia.json
-                  kubeconfig --> kubeconfig.westcentralus.json
-                  kubeconfig --> kubeconfig.westeurope.json
-                  kubeconfig --> kubeconfig.westindia.json
-                  kubeconfig --> kubeconfig.westus2.json
-                  kubeconfig --> kubeconfig.westus.json
 ```
