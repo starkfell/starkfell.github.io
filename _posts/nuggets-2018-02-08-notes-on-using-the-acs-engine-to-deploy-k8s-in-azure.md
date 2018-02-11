@@ -19,6 +19,9 @@ This article covers the basics of deploying a new K8s Cluster in Azure using the
 * Generating an SSH Key
 * Create a Service Principal in the Azure Subscription
 * Create a Cluster Definition File
+* Create a new Resource Group for the Kubernetes Cluster
+* Deploy the Kubernetes ARM Template to the Resource Group
+* Verify connectivity to the Kubernetes Cluster
 
 ## Prerequisites
 
@@ -284,6 +287,114 @@ _output/azure-k8s-dev --> kubeconfig
                           kubeconfig --> kubeconfig.westindia.json
                           kubeconfig --> kubeconfig.westus2.json
                           kubeconfig --> kubeconfig.westus.json
+```
+
+## Create a new Resource Group for the Kubernetes Cluster
+
+Run the following command to deploy a new Resource Group.
+
+```bash
+    az group create \
+    --name azure-k8s-dev \
+    --location westeurope
+```
+
+You should get the following response back.
+
+```bash
+{
+  "id": "/subscriptions/d5b31b94-d91c-4ef8-b9d0-30193e6308ee/resourceGroups/azure-k8s-dev",
+  "location": "westeurope",
+  "managedBy": null,
+  "name": "azure-k8s-dev",
+  "properties": {
+    "provisioningState": "Succeeded"
+  },
+  "tags": null
+}
+```
+
+## Deploy the Kubernetes ARM Template to the Resource Group
+
+First, make sure you are located in your **home** directory.
+
+```bash
+cd ~
+```
+
+Run the following command to deploy the Kubernetes ARM Template to the **azure-k8s-dev** Resource Group.
+
+```bash
+az group deployment create \
+    --name "azure-k8s-dev-Deployment" \
+    --resource-group "azure-k8s-dev" \
+    --template-file "./_output/azure-k8s-dev/azuredeploy.json" \
+    --parameters "./_output/azure-k8s-dev/azuredeploy.parameters.json"
+```
+
+This command should run for approximately 10 to 15 minutes. When the command completes, you should get back a very long list of output which I have ommitted here as its too long. It's much easier to track and verify the deployment succeeded in the [Azure Portal](https://portal.azure.com) in the **azure-k8s-dev** Resource Group.
+
+## Verify connectivity to the Kubernetes Cluster
+
+In order to verify connectivity to the K8s Cluster, we have to let kubectl which kubeconfig file to use. Run the following command to set the location of the kubeconfig file; because we deployed the K8s cluster in Western Europe, we are pointing to the respective kubeconfig file.
+
+```bash
+export KUBECONFIG=~/_output/azure-k8s-dev/kubeconfig/kubeconfig.westeurope.json
+```
+
+Next, run the following command to verify that you can connect to the Kubernetes Cluster and display the clusters information.
+
+```bash
+kubectl cluster-info
+```
+
+You should get back the following output.
+
+```bash
+Kubernetes master is running at https://azure-k8s-dev.westeurope.cloudapp.azure.com
+Heapster is running at https://azure-k8s-dev.westeurope.cloudapp.azure.com/api/v1/namespaces/kube-system/services/heapster/proxy
+KubeDNS is running at https://azure-k8s-dev.westeurope.cloudapp.azure.com/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy
+kubernetes-dashboard is running at https://azure-k8s-dev.westeurope.cloudapp.azure.com/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy
+tiller-deploy is running at https://azure-k8s-dev.westeurope.cloudapp.azure.com/api/v1/namespaces/kube-system/services/tiller-deploy:tiller/proxy
+```
+
+Next, run the following command to display the Nodes in the Cluster.
+
+```bash
+kubectl get nodes
+```
+
+You should get back the following output.
+
+```bash
+NAME                        STATUS    ROLES     AGE       VERSION
+k8s-linuxpool1-30657238-0   Ready     agent     15m       v1.9.1
+k8s-linuxpool1-30657238-1   Ready     agent     18m       v1.9.1
+k8s-master-30657238-0       Ready     master    18m       v1.9.1
+```
+
+Lastly, run the following command to display all of the current pods running in the cluster.
+
+```bash
+
+```
+
+You should get back the following output. Note that the alphanumeric characters appending the name of each pod will be different for you.
+
+```bash
+NAMESPACE     NAME                                            READY     STATUS    RESTARTS   AGE
+kube-system   heapster-668b9fdf67-zx7v4                       2/2       Running   0          19m
+kube-system   kube-addon-manager-k8s-master-30657238-0        1/1       Running   0          19m
+kube-system   kube-apiserver-k8s-master-30657238-0            1/1       Running   0          18m
+kube-system   kube-controller-manager-k8s-master-30657238-0   1/1       Running   0          18m
+kube-system   kube-dns-v20-55498dbf49-94hr8                   3/3       Running   0          19m
+kube-system   kube-dns-v20-55498dbf49-mm8jk                   3/3       Running   0          19m
+kube-system   kube-proxy-h87xw                                1/1       Running   0          19m
+kube-system   kube-proxy-nhlh8                                1/1       Running   0          19m
+kube-system   kube-proxy-ss9cv                                1/1       Running   0          17m
+kube-system   kube-scheduler-k8s-master-30657238-0            1/1       Running   0          19m
+kube-system   kubernetes-dashboard-868965c888-2jpxn           1/1       Running   0          19m
+kube-system   tiller-deploy-589f6788d7-5gk95                  1/1       Running   0          19m
 ```
 
 ## Other
