@@ -1,7 +1,7 @@
 ---
 layout: post
 comments: true
-title: "Getting started with the ACS Engine to deploy Kubernetes in Azure."
+title: "Getting started with the ACS Engine to deploy Kubernetes in Azure"
 date: 2018-02-08
 ---
 
