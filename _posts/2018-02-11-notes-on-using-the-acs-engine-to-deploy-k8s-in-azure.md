@@ -376,10 +376,10 @@ k8s-master-30657238-0       Ready     master    18m       v1.9.1
 Lastly, run the following command to display all of the current pods running in the cluster.
 
 ```bash
-
+kubectl get pods --all-namespaces
 ```
 
-You should get back the following output. Note that the alphanumeric characters appending the name of each pod will be different for you.
+You should get back the following output. The Pod names will be slightly different for you.
 
 ```bash
 NAMESPACE     NAME                                            READY     STATUS    RESTARTS   AGE
