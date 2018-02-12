@@ -5,10 +5,9 @@ title: "Getting started with the ACS Engine to deploy Kubernetes in Azure"
 date: 2018-02-08
 ---
 
-Over the past 6 months, I have had to use the acs-engine to deploy and maintain K8s Clusters in Azure that are running both Linux and Windows Nodes in the same cluster. This type of configuration is only possible to deploy using the acs-engine and isn't supported by Microsoft (Surprise!). The first time you use the acs-engine can be incredibly daunting as it is the complete opposite experience of deploying a Kubernetes cluster using acs or aks in the Azure CLI; instead of having everything managed for you, you are responsible for managing the configuration and deployment of the Cluster. As such, you can configure just about every aspect of your Kubernetes Cluster before deploying it.
+Over the past 6 months, I have had to use the **[Azure Container Service Engine](https://github.com/Azure/acs-engine)** to deploy and maintain K8s Clusters in Azure running both Linux and Windows Nodes in the same Cluster. This type of configuration in Azure is currently only possible using the ACS Engine. First time users of the ACS Engine may find the process incredibly daunting as it is the complete opposite experience of deploying a K8s Cluster using acs or aks in the Azure CLI; instead of having everything managed for you, you are responsible for managing the configuration and deployment of the Cluster. As such you are able to configure almost every aspect of your K8s Cluster before deploying it.
 
-While I recommend going through the **[Official Documenation](https://github.com/Azure/acs-engine)**. I wanted to provide a more succinct version for reference and to help speed up the on-boarding process for others getting started.
-
+Because the learning curve of the ACS Engine can be quite steep, I wanted to provide a reference guide allowing other individuals a quicker way to get started from scratch as well having it for future reference for myself. For the complete documentation on the Azure Container Service Engine, make sure to review the **[Official Documenation](https://github.com/Azure/acs-engine/tree/master/docs)**.
 # Overview
 
 This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine.
