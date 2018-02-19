@@ -2,7 +2,7 @@
 layout: post
 comments: true
 title: "Getting started with the ACS Engine to deploy Kubernetes in Azure"
-date: 2018-02-08
+date: 2018-02-19
 ---
 
 Over the past 6 months, I have had to use the **[Azure Container Service Engine](https://github.com/Azure/acs-engine)** to deploy and maintain K8s Clusters in Azure running both Linux and Windows Nodes in the same Cluster. This type of configuration in Azure is currently only possible using the ACS Engine. First time users of the ACS Engine may find the process incredibly daunting as it is the complete opposite experience of deploying a K8s Cluster using acs or aks in the Azure CLI; instead of having everything managed for you, you are responsible for managing the configuration and deployment of the Cluster. As such you are able to configure almost every aspect of your K8s Cluster before deploying it.
