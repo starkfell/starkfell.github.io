@@ -127,7 +127,7 @@ The acs-engine Cluster Definition Files are JSON files that allow you to configu
 
 ```text
 orchestratorType         - Kubernetes (Other options include Swarm, Swarm Mode, and DCOS).
-orchestratorVersion      - The version of Kubernetes to deploy, i.e. - 1.6.1, 1.7.2, 1.8.2, 1.9.1.
+orchestratorVersion      - The version of Kubernetes to deploy, i.e. - 1.6.1, 1.7.2, 1.8.2, 1.9.1, 1.9.3.
 masterProfile            - The number of Master Nodes to deploy, the DNS Prefix to use, VM Size, type of Storage to use, OS Disk Size (GB).
 agentPoolProfiles        - The name of the pool, number of Nodes to deploy, VM Size, type of Storage to use, OS Disk Size (GB), Availability Set Profile, OS Type.
 linuxProfile             - the admin Username and SSH Key used to access the Linux Nodes.
@@ -135,7 +135,7 @@ windowsProfile           - the admin Username and Password used to access the Wi
 servicePrincipalProfile  - The Service Principal Client ID and Service Principal Password.
 ```
 
-For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.9.1 using the following Cluster Definition File. Copy and paste the contents below into a file called **deploy-k8s-1.9.1.json**.
+For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.9.3 using the following Cluster Definition File. Copy and paste the contents below into a file called **deploy-k8s-1.9.3.json**.
 
 ```json
 {
@@ -185,7 +185,7 @@ clientId  = appId
 secret    = UseAzureKeyVault1!
 ```
 
-Once you have added in the respective values of the name-pairs listed above, the **deploy-k8s-1.9.1.json** file should appear similar to what is shown below.
+Once you have added in the respective values of the name-pairs listed above, the **deploy-k8s-1.9.3.json** file should appear similar to what is shown below.
 
 ```json
 {
@@ -226,7 +226,7 @@ Once you have added in the respective values of the name-pairs listed above, the
 }
 ```
 
-Save your changes to the **deploy-k8s-1.9.1.json** file and close it.
+Save your changes to the **deploy-k8s-1.9.3.json** file and close it.
 
 *Note: The full list of customizable options you can modify can be found in the **[Cluster Definition Documentation](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)**.*
 
@@ -235,7 +235,7 @@ Save your changes to the **deploy-k8s-1.9.1.json** file and close it.
 Run the following command to generate the deployment ARM Templates.
 
 ```bash
-acs-engine generate deploy-k8s-1.9.1.json
+acs-engine generate deploy-k8s-1.9.3.json
 ```
 
 The ARM Templates will generated in a few seconds and you should see the following response.
@@ -368,9 +368,9 @@ You should get back the following output.
 
 ```bash
 NAME                        STATUS    ROLES     AGE       VERSION
-k8s-linuxpool1-30657238-0   Ready     agent     15m       v1.9.1
-k8s-linuxpool1-30657238-1   Ready     agent     18m       v1.9.1
-k8s-master-30657238-0       Ready     master    18m       v1.9.1
+k8s-linuxpool1-30657238-0   Ready     agent     15m       v1.9.3
+k8s-linuxpool1-30657238-1   Ready     agent     18m       v1.9.3
+k8s-master-30657238-0       Ready     master    18m       v1.9.3
 ```
 
 Lastly, run the following command to display all of the current pods running in the cluster.
