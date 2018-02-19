@@ -13,7 +13,7 @@ More posts will be coming in the near future detailing some of the customization
 
 # Overview
 
-This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine. These instructions were written for and tested on Ubuntu 16.04.
+This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine. These instructions were written for and tested on Ubuntu 16.04 using a standard linux user starting in their home directory. The instructions *should* work on Bash on Ubuntu for Windows but haven't been tested.
 
 * Installing Azure CLI 2.0
 * Instll the latest version of kubectl
@@ -29,12 +29,11 @@ This article covers the basics of deploying a new K8s Cluster in Azure using the
 
 * Access to an existing Azure Subscription and Administrative Rights to the Subscription
 * A Linux VM with the Azure CLI Installed
+* **curl** is required to be installed and **vim** is highly recommended
 * 5 to 10 CPU Cores available in your Azure Subscription for Standard_D2_v2 VMs
 * The Azure Subscription ID used in the documentation below, **d5b31b94-d91c-4ef8-b9d0-30193e6308ee**, needs to be replaced with your Azure Subscription ID.
 
 The Name of the Service Principal and DNS Prefix for the documentation below is **azure-k8s-dev**.
-
-The steps below *should* work on Bash on Ubuntu for Windows but haven't been tested.
 
 ## Installing Azure CLI 2.0
 
@@ -322,12 +321,6 @@ You should get the following response back.
 ```
 
 ## Deploy the Kubernetes ARM Template to the Resource Group
-
-First, make sure you are located in your **home** directory.
-
-```bash
-cd ~
-```
 
 Run the following command to deploy the Kubernetes ARM Template to the **azure-k8s-dev** Resource Group.
 
