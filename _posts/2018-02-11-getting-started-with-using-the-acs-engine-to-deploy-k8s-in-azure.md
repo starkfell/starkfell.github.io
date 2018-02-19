@@ -8,9 +8,12 @@ date: 2018-02-08
 Over the past 6 months, I have had to use the **[Azure Container Service Engine](https://github.com/Azure/acs-engine)** to deploy and maintain K8s Clusters in Azure running both Linux and Windows Nodes in the same Cluster. This type of configuration in Azure is currently only possible using the ACS Engine. First time users of the ACS Engine may find the process incredibly daunting as it is the complete opposite experience of deploying a K8s Cluster using acs or aks in the Azure CLI; instead of having everything managed for you, you are responsible for managing the configuration and deployment of the Cluster. As such you are able to configure almost every aspect of your K8s Cluster before deploying it.
 
 Because the learning curve of the ACS Engine can be quite steep, I wanted to provide a reference guide allowing other individuals a quicker way to get started from scratch as well having it for future reference for myself. For the complete documentation on the Azure Container Service Engine, make sure to review the **[Official Documenation](https://github.com/Azure/acs-engine/tree/master/docs)**.
+
+There will be a few more posts related to this one coming soon.
+
 # Overview
 
-This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine.
+This article covers the basics of deploying a new K8s Cluster in Azure using the following steps and the acs-engine. These instructions were written for and tested on Ubuntu 16.04.
 
 * Installing Azure CLI 2.0
 * Instll the latest version of kubectl
@@ -55,13 +58,13 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 ## Install the ACS Engine
 
-If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.12.5**, run the following command.
+If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.13.0**, run the following command.
 
 ```bash
-wget https://github.com/Azure/acs-engine/releases/download/v0.12.5/acs-engine-v0.12.5-linux-amd64.tar.gz && \
-tar -xzvf acs-engine-v0.12.5-linux-amd64.tar.gz && \
-sudo cp acs-engine-v0.12.5-linux-amd64/acs-engine /usr/bin/acs-engine && \
-sudo cp acs-engine-v0.12.5-linux-amd64/acs-engine /usr/local/bin/acs-engine
+wget https://github.com/Azure/acs-engine/releases/download/v0.13.0/acs-engine-v0.13.0-linux-amd64.tar.gz && \
+tar -xzvf acs-engine-v0.13.0-linux-amd64.tar.gz && \
+sudo cp acs-engine-v0.13.0-linux-amd64/acs-engine /usr/bin/acs-engine && \
+sudo cp acs-engine-v0.13.0-linux-amd64/acs-engine /usr/local/bin/acs-engine
 ```
 
 If you want to install a particular version of the acs-engine, visit https://github.com/Azure/acs-engine/tags.
@@ -395,6 +398,11 @@ kube-system   kube-scheduler-k8s-master-30657238-0            1/1       Running 
 kube-system   kubernetes-dashboard-868965c888-2jpxn           1/1       Running   0          19m
 kube-system   tiller-deploy-589f6788d7-5gk95                  1/1       Running   0          19m
 ```
+
+## Closing
+
+This article covered the basics of getting started with 
+
 
 ## Other
 
