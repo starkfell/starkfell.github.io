@@ -9,7 +9,7 @@ Over the past 6 months, I have had to use the **[Azure Container Service Engine]
 
 Because the learning curve of the ACS Engine can be quite steep, I wanted to provide a reference guide allowing other individuals a quicker way to get started from scratch as well having it for future reference for myself. For the complete documentation on the Azure Container Service Engine, make sure to review the **[Official Documenation](https://github.com/Azure/acs-engine/tree/master/docs)**.
 
-There will be a few more posts related to this one coming soon.
+More posts will be coming in the near future detailing some of the customization options available to you in the Azure Container Service Engine.
 
 # Overview
 
@@ -23,13 +23,14 @@ This article covers the basics of deploying a new K8s Cluster in Azure using the
 * Create a Cluster Definition File
 * Create a new Resource Group for the Kubernetes Cluster
 * Deploy the Kubernetes ARM Template to the Resource Group
-* Verify connectivity to the Kubernetes Cluster
+* Connect to the Kubernetes Cluster
 
 ## Prerequisites
 
 * Access to an existing Azure Subscription and Administrative Rights to the Subscription
 * A Linux VM with the Azure CLI Installed
 * 5 to 10 CPU Cores available in your Azure Subscription for Standard_D2_v2 VMs
+* The Azure Subscription ID used in the documentation below, **d5b31b94-d91c-4ef8-b9d0-30193e6308ee**, needs to be replaced with your Azure Subscription ID.
 
 The Name of the Service Principal and DNS Prefix for the documentation below is **azure-k8s-dev**.
 
@@ -117,6 +118,8 @@ Retrying role assignment creation: 2/36
 }
 ```
 
+Make note of the the **AppId** as it will be used for the **clientId** field in the Cluster Definition File in the next section.
+
 ## Create a Cluster Definition File
 
 Several Cluster Definition File examples can be found in the **[ACS Engine GitHub Repository](https://github.com/Azure/acs-engine/tree/master/examples)**. The Cluster Definition File that we will be using here will be a modified version of an existing example.
@@ -133,7 +136,7 @@ windowsProfile           - the admin Username and Password used to access the Wi
 servicePrincipalProfile  - The Service Principal Client ID and Service Principal Password.
 ```
 
-For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.9.2 using the following cluster defintion file.
+For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.9.1 using the following Cluster Definition File. Copy and paste the contents below into a file called **deploy-k8s-1.9.1.json**.
 
 ```json
 {
@@ -183,6 +186,8 @@ clientId  = appId
 secret    = UseAzureKeyVault1!
 ```
 
+Once you have added in the respective values of the name-pairs listed above, the **deploy-k8s-1.9.1.json** file should appear similar to what is shown below.
+
 ```json
 {
   "apiVersion": "vlabs",
@@ -222,7 +227,7 @@ secret    = UseAzureKeyVault1!
 }
 ```
 
-Save your final configuration in a file called **sample-deployment.json**.
+Save your changes to the **deploy-k8s-1.9.1.json** file and close it.
 
 *Note: The full list of customizable options you can modify can be found in the **[Cluster Definition Documentation](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)**.*
 
@@ -231,7 +236,7 @@ Save your final configuration in a file called **sample-deployment.json**.
 Run the following command to generate the deployment ARM Templates.
 
 ```bash
-acs-engine generate sample-deployment.json
+acs-engine generate deploy-k8s-1.9.1.json
 ```
 
 The ARM Templates will generated in a few seconds and you should see the following response.
@@ -334,11 +339,11 @@ az group deployment create \
     --parameters "./_output/azure-k8s-dev/azuredeploy.parameters.json"
 ```
 
-This command should run for approximately 10 to 15 minutes. When the command completes, you should get back a very long list of output which I have ommitted here as its too long. It's much easier to track and verify the deployment succeeded in the [Azure Portal](https://portal.azure.com) in the **azure-k8s-dev** Resource Group.
+This command should run for approximately 10 to 15 minutes. When the command completes, you should get back a very long list of output which I have ommitted from here due to its length. It's much easier to track and verify the deployment succeeded in the [Azure Portal](https://portal.azure.com) in the **azure-k8s-dev** Resource Group.
 
-## Verify connectivity to the Kubernetes Cluster
+## Connect to the Kubernetes Cluster
 
-In order to verify connectivity to the K8s Cluster, we have to let kubectl which kubeconfig file to use. Run the following command to set the location of the kubeconfig file; because we deployed the K8s cluster in Western Europe, we are pointing to the respective kubeconfig file.
+In order to connect to the K8s Cluster, we have to point kubectl to the kubeconfig file to use. Run the following command to set the location of the kubeconfig file; because we deployed the K8s cluster in Western Europe, we are pointing to the respective kubeconfig file.
 
 ```bash
 export KUBECONFIG=~/_output/azure-k8s-dev/kubeconfig/kubeconfig.westeurope.json
@@ -401,33 +406,4 @@ kube-system   tiller-deploy-589f6788d7-5gk95                  1/1       Running 
 
 ## Closing
 
-This article covered the basics of getting started with 
-
-
-## Other
-
-The agentPoolProfiles section allows you to define multiple Pools of whatever OS type you want; this is how you can run Linux and Windows Nodes in a single K8s Cluster in Azure.
-
-An **agentPoolProfiles** sample is shown below:
-
-```json
-      "agentPoolProfiles": [
-        {
-          "name": "linuxpool",
-          "count": 2,
-          "vmSize": "Standard_D2_v2",
-          "storageProfile": "ManagedDisks",
-          "osDiskSizeGB": 128,
-          "availabilityProfile": "AvailabilitySet"
-        },
-        {
-          "name": "windowspool",
-          "count": 2,
-          "vmSize": "Standard_D2_v2",
-          "storageProfile": "ManagedDisks",
-          "osDiskSizeGB": 128,
-          "availabilityProfile": "AvailabilitySet",
-          "osType": "Windows"
-        }
-      ],
-```
+This article covered the basics of how to quickly setup and deploy a Kubernetes Cluster running in Azure using the Azure Container Service Engine and verify it is working.
