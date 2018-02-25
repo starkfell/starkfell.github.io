@@ -67,11 +67,11 @@ sudo cp acs-engine-v0.13.0-linux-amd64/acs-engine /usr/bin/acs-engine && \
 sudo cp acs-engine-v0.13.0-linux-amd64/acs-engine /usr/local/bin/acs-engine
 ```
 
-If you want to install a particular version of the acs-engine, visit https://github.com/Azure/acs-engine/tags.
+If you want to install a particular version of the acs-engine, visit **https://github.com/Azure/acs-engine/tags**.
 
 ## Generate an SSH Key
 
-Below is a quick way to generate an SSH Key using Bash.
+Run the command below to generate an SSH Key using **ssh-keygen**. The Name of the SSH Key is named after the Service Principal and DNS Prefix being used in this walkthrough, **azure-k8s-dev**.
 
 ```bash
 ssh-keygen -t rsa -b 2048 -C "azure-k8s-dev-access-key" -f ~/.ssh/azure-k8s-dev-access-key -N ''
@@ -103,7 +103,7 @@ Run the following command create a Service Principal in the Azure Subscription.
     --scopes="/subscriptions/d5b31b94-d91c-4ef8-b9d0-30193e6308ee"
 ```
 
-You should get a similar response back after a few seconds. Additionally, you should see the App in the **App Registrations** section in the [Azure Portal](https://portal.azure.com)
+You should get a similar response back after a few seconds. Additionally, the App will appear in the **App Registrations** section in the **[Azure Portal](https://portal.azure.com)**.
 
 ```bash
 Retrying role assignment creation: 1/36
@@ -230,7 +230,7 @@ Save your changes to the **deploy-k8s-1.9.3.json** file and close it.
 
 *Note: The full list of customizable options you can modify can be found in the **[Cluster Definition Documentation](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)**.*
 
-## Generate the deployment ARM Temaplates using the ACS Engine
+## Generate the deployment ARM Templates using the ACS Engine
 
 Run the following command to generate the deployment ARM Templates.
 
@@ -244,7 +244,7 @@ The ARM Templates will generated in a few seconds and you should see the followi
 INFO[0000] Generating assets into _output/azure-k8s-dev...
 ```
 
-The acs-engine generates the following folder structure based off of the **DNS Prefix** that is defined in the **masterProfile** in the cluster-definition file. Shown below is what the folder structure when the DNS Prefix is set to **azure-k8s-dev**, as was done in the previous steps.
+The acs-engine generates the following folder structure based off of the **dnsPrefix** that we previously set in the **masterProfile** section of the Cluster Definition file. Shown below is what the folder structure when the DNS Prefix is set to **azure-k8s-dev**, as was done in the previous steps.
 
 ```text
 _output/azure-k8s-dev --> apimodel.json
