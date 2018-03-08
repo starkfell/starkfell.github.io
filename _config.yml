@@ -23,7 +23,7 @@ footer-links:
   flickr:
   github: starkfell
   instagram:
-  linkedin:
+  linkedin: rirujo
   pinterest:
   rss: # just type anything here for a working RSS icon
   twitter: reirujo
@@ -76,6 +76,10 @@ sass:
 gems:
   - jekyll-sitemap # Create a sitemap using the official Jekyll sitemap gem
   - jekyll-feed # Create an Atom feed using the official Jekyll feed gem
+  - jekyll-mermaid # Plugin to simplify the creation of mermaid diagrams and flowcharts in posts and pages.
+
+mermaid:
+  src: 'https://raw.githubusercontent.com/knsv/mermaid/master/src/mermaid.js'
 
 # Exclude these files from your production _site
 exclude:
