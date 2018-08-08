@@ -1,0 +1,41 @@
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes",
+      "orchestratorRelease": "1.10"
+    },
+    "aadProfile": {
+      "serverAppID": "{K8S_APISRV_APP_ID}",
+      "clientAppID": "{K8S_APICLI_APP_ID}",
+      "tenantID": "{AZURE_SUB_TENANT_ID}"
+    },
+    "masterProfile": {
+      "count": 1,
+      "dnsPrefix": "{DNS_PREFIX}",
+      "vmSize": "Standard_D2_v2"
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "linuxpool1",
+        "count": 2,
+        "vmSize": "Standard_D2_v2",
+        "availabilityProfile": "AvailabilitySet"
+      }
+    ],
+    "linuxProfile": {
+      "adminUsername": "{ADMIN_USERNAME}",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "{SSH_PUBLIC_KEY}"
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "clientId": "{SP_CLIENT_ID}",
+      "secret": "{SP_CLIENT_PASSWORD}"
+    }
+  }
+}
