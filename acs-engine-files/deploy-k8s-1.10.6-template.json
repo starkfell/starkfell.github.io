@@ -34,8 +34,8 @@
       }
     },
     "servicePrincipalProfile": {
-      "clientId": "{SP_CLIENT_ID}",
-      "secret": "{SP_CLIENT_PASSWORD}"
+      "clientId": "{K8S_SP_CLIENT_ID}",
+      "secret": "{K8S_SP_CLIENT_PASSWORD}"
     }
   }
 }
