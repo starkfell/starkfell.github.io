@@ -5,7 +5,7 @@ title: "Deploying Kubernetes 1.10.6 with Azure Active Directory Integration usin
 date: 2018-08-23
 ---
 
-Most of the instructions available online on this topic do not provide a way to create the required Server and Client AD Applications using the Azure CLI. In my experience, incorrectly creating these two applications through the Azure Portal is what causes AAD Integration with Kubernetes to fail. By using the Azure CLI, the potential for failure is reduced from forgetting to click on a button to a copy paste issue. Hopefully the information detailed below will help you out if you are either getting started with AAD Integration with K8s or are working on automating the deployment of your existing K8s Clusters in Azure.
+Most of the instructions available online on this topic do not provide a way to create the required Server and Client AD Applications using the Azure CLI. In my experience, incorrectly creating these two applications through the Azure Portal is what causes AAD Integration with Kubernetes to fail. By using the Azure CLI, the potential for failure from a forgotten button clicked is removed. Hopefully the information detailed below will help you out if you are either getting started with AAD Integration with K8s or are working on automating the deployment of your existing K8s Clusters in Azure.
 
 # Overview
 
@@ -249,7 +249,7 @@ sed -i -e "s/{K8S_APISRV_APP_ID}/$K8S_APISRV_APP_ID/" k8s-apicli-manifest.json &
 sed -i -e "s/{K8S_APISRV_OAUTH2_PERMISSIONS_ID}/$K8S_APISRV_OAUTH2_PERMISSIONS_ID/" k8s-apicli-manifest.json
 ```
 
-The contents of the **k8s-apicli-template-manifest.json** file will grant the Client Application access to the Server Application created earlier.
+The contents of the **k8s-apicli-manifest.json** file will grant the Client Application access to the Server Application created earlier.
 
 ```text
 Windows Azure Active Directory
