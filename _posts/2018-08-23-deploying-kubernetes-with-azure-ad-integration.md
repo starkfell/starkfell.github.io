@@ -1,17 +1,17 @@
 ---
 layout: post
 comments: true
-title: "Deploy Kubernetes 1.10.6 in Azure with Azure Active Directory Integration using the ACS Engine"
+title: "Deploying Kubernetes 1.10.6 with Azure Active Directory Integration using the ACS Engine"
 date: 2018-08-23
 ---
 
-If you are looking for the quickest way to deploy a Kubernetes Cluster in Azure with AAD Integration, check out the [Integrate Azure Active Directory with AKS - Preview](https://docs.microsoft.com/en-us/azure/aks/aad-integration) article under Microsoft's official documentation.
+Most of the instructions available online on this topic do not provide a way to create the required Server and Client AD Applications using the Azure CLI. In my experience, incorrectly creating these two applications through the Azure Portal is what causes AAD Integration with Kubernetes to fail. By using the Azure CLI, the potential for failure is reduced from forgetting to click on a button to a copy paste issue. Hopefully the information detailed below will help you out if you are either getting started with AAD Integration with K8s or are working on automating the deployment of your existing K8s Clusters in Azure.
 
 # Overview
 
-This article covers how to deploy a new Kubernetes Cluster (1.10.6) in Azure with AAD Integration using the acs-engine. While there is plenty of documentation online on how to do this; most of the instructions available do not provide a way to create the required Server and Client AD Applications using the Azure CLI. In my experience, incorrectly creating these two applications (either using the Azure CLI or the Azure Portal) is what causes AAD Integration with Kubernetes to fail.
+If you are looking for the quickest way to deploy a Kubernetes Cluster in Azure with AAD Integration, check out the [Integrate Azure Active Directory with AKS - Preview](https://docs.microsoft.com/en-us/azure/aks/aad-integration) article under Microsoft's official documentation.
 
-These instructions were written for and tested on Ubuntu 16.04 and Ubuntu 18.04 using a standard linux user from within their */home* directory. The instructions *should* work on Bash on Ubuntu for Windows but haven't been tested. The steps involved are listed below:
+This article covers: how to deploy a new Kubernetes Cluster (1.10.6) in Azure with AAD Integration using the acs-engine, how to add an Azure AD User to the K8s Cluster, and finally how to authenticate and connect to the K8s Cluster as them. Additionally, this walkthrough was written for and tested on Ubuntu 16.04 and Ubuntu 18.04 (minimum installations) using a standard linux user from within their */home* directory. The instructions *should* work on Bash on Ubuntu for Windows but haven't been tested. The steps involved are listed below:
 
 * Installing Azure CLI 2.0
 * Instll the latest version of kubectl
@@ -571,7 +571,7 @@ users:
 
 ## Closing
 
-This article covered how to deploy a new Kubernetes Cluster (1.10.6) in Azure with AAD Integration using the acs-engine and how to add a single user to the Cluster and then authenticate and connect to the Cluster as them.
+This article covered how to deploy a new Kubernetes Cluster (1.10.6) in Azure with AAD Integration using the acs-engine, how to add an Azure AD User to the K8s Cluster, and finally how to authenticate and connect to the K8s Cluster as them.
 
 ## Additional Reading
 
