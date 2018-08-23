@@ -40,10 +40,13 @@ The Name of the Service Principal and DNS Prefix for the documentation below is 
 Run the following command to install Azure CLI 2.0.
 
 ```bash
-echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ wheezy main" | sudo tee /etc/apt/sources.list.d/azure-cli.list && \
-sudo apt-key adv --keyserver packages.microsoft.com --recv-keys 417A0893 && \
+AZ_REPO=$(lsb_release -cs) && \
+echo "deb [arch=amd64] https://packages.microsoft.com/repos/azure-cli/ $AZ_REPO main" | \
+sudo tee /etc/apt/sources.list.d/azure-cli.list && \
+curl -L https://packages.microsoft.com/keys/microsoft.asc | sudo apt-key add - && \
 sudo apt-get install -y apt-transport-https && \
-sudo apt-get update && sudo apt-get install -y azure-cli
+sudo apt-get update && \
+sudo apt-get install -y azure-cli
 ```
 
 ## Install the latest version of kubectl
@@ -58,13 +61,13 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 ## Install the ACS Engine
 
-If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.13.0**, run the following command.
+If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.20.3**, run the following command.
 
 ```bash
-wget https://github.com/Azure/acs-engine/releases/download/v0.13.0/acs-engine-v0.13.0-linux-amd64.tar.gz && \
-tar -xzvf acs-engine-v0.13.0-linux-amd64.tar.gz && \
-sudo cp acs-engine-v0.13.0-linux-amd64/acs-engine /usr/bin/acs-engine && \
-sudo cp acs-engine-v0.13.0-linux-amd64/acs-engine /usr/local/bin/acs-engine
+wget https://github.com/Azure/acs-engine/releases/download/v0.20.3/acs-engine-v0.20.3-linux-amd64.tar.gz && \
+tar -xzvf acs-engine-v0.20.3-linux-amd64.tar.gz && \
+sudo cp acs-engine-v0.20.3-linux-amd64/acs-engine /usr/bin/acs-engine && \
+sudo cp acs-engine-v0.20.3-linux-amd64/acs-engine /usr/local/bin/acs-engine
 ```
 
 If you want to install a particular version of the acs-engine, visit **https://github.com/Azure/acs-engine/tags**.
@@ -127,7 +130,7 @@ The acs-engine Cluster Definition Files are JSON files that allow you to configu
 
 ```text
 orchestratorType         - Kubernetes (Other options include Swarm, Swarm Mode, and DCOS).
-orchestratorVersion      - The version of Kubernetes to deploy, i.e. - 1.6.1, 1.7.2, 1.8.2, 1.9.1, 1.9.3.
+orchestratorVersion      - The version of Kubernetes to deploy, i.e. - 1.7.2, 1.8.2, 1.9.1, 1.9.3, 1.10.6.
 masterProfile            - The number of Master Nodes to deploy, the DNS Prefix to use, VM Size, type of Storage to use, OS Disk Size (GB).
 agentPoolProfiles        - The name of the pool, number of Nodes to deploy, VM Size, type of Storage to use, OS Disk Size (GB), Availability Set Profile, OS Type.
 linuxProfile             - the admin Username and SSH Key used to access the Linux Nodes.
@@ -135,7 +138,7 @@ windowsProfile           - the admin Username and Password used to access the Wi
 servicePrincipalProfile  - The Service Principal Client ID and Service Principal Password.
 ```
 
-For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.9.3 using the following Cluster Definition File. Copy and paste the contents below into a file called **deploy-k8s-1.9.3.json**.
+For the purposes of this walkthrough, we are going to deploy a **vanilla** Deployment of Kubernetes 1.10.6 using the following Cluster Definition File. Copy and paste the contents below into a file called **deploy-k8s-1.10.6.json**.
 
 ```json
 {
@@ -143,7 +146,7 @@ For the purposes of this walkthrough, we are going to deploy a **vanilla** Deplo
   "properties": {
     "orchestratorProfile": {
       "orchestratorType": "Kubernetes",
-      "orchestratorRelease": "1.9"
+      "orchestratorRelease": "1.10"
     },
     "masterProfile": {
       "count": 1,
@@ -185,7 +188,7 @@ clientId  = appId
 secret    = UseAzureKeyVault1!
 ```
 
-Once you have added in the respective values of the name-pairs listed above, the **deploy-k8s-1.9.3.json** file should appear similar to what is shown below.
+Once you have added in the respective values of the name-pairs listed above, the **deploy-k8s-1.10.6.json** file should appear similar to what is shown below.
 
 ```json
 {
@@ -193,7 +196,7 @@ Once you have added in the respective values of the name-pairs listed above, the
   "properties": {
     "orchestratorProfile": {
       "orchestratorType": "Kubernetes",
-      "orchestratorRelease": "1.9"
+      "orchestratorRelease": "1.10"
     },
     "masterProfile": {
       "count": 1,
@@ -226,7 +229,7 @@ Once you have added in the respective values of the name-pairs listed above, the
 }
 ```
 
-Save your changes to the **deploy-k8s-1.9.3.json** file and close it.
+Save your changes to the **deploy-k8s-1.10.6.json** file and close it.
 
 *Note: The full list of customizable options you can modify can be found in the **[Cluster Definition Documentation](https://github.com/Azure/acs-engine/blob/master/docs/clusterdefinition.md)**.*
 
@@ -235,7 +238,7 @@ Save your changes to the **deploy-k8s-1.9.3.json** file and close it.
 Run the following command to generate the deployment ARM Templates.
 
 ```bash
-acs-engine generate deploy-k8s-1.9.3.json
+acs-engine generate deploy-k8s-1.10.6.json
 ```
 
 The ARM Templates will generated in a few seconds and you should see the following response.
@@ -300,7 +303,7 @@ _output/azure-k8s-dev --> kubeconfig
 Run the following command to deploy a new Resource Group.
 
 ```bash
-    az group create \
+az group create \
     --name azure-k8s-dev \
     --location westeurope
 ```
@@ -396,6 +399,185 @@ kube-system   kube-scheduler-k8s-master-30657238-0            1/1       Running 
 kube-system   kubernetes-dashboard-868965c888-2jpxn           1/1       Running   0          19m
 kube-system   tiller-deploy-589f6788d7-5gk95                  1/1       Running   0          19m
 ```
+
+## Deploying Kubernetes using the ACS Engine with RBAC authentication
+
+Document: Microsoft Azure Container Service Engine - Kubernetes AAD integration Walkthrough: https://github.com/Azure/acs-engine/blob/master/docs/kubernetes/aad.md#loginpageerror
+
+* Standard Deployment of main stuff above
+* Use this guide to deploy the **k8s-apisrv-app** and **k8s-cli-app** Azure AD applications - https://docs.microsoft.com/en-us/azure/aks/aad-integration
+  * k8s-apisrv-app: serverAppID = Application ID
+  * k8s-cli-app: clientAppID = Application ID
+  * Tenant ID = Azure Subscription Tenant ID
+* Use the **deploy-k8s-1.10.6-aad-rbac.json** deployment configuration
+
+```json
+{
+  "apiVersion": "vlabs",
+  "properties": {
+    "orchestratorProfile": {
+      "orchestratorType": "Kubernetes",
+      "orchestratorRelease": "1.10"
+    },
+    "aadProfile": {
+      "serverAppID": "b047190f-7e53-4c29-8ffb-a3951a2140e7",
+      "clientAppID": "4619319a-3cab-4fa7-a4a7-d6f80b424028",
+      "tenantID": "7f24e4c5-12f1-4047-afa1-c15d6927e745"
+    },
+    "masterProfile": {
+      "count": 1,
+      "dnsPrefix": "azure-k8s-dev",
+      "vmSize": "Standard_D2_v2"
+    },
+    "agentPoolProfiles": [
+      {
+        "name": "linuxpool1",
+        "count": 2,
+        "vmSize": "Standard_D2_v2",
+        "availabilityProfile": "AvailabilitySet"
+      }
+    ],
+    "linuxProfile": {
+      "adminUsername": "linuxadmin",
+      "ssh": {
+        "publicKeys": [
+          {
+            "keyData": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQClz3c4WwiEo1Gymum8IMwlHDd6m0kwUOKJUak1jgsfXPDZAo6Fdy+yAq845+cLEDMLObaTtrutZ6l9bsBSFGqjvAmJdQI84pP3iG7Nmo6vaiBO4gU2X2h2kN/kk645q2CTg9yOrsL3xE1vXuzFDL/tzA7FPPPsUz2nOyq4WdPNZOU2hR0pZi7JztMlfJ1edapRjYNyA35Jwp3RUX99bONYeSFQY4ySFXI273A/gwcuVVo88kVOSeb4ngjoknuiZIA55Y5c7Q+nSTJzmNVbBtsGGcc9xJ/znHJpX3Vy/mSxSYQCQyxb1JREqHW6tniFKMTeWMFRbsR30f8IuY/23FY3 azure-k8s-dev-access-key"
+          }
+        ]
+      }
+    },
+    "servicePrincipalProfile": {
+      "clientId": "d0fa09da-9edc-4a43-8395-676a99c620a9",
+      "secret": "UseAzureKeyVault1!"
+    }
+  }
+}
+```
+
+* Generate ACS Deployment Files from ****deploy-k8s-1.10.6-aad-rbac.json**.
+* Deploy Kubernetes.
+* Run the rest of these commands:
+
+```bash
+export KUBECONFIG=~/devopsautocloud/_output/azure-k8s-dev/kubeconfig/kubeconfig.westeurope.json
+
+
+eval $(ssh-agent -s) ; ssh-add ~/.ssh/azure-k8s-dev-access-key
+
+ssh -i _output/azure-k8s-dev/azureuser_rsa linuxadmin@azure-k8s-dev.westeurope.cloudapp.azure.com \
+kubectl create clusterrolebinding \
+aad-default-cluster-admin-binding \
+--clusterrole=cluster-admin \
+--user 'https://sts.windows.net/7f24e4c5-12f1-4047-afa1-c15d6927e745/#b4b933ce-8e82-47f5-8d27-4c81285824dc'
+
+```
+
+
+
+
+
+
+
+
+## Connect to the Kubernetes Dashboard
+
+In certain circumstances you'll want to make the Kubernetes Dashboard available. Follow the instructions below to make it available from the Ubuntu Host you are working from.
+
+*WARNING: This isn't a comprehensive guide on how to securely configure the Kubernetes Dashboard in a Production Environment; you will need to take additional steps not documented here in order to achieve this.*
+
+Kubernetes does not have use accounts; instead access is granted directly using service accounts. To simplify access to the Kubernetes Dashboard, we are going to create a service account called **k8s-admin** in the **kube-system** namespace and grant them access to the Cluster Role **cluster-admin**. For all intents and purposes, this is granting **k8s-admin** admin access to the K8s Cluster.
+
+Copy and paste the contents below into a file called **k8s-admin-service-account.yaml**.
+
+```yaml
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: k8s-admin
+  namespace: kube-system
+---
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: k8s-admin
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: k8s-admin
+  namespace: kube-system
+```
+
+Run the following command to add the **k8s-admin** service account to the K8s Cluster.
+
+```bash
+kubectl apply -f k8s-admin-service-account.yaml
+```
+
+Next, run the following command to access the Kubernetes Dashboard via Proxy from your Ubuntu Host.
+
+```bash
+kubectl proxy --address 0.0.0.0 --port 8080 --accept-hosts '.*' &
+```
+
+Next, browse to the Kubernetes Dashboard.
+
+Syntax: localhost
+
+```bash
+http://localhost:8080/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy/
+```
+
+As soon as you browse to the URL, you should be presented with a Login screen.
+
+In order to login with a Bearer Token, you need to retrieve the token from the **k8s-admin** service account. Run the following command to do so.
+
+```bash
+kubectl -n kube-system describe secret | grep k8s-admin -A10 | awk '/token:/ {print $2}'
+```
+
+Next, select the **Token** option and copy and paste the token for the **k8s-admin** service account and then click the **Sign In** button.
+
+*Note: You will only be able to access the Kubernetes Dashboard using **kubectl proxy** from localhost and 127.0.0.1. If you attempt to login from a different IP or Domain (privately or publically) nothing will happen after clicking Sign in button on login page. A way to circumvent this, along with authentication altogether, is presented in the next section. The contributors to the Kubernetes Dashboard were so adamant about this being a feature and not a bug, that they included it TWICE in the [documentation](https://github.com/kubernetes/dashboard/wiki/Accessing-Dashboard---1.7.X-and-above).*
+
+[Kubernetes Dashboard Installation](https://github.com/kubernetes/dashboard/wiki/Installation#recommended-setup)
+
+### Insecure Access to Kubernetes Dashboard
+
+You can add the **kubernetes-dashboard** service account to the **cluster-admin** Cluster Role. This will allow you to skip the Kubernetes Dashboard Login page.
+
+Copy and paste the contents below into a file called **insecure-dashboard-access.yaml**.
+
+```yaml
+apiVersion: rbac.authorization.k8s.io/v1beta1
+kind: ClusterRoleBinding
+metadata:
+  name: kubernetes-dashboard
+  labels:
+    k8s-app: kubernetes-dashboard
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: cluster-admin
+subjects:
+- kind: ServiceAccount
+  name: kubernetes-dashboard
+  namespace: kube-system
+```
+
+Run the following command to apply the configuration change.
+
+```bash
+kubectl apply -f k8s-admin-service-account.yaml
+```
+
+## Recommended Kubernetes Dashboard Setup
+
+
+
 
 ## Closing
 
