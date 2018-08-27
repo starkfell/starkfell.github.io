@@ -2,7 +2,7 @@
 layout: post
 comments: true
 title: "Deploying Kubernetes 1.10.6 with Azure Active Directory Integration using the ACS Engine"
-date: 2018-08-23
+date: 2018-08-27
 ---
 
 Most of the instructions available online on this topic do not provide a way to create the required Server and Client AD Applications using the Azure CLI. In my experience, incorrectly creating these two applications through the Azure Portal is what causes AAD Integration with Kubernetes to fail. By using the Azure CLI, the potential for failure from a forgotten button clicked is removed. Hopefully the information detailed below will help you out if you are either getting started with AAD Integration with K8s or are working on automating the deployment of your existing K8s Clusters in Azure.
@@ -17,7 +17,7 @@ This article covers: how to deploy a new Kubernetes Cluster (1.10.6) in Azure wi
 * Instll the latest version of kubectl
 * Installing the ACS Engine
 * Generating an SSH Key
-* Create a Service Principal in the Azure Subscription
+* Create a Service Principal in the Azure Subscription for Kubernetes
 * Download the Manifest Files for creating the Azure AD Applcations
 * Download the Kubernetes Cluster Definition File
 * Create the Server AD Application
@@ -37,6 +37,7 @@ This article covers: how to deploy a new Kubernetes Cluster (1.10.6) in Azure wi
 * The Azure Subscription ID used in the documentation below, **d5b31b94-d91c-4ef8-b9d0-30193e6308ee**, needs to be replaced with your Azure Subscription ID.
 * The default username of all the Linux Nodes in the K8s Cluster is **linuxadmin**.
 * The default password of the Kubernetes Service Principal is **UseAzureKeyVault1!**.
+* The default DNS Prefix used for the Kubernetes cluster is **azure-k8s-dev**.
 
 *Note: This walkthrough uses local variables extensively so that the majority of commands can simply be copy/pasted directly into a SSH session with minimal interaction. If you decide to copy and paste everything in this guide without reading through it first, you should have a working K8s Cluster with AAD Integration; however, if something breaks unexpectedly, that's on you.*
 
@@ -66,13 +67,13 @@ sudo mv ./kubectl /usr/local/bin/kubectl
 
 ## Install the ACS Engine
 
-If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.20.9**, run the following command.
+If you want to install the **[latest](https://github.com/Azure/acs-engine/releases/latest)** version of the acs-engine, which at the time of this writing is **v0.21.1**, run the following command.
 
 ```bash
-wget https://github.com/Azure/acs-engine/releases/download/v0.20.9/acs-engine-v0.20.9-linux-amd64.tar.gz && \
-tar -xzvf acs-engine-v0.20.9-linux-amd64.tar.gz && \
-sudo cp acs-engine-v0.20.9-linux-amd64/acs-engine /usr/bin/acs-engine && \
-sudo cp acs-engine-v0.20.9-linux-amd64/acs-engine /usr/local/bin/acs-engine
+wget https://github.com/Azure/acs-engine/releases/download/v0.21.1/acs-engine-v0.21.1-linux-amd64.tar.gz && \
+tar -xzvf acs-engine-v0.21.1-linux-amd64.tar.gz && \
+sudo cp acs-engine-v0.21.1-linux-amd64/acs-engine /usr/bin/acs-engine && \
+sudo cp acs-engine-v0.21.1-linux-amd64/acs-engine /usr/local/bin/acs-engine
 ```
 
 If you want to install a particular version of the acs-engine, visit **https://github.com/Azure/acs-engine/tags**.
@@ -85,7 +86,7 @@ Run the command below to generate an SSH Key using **ssh-keygen**. The Name of t
 ssh-keygen -t rsa -b 2048 -C "azure-k8s-dev-access-key" -f ~/.ssh/azure-k8s-dev-access-key -N ''
 ```
 
-## Create a Service Principal in the Azure Subscription
+## Create a Service Principal in the Azure Subscription for Kubernetes
 
 Run the commands below using the Azure CLI.
 
@@ -397,7 +398,7 @@ az group deployment create \
 --parameters "./_output/azure-k8s-dev/azuredeploy.parameters.json"
 ```
 
-This command should run for approximately 10 to 15 minutes. When the command completes, you should get back a very long list of output which I have ommitted from here due to its length. It's much easier to track and verify the deployment succeeded in the [Azure Portal](https://portal.azure.com) in the **azure-k8s-dev** Resource Group.
+This command should run for approximately 5 to 10 minutes. When the command completes, you should get back a very long list of output which I have ommitted from here due to its length. It's much easier to track and verify the deployment succeeded in the [Azure Portal](https://portal.azure.com) in the **azure-k8s-dev** Resource Group.
 
 ## Verify kubeconfig configuration
 
@@ -530,9 +531,9 @@ You shoul get back a similar response response.
 
 ```text
 NAME                        STATUS    ROLES     AGE       VERSION
-k8s-linuxpool1-30657238-0   Ready     agent     42m       v1.10.6
-k8s-linuxpool1-30657238-1   Ready     agent     42m       v1.10.6
-k8s-master-30657238-0       Ready     master    42m       v1.10.6
+k8s-linuxpool1-30657238-0   Ready     agent     42m       v1.10.7
+k8s-linuxpool1-30657238-1   Ready     agent     42m       v1.10.7
+k8s-master-30657238-0       Ready     master    42m       v1.10.7
 ```
 
 You should now be able to run any and all commands in the K8s Cluster as the Azure AD User you logged in as.
